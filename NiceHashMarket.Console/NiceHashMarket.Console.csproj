@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{82C419A1-1911-4A98-AA92-042D69F901F5}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>NiceHashMarket.Console</RootNamespace>
+    <AssemblyName>NiceHashMarket.Console</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NiceHashMarket.Core.Interfaces\NiceHashMarket.Core.Interfaces.csproj">
+      <Project>{7f2a4c8d-9dc1-48a0-84fd-0d365191a04d}</Project>
+      <Name>NiceHashMarket.Core.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Core\NiceHashMarket.Core.csproj">
+      <Project>{050a8e9c-7ca6-4dc2-b6dc-8ff3ed4a7b6f}</Project>
+      <Name>NiceHashMarket.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Model.Interfaces\NiceHashMarket.Model.Interfaces.csproj">
+      <Project>{5236C511-7B02-4952-B9D8-D98291E7A6DE}</Project>
+      <Name>NiceHashMarket.Model.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Model\NiceHashMarket.Model.csproj">
+      <Project>{91636E6F-612E-443E-89F5-A5BACA2F05CB}</Project>
+      <Name>NiceHashMarket.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

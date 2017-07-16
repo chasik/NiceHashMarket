@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.Model", "NiceHashMarket.Model\NiceHashMarket.Model.csproj", "{91636E6F-612E-443E-89F5-A5BACA2F05CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.Core", "NiceHashMarket.Core\NiceHashMarket.Core.csproj", "{050A8E9C-7CA6-4DC2-B6DC-8FF3ED4A7B6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.WpfClient", "NiceHashMarket.WpfClient\NiceHashMarket.WpfClient.csproj", "{EB0F293E-1947-45F5-8EC6-073E7EE033C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.Console", "NiceHashMarket.Console\NiceHashMarket.Console.csproj", "{82C419A1-1911-4A98-AA92-042D69F901F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.Core.Interfaces", "NiceHashMarket.Core.Interfaces\NiceHashMarket.Core.Interfaces.csproj", "{7F2A4C8D-9DC1-48A0-84FD-0D365191A04D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.Model.Interfaces", "NiceHashMarket.Model.Interfaces\NiceHashMarket.Model.Interfaces.csproj", "{5236C511-7B02-4952-B9D8-D98291E7A6DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91636E6F-612E-443E-89F5-A5BACA2F05CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91636E6F-612E-443E-89F5-A5BACA2F05CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91636E6F-612E-443E-89F5-A5BACA2F05CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91636E6F-612E-443E-89F5-A5BACA2F05CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{050A8E9C-7CA6-4DC2-B6DC-8FF3ED4A7B6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{050A8E9C-7CA6-4DC2-B6DC-8FF3ED4A7B6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{050A8E9C-7CA6-4DC2-B6DC-8FF3ED4A7B6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{050A8E9C-7CA6-4DC2-B6DC-8FF3ED4A7B6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB0F293E-1947-45F5-8EC6-073E7EE033C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB0F293E-1947-45F5-8EC6-073E7EE033C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB0F293E-1947-45F5-8EC6-073E7EE033C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB0F293E-1947-45F5-8EC6-073E7EE033C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82C419A1-1911-4A98-AA92-042D69F901F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82C419A1-1911-4A98-AA92-042D69F901F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82C419A1-1911-4A98-AA92-042D69F901F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82C419A1-1911-4A98-AA92-042D69F901F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F2A4C8D-9DC1-48A0-84FD-0D365191A04D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F2A4C8D-9DC1-48A0-84FD-0D365191A04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F2A4C8D-9DC1-48A0-84FD-0D365191A04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F2A4C8D-9DC1-48A0-84FD-0D365191A04D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5236C511-7B02-4952-B9D8-D98291E7A6DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5236C511-7B02-4952-B9D8-D98291E7A6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5236C511-7B02-4952-B9D8-D98291E7A6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5236C511-7B02-4952-B9D8-D98291E7A6DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
