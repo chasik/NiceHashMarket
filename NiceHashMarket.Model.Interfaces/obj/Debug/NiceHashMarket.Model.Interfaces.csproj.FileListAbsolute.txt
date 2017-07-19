@@ -3,3 +3,8 @@ C:\Users\ich\Documents\GitHub\NiceHashMarket\NiceHashMarket.Model.Interfaces\bin
 C:\Users\ich\Documents\GitHub\NiceHashMarket\NiceHashMarket.Model.Interfaces\obj\Debug\NiceHashMarket.Model.Interfaces.dll
 C:\Users\ich\Documents\GitHub\NiceHashMarket\NiceHashMarket.Model.Interfaces\obj\Debug\NiceHashMarket.Model.Interfaces.pdb
 C:\Users\ich\Documents\GitHub\NiceHashMarket\NiceHashMarket.Model.Interfaces\obj\Debug\NiceHashMarket.Model.Interfaces.csprojResolveAssemblyReference.cache
+C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Model.Interfaces\bin\Debug\NiceHashMarket.Model.Interfaces.dll
+C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Model.Interfaces\bin\Debug\NiceHashMarket.Model.Interfaces.pdb
+C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Model.Interfaces\obj\Debug\NiceHashMarket.Model.Interfaces.csprojResolveAssemblyReference.cache
+C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Model.Interfaces\obj\Debug\NiceHashMarket.Model.Interfaces.dll
+C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Model.Interfaces\obj\Debug\NiceHashMarket.Model.Interfaces.pdb

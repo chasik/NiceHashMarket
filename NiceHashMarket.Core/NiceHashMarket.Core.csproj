@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Algorithms.cs" />
     <Compile Include="ApiClient.cs" />
+    <Compile Include="DataStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
