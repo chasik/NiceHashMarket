@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -8,7 +9,7 @@ using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Core
 {
-    public class DataStorage<T>
+    public class DataStorage<T> : IEnumerable<T>
         where T : IHaveId, INotifyPropertyChanged
     {
         private Timer _timer;
@@ -18,9 +19,8 @@ namespace NiceHashMarket.Core
         public IAlgo Algo { get; set; }
         public ApiClient ApiClient { get; set; }
         public BindingList<T> Entities { get; set; }
-        public PropertyChangedEventHandler PropertyChangedHandler { get; set; }
 
-        public DataStorage(ApiClient apiClient, IAlgo algo, int frequencyQueryMilliseconds, PropertyChangedEventHandler propertyChangedHandler)
+        public DataStorage(ApiClient apiClient, IAlgo algo, int frequencyQueryMilliseconds)
         {
             Entities = new BindingList<T>();
 
@@ -28,14 +28,12 @@ namespace NiceHashMarket.Core
 
             ApiClient = apiClient;
 
-            PropertyChangedHandler = propertyChangedHandler;
-
             _frequencyQueryMilliseconds = frequencyQueryMilliseconds;
 
             _timer = new Timer(ApiQueryExecute, null, 0, _frequencyQueryMilliseconds);
         }
 
-            public virtual void ApiQueryExecute(object state)
+        public virtual void ApiQueryExecute(object state)
         {
         }
 
@@ -48,13 +46,27 @@ namespace NiceHashMarket.Core
                 if (knownEntity == null)
                 {
                     Entities.Add(entity);
-                    entity.PropertyChanged += PropertyChangedHandler;
-
                     continue;
                 }
 
                 entity.CopyProperties(knownEntity);
             }
+        }
+
+        public T this[int index]
+        {
+            get => Entities[index];
+            set => Entities[index] = value;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return Entities.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

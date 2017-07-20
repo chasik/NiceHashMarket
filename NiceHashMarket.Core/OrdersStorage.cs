@@ -1,13 +1,12 @@
-﻿using System.ComponentModel;
-using NiceHashMarket.Model;
+﻿using NiceHashMarket.Model;
 using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Core
 {
     public class OrdersStorage : DataStorage<Order>
     {
-        public OrdersStorage(ApiClient apiClient, IAlgo algo, int frequencyQueryMilliseconds, PropertyChangedEventHandler propertyChangedHandler) 
-            : base(apiClient, algo, frequencyQueryMilliseconds, propertyChangedHandler)
+        public OrdersStorage(ApiClient apiClient, IAlgo algo, int frequencyQueryMilliseconds) 
+            : base(apiClient, algo, frequencyQueryMilliseconds)
         {
 
         }
