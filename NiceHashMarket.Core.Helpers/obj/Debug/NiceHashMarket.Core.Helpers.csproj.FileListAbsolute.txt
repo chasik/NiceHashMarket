@@ -1,5 +1,0 @@
-C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Core.Helpers\bin\Debug\NiceHashMarket.Core.Helpers.dll
-C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Core.Helpers\bin\Debug\NiceHashMarket.Core.Helpers.pdb
-C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Core.Helpers\obj\Debug\NiceHashMarket.Core.Helpers.csprojResolveAssemblyReference.cache
-C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Core.Helpers\obj\Debug\NiceHashMarket.Core.Helpers.dll
-C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Core.Helpers\obj\Debug\NiceHashMarket.Core.Helpers.pdb
