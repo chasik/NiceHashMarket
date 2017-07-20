@@ -50,9 +50,14 @@
     <Compile Include="Algorithms.cs" />
     <Compile Include="ApiClient.cs" />
     <Compile Include="DataStorage.cs" />
+    <Compile Include="OrdersStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NiceHashMarket.Core.Helpers\NiceHashMarket.Core.Helpers.csproj">
+      <Project>{EF7CE819-802A-41B1-8B30-DC551985F585}</Project>
+      <Name>NiceHashMarket.Core.Helpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NiceHashMarket.Core.Interfaces\NiceHashMarket.Core.Interfaces.csproj">
       <Project>{7F2A4C8D-9DC1-48A0-84FD-0D365191A04D}</Project>
       <Name>NiceHashMarket.Core.Interfaces</Name>

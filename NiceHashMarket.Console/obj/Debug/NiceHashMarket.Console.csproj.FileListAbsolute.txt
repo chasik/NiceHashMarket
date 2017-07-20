@@ -34,3 +34,5 @@ C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Console\bin\
 C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Console\obj\Debug\NiceHashMarket.Console.csprojResolveAssemblyReference.cache
 C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Console\obj\Debug\NiceHashMarket.Console.exe
 C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Console\obj\Debug\NiceHashMarket.Console.pdb
+C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Console\bin\Debug\NiceHashMarket.Core.Helpers.dll
+C:\Users\Ivan_Chasov\Documents\GitHub\NiceHashMarket\NiceHashMarket.Console\bin\Debug\NiceHashMarket.Core.Helpers.pdb
