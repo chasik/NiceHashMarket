@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using NiceHashMarket.Core;
 using System.Linq;
 using NiceHashMarket.Model;
@@ -14,7 +13,7 @@ namespace NiceHashMarket.Console
             var algoList = new Algorithms();
 
             
-            var ordersStorage = new OrdersStorage(client, algoList.First(a => a.Id == 23), 500);
+            var ordersStorage = new OrdersStorage(client, algoList.First(a => a.Id == 23), 2000);
             ordersStorage.Entities.ListChanged += EntitiesOnListChanged;
 
             System.Console.WriteLine();
@@ -28,7 +27,11 @@ namespace NiceHashMarket.Console
 
             var order = storage[listChangedEventArgs.NewIndex];
 
-            System.Console.WriteLine($"(LIST CHANGED) {listChangedEventArgs.ListChangedType}\t{listChangedEventArgs.PropertyDescriptor?.Name}\t{order}");
+            //if (listChangedEventArgs.PropertyDescriptor?.Name == "DeltaPrice")
+            //    System.Console.WriteLine($"(LIST CHANGED) {listChangedEventArgs.ListChangedType}\t{listChangedEventArgs.PropertyDescriptor?.Name}\t{order}");
+
+            //MarketLogger.Information(
+            //    "(LIST CHANGED: {@orderId}) {@changeType} {@property} " + order, order.Id, listChangedEventArgs.ListChangedType, listChangedEventArgs.PropertyDescriptor?.Name);
         }
 
     }

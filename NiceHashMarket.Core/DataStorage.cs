@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
+using System.Windows.Threading;
 using NiceHashMarket.Core.Helpers;
 using NiceHashMarket.Core.Interfaces;
+using NiceHashMarket.Model;
 using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Core
@@ -13,15 +15,17 @@ namespace NiceHashMarket.Core
         where T : IHaveId, INotifyPropertyChanged
     {
         private Timer _timer;
-        private int _frequencyQueryMilliseconds;
-
+        private readonly Dispatcher _currentDispatcher;
+        private readonly int _frequencyQueryMilliseconds;
 
         public IAlgo Algo { get; set; }
         public ApiClient ApiClient { get; set; }
         public BindingList<T> Entities { get; set; }
 
-        public DataStorage(ApiClient apiClient, IAlgo algo, int frequencyQueryMilliseconds)
+        public DataStorage(ApiClient apiClient, IAlgo algo, int frequencyQueryMilliseconds, Dispatcher currentDispatcher)
         {
+            _currentDispatcher = currentDispatcher;
+
             Entities = new BindingList<T>();
 
             Algo = algo;
@@ -30,10 +34,18 @@ namespace NiceHashMarket.Core
 
             _frequencyQueryMilliseconds = frequencyQueryMilliseconds;
 
-            _timer = new Timer(ApiQueryExecute, null, 0, _frequencyQueryMilliseconds);
+            _timer = new Timer(TimerOnElapsed, null, 0, _frequencyQueryMilliseconds);
         }
 
-        public virtual void ApiQueryExecute(object state)
+        private void TimerOnElapsed(object state)
+        {
+            if (_currentDispatcher == null)
+                ApiQueryExecute();
+            else
+                _currentDispatcher.Invoke(ApiQueryExecute);
+        }
+
+        public virtual void ApiQueryExecute()
         {
         }
 

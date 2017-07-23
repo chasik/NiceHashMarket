@@ -1,4 +1,4 @@
-﻿namespace NiceHashMarket.Core.Interfaces
+﻿namespace NiceHashMarket.Model.Interfaces
 {
     public interface IHaveId
     {

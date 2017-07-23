@@ -43,5 +43,15 @@
     <Compile Include="ObjectReflectionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NiceHashMarket.Logger\NiceHashMarket.Logger.csproj">
+      <Project>{EC5235B5-D2B2-4883-B0E8-4A1532B04784}</Project>
+      <Name>NiceHashMarket.Logger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Model.Interfaces\NiceHashMarket.Model.Interfaces.csproj">
+      <Project>{5236c511-7b02-4952-b9d8-d98291e7a6de}</Project>
+      <Name>NiceHashMarket.Model.Interfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

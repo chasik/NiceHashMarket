@@ -1,46 +1,84 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using NiceHashMarket.Core.Interfaces;
-using NiceHashMarket.Model.Annotations;
+using NiceHashMarket.Logger;
+using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Model
 {
     public class Order : IHaveId, INotifyPropertyChanged
     {
+        private int _id;
         private decimal _price;
         private decimal _amount;
         private decimal _speed;
         private int _workers;
         private bool _active;
+        private decimal _deltaPrice;
+        private int _deltaPercentAmount;
+        private int _deltaPercentWorkers;
+        private int _deltaPercentSpeed;
+        private OrderTypeEnum _type;
 
         public Order(int id, decimal price, decimal amount, decimal speed, int workers, int type, int active, ServerEnum server = ServerEnum.Unknown)
         {
             Server = server;
 
-            Id = id;
-            Price = price;
-            Amount = amount;
-            Speed = speed;
-            Workers = workers;
-            Active = active == 1;
+            _id = id;
+            _price = price;
+            _amount = amount;
+            _speed = speed;
+            _workers = workers;
+            _active = active == 1;
 
             if (type == 0)
-                Type = OrderTypeEnum.Standart;
+                _type = OrderTypeEnum.Standart;
             else if (type == 1)
-                Type = OrderTypeEnum.Fixed;
+                _type = OrderTypeEnum.Fixed;
+
+            //MarketLogger.Information("counstructor: {@orderId})", Id);
         }
 
 
-        public int Id { get; set; }
+        public int Id
+        {
+            get => _id;
+            set
+            {
+                if (_id == value) return;
+
+                _id = value;
+                OnPropertyChanged();
+            }
+        }
 
         public decimal Price
         {
             get => _price;
             set
             {
+                //MarketLogger.Information("set price 1: {@orderId} price: {@price} value: {@value})", Id, _price, value);
                 if (_price == value) return;
 
+                if (_price != 0)
+                    DeltaPrice = value - _price;
+
+                //MarketLogger.Information("set price 2: {@orderId} price: {@price} value: {@value})", Id, _price, value);
                 _price = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public decimal DeltaPrice
+        {
+            get => _deltaPrice;
+            set
+            {
+                //MarketLogger.Information("set deltaPrice 1: {@orderId} deltaPrice: {@deltaPrice} value: {@value})", Id, _deltaPrice, value);
+                if (_deltaPrice == value || value == 0) return;
+
+                //MarketLogger.Information("set deltaPrice 2: {@orderId} deltaPrice: {@deltaPrice} value: {@value})", Id, _deltaPrice, value);
+                _deltaPrice = value; 
                 OnPropertyChanged();
             }
         }
@@ -52,7 +90,21 @@ namespace NiceHashMarket.Model
             {
                 if (_amount == value) return;
 
+                DeltaPercentAmount = (int)Math.Round(_amount == 0 ? value : value * 100 / _amount - 100);
+
                 _amount = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int DeltaPercentAmount
+        {
+            get => _deltaPercentAmount;
+            set
+            {
+                if (_deltaPercentAmount == value) return;
+
+                _deltaPercentAmount = value;
                 OnPropertyChanged();
             }
         }
@@ -64,7 +116,21 @@ namespace NiceHashMarket.Model
             {
                 if (_speed == value) return;
 
+                DeltaPercentSpeed = (int)Math.Round(_speed == 0 ? value : value * 100 / _speed - 100);
+
                 _speed = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int DeltaPercentSpeed
+        {
+            get => _deltaPercentSpeed;
+            set
+            {
+                if (_deltaPercentSpeed == value) return;
+
+                _deltaPercentSpeed = value;
                 OnPropertyChanged();
             }
         }
@@ -76,7 +142,21 @@ namespace NiceHashMarket.Model
             {
                 if (_workers == value) return;
 
+                DeltaPercentWorkers = _workers == 0 ? value : value * 100 / _workers - 100 ;
+
                 _workers = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int DeltaPercentWorkers
+        {
+            get => _deltaPercentWorkers;
+            set
+            {
+                if (_deltaPercentWorkers == value) return;
+
+                _deltaPercentWorkers = value;
                 OnPropertyChanged();
             }
         }
@@ -93,19 +173,28 @@ namespace NiceHashMarket.Model
             }
         }
 
-        public ServerEnum Server { get; set; }
+        public OrderTypeEnum Type
+        {
+            get => _type;
+            set
+            {
+                if (_type == value) return;
 
-        public OrderTypeEnum Type { get; set; }
+                _type = value; 
+                OnPropertyChanged();
+            }
+        }
+
+        public ServerEnum Server { get; set; }
 
 
         public override string ToString()
         {
-            return $"Id={Id};\tPrice={Price};\tAmount={Amount};\tWorkers={Workers};\tSpeed={Speed};\tActive={Active}";
+            return $"Id={Id};\tPrice={Price};\tDeltaPrice={DeltaPrice};\tAmount={Amount};\tWorkers={Workers};\tSpeed={Speed};\tActive={Active}";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

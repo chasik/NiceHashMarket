@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.0
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.Model", "NiceHashMarket.Model\NiceHashMarket.Model.csproj", "{91636E6F-612E-443E-89F5-A5BACA2F05CB}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.Model.Interfaces", "NiceHashMarket.Model.Interfaces\NiceHashMarket.Model.Interfaces.csproj", "{5236C511-7B02-4952-B9D8-D98291E7A6DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.Core.Helpers", "NiceHashMarket.Core.Helpers\NiceHashMarket.Core.Helpers.csproj", "{EF7CE819-802A-41B1-8B30-DC551985F585}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.Logger", "NiceHashMarket.Logger\NiceHashMarket.Logger.csproj", "{EC5235B5-D2B2-4883-B0E8-4A1532B04784}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{EF7CE819-802A-41B1-8B30-DC551985F585}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF7CE819-802A-41B1-8B30-DC551985F585}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF7CE819-802A-41B1-8B30-DC551985F585}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC5235B5-D2B2-4883-B0E8-4A1532B04784}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC5235B5-D2B2-4883-B0E8-4A1532B04784}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC5235B5-D2B2-4883-B0E8-4A1532B04784}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC5235B5-D2B2-4883-B0E8-4A1532B04784}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

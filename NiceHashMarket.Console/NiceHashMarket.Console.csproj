@@ -41,6 +41,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -57,6 +58,10 @@
     <ProjectReference Include="..\NiceHashMarket.Core\NiceHashMarket.Core.csproj">
       <Project>{050a8e9c-7ca6-4dc2-b6dc-8ff3ed4a7b6f}</Project>
       <Name>NiceHashMarket.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Logger\NiceHashMarket.Logger.csproj">
+      <Project>{EC5235B5-D2B2-4883-B0E8-4A1532B04784}</Project>
+      <Name>NiceHashMarket.Logger</Name>
     </ProjectReference>
     <ProjectReference Include="..\NiceHashMarket.Model.Interfaces\NiceHashMarket.Model.Interfaces.csproj">
       <Project>{5236C511-7B02-4952-B9D8-D98291E7A6DE}</Project>
