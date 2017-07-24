@@ -7,6 +7,7 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="900"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:AlgoMarketViewModel}}">
@@ -16,13 +17,13 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <dxg:GridControl Grid.Column="0" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
+                         SelectionMode="Row"
                          ItemsSource="{Binding OrdersEurope}">
-            <dxg:GridControl.SortInfo>
-                <dxg:GridSortInfo FieldName="Price" SortOrder="Descending" />
-            </dxg:GridControl.SortInfo>
             <dxg:GridControl.Columns>
-                <dxg:GridColumn FieldName="Id" Width="70" />
-                <dxg:GridColumn FieldName="Price" Width="70">
+                <dxg:GridColumn FieldName="Type" Width="50" SortOrder="Descending" SortIndex="1"/>
+                <dxg:GridColumn FieldName="Active" Width="40" SortOrder="Descending" SortIndex="2"/>
+                <dxg:GridColumn FieldName="Id" Width="60" />
+                <dxg:GridColumn FieldName="Price" Width="60" SortOrder="Descending" SortIndex="3">
                     <dxg:GridColumn.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="F4"/>
                     </dxg:GridColumn.EditSettings>
@@ -30,12 +31,13 @@
                 <dxg:GridColumn FieldName="DeltaPrice" Header="+/-" AllowEditing="False" Width="48">
                     <dxg:GridColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox FontSize="9" FontWeight="Light" HorizontalContentAlignment="Right" Background="Transparent"
-                                     Text="{Binding Path=RowData.Row.DeltaPrice, Mode=OneWay}" />
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPrice, Mode=OneWay}" />
                         </DataTemplate>
                     </dxg:GridColumn.CellTemplate>
                 </dxg:GridColumn>
-                <dxg:GridColumn FieldName="Amount" Width="70">
+                <dxg:GridColumn FieldName="Amount" Width="60">
                     <dxg:GridColumn.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="F2"/>
                     </dxg:GridColumn.EditSettings>
@@ -43,21 +45,23 @@
                 <dxg:GridColumn FieldName="DeltaPercentAmount" Header="+/- %" AllowEditing="False" Width="48">
                     <dxg:GridColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox FontSize="9" FontWeight="Light" HorizontalContentAlignment="Right" Background="Transparent"
-                                     Text="{Binding Path=RowData.Row.DeltaPercentAmount, Mode=OneWay}" />
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPercentAmount, Mode=OneWay}" />
                         </DataTemplate>
                     </dxg:GridColumn.CellTemplate>
                 </dxg:GridColumn>
-                <dxg:GridColumn FieldName="Workers" Width="70" />
+                <dxg:GridColumn FieldName="Workers" Width="60" />
                 <dxg:GridColumn FieldName="DeltaPercentWorkers" Header="+/- %" AllowEditing="False" Width="48">
                     <dxg:GridColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox FontSize="9" FontWeight="Light" HorizontalContentAlignment="Right" Background="Transparent"
-                                     Text="{Binding Path=RowData.Row.DeltaPercentWorkers, Mode=OneWay}" />
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPercentWorkers, Mode=OneWay}" />
                         </DataTemplate>
                     </dxg:GridColumn.CellTemplate>
                 </dxg:GridColumn>
-                <dxg:GridColumn FieldName="Speed" Width="70">
+                <dxg:GridColumn FieldName="Speed" Width="60">
                     <dxg:GridColumn.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="F4"/>
                     </dxg:GridColumn.EditSettings>
@@ -65,8 +69,9 @@
                 <dxg:GridColumn FieldName="DeltaPercentSpeed" Header="+/- %" AllowEditing="False" Width="48">
                     <dxg:GridColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox FontSize="9" FontWeight="Light" HorizontalContentAlignment="Right" Background="Transparent"
-                                     Text="{Binding Path=RowData.Row.DeltaPercentSpeed, Mode=OneWay}"/>
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPercentSpeed, Mode=OneWay}"/>
                         </DataTemplate>
                     </dxg:GridColumn.CellTemplate>
                 </dxg:GridColumn>
@@ -76,19 +81,21 @@
                                ShowGroupFooters="False" AllowScrollToFocusedRow="False"
                                NavigationStyle="Row" AnimateConditionalFormattingTransition="True"
                                AllowConditionalFormattingMenu="True" AllowDataUpdateFormatConditionMenu="True">
+                    <dxg:TableView.CellStyle>
+                        <Style BasedOn="{StaticResource {dxgt:GridRowThemeKey ResourceKey=LightweightCellStyle}}" 
+                               TargetType="{x:Type dxg:LightweightCellEditor}">
+                            <Setter Property="Height" Value="19"/>
+                            <Setter Property="FontSize" Value="11"/>
+                            <Setter Property="FontFamily" Value="Arial"/>
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </dxg:TableView.CellStyle>
                     <dxg:TableView.FormatConditions>
-                        <!--<dxg:IconSetFormatCondition FieldName="Price" Expression="[DeltaPrice]" PredefinedFormatName="PositiveNegativeTrianglesIconSet"/>-->
                         <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase"/>
                         <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease"/>
-                        <!--<dxg:IconSetFormatCondition FieldName="Amount" Expression="[DeltaPercentAmount]" PredefinedFormatName="PositiveNegativeTrianglesIconSet"/>-->
                         <dxg:DataUpdateFormatCondition FieldName="Amount" Expression="[Amount]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase"/>
                         <dxg:DataUpdateFormatCondition FieldName="Amount" Expression="[Amount]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease"/>
-                        <!--<dxg:IconSetFormatCondition FieldName="Workers" Expression="[DeltaPercentWorkers]" PredefinedFormatName="PositiveNegativeTrianglesIconSet"/>-->
-                        <!--<dxg:DataUpdateFormatCondition FieldName="Workers" Expression="[Workers]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase"/>
-                        <dxg:DataUpdateFormatCondition FieldName="Workers" Expression="[Workers]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease"/>-->
-                        <!--<dxg:IconSetFormatCondition FieldName="Speed" Expression="[DeltaPercentSpeed]" PredefinedFormatName="PositiveNegativeTrianglesIconSet"/>-->
-                        <!--<dxg:DataUpdateFormatCondition FieldName="Speed" Expression="[Speed]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase" />
-                        <dxg:DataUpdateFormatCondition FieldName="Speed" Expression="[Speed]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease" />-->
                         <dxg:ColorScaleFormatCondition FieldName="Amount" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
                         <dxg:ColorScaleFormatCondition FieldName="Workers" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
                         <dxg:ColorScaleFormatCondition FieldName="Speed" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
@@ -102,14 +109,15 @@
 
             </dxg:GridControl.View>
         </dxg:GridControl>
+        
         <dxg:GridControl Grid.Column="1" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True"
+                         SelectionMode="Row"
                          ItemsSource="{Binding OrdersUsa}">
-            <dxg:GridControl.SortInfo>
-                <dxg:GridSortInfo FieldName="Price" SortOrder="Descending" />
-            </dxg:GridControl.SortInfo>
             <dxg:GridControl.Columns>
-                <dxg:GridColumn FieldName="Id" Width="70" />
-                <dxg:GridColumn FieldName="Price" Width="70">
+                <dxg:GridColumn FieldName="Type" Width="50" SortOrder="Descending" SortIndex="1"/>
+                <dxg:GridColumn FieldName="Active" Width="40" SortOrder="Descending" SortIndex="2"/>
+                <dxg:GridColumn FieldName="Id" Width="60" />
+                <dxg:GridColumn FieldName="Price" Width="60" SortOrder="Descending" SortIndex="3">
                     <dxg:GridColumn.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="F4"/>
                     </dxg:GridColumn.EditSettings>
@@ -117,12 +125,13 @@
                 <dxg:GridColumn FieldName="DeltaPrice" Header="+/-" AllowEditing="False" Width="48">
                     <dxg:GridColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox FontSize="9" FontWeight="Light" HorizontalContentAlignment="Right" Background="Transparent"
-                                     Text="{Binding Path=RowData.Row.DeltaPrice, Mode=OneWay}" />
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPrice, Mode=OneWay}" />
                         </DataTemplate>
                     </dxg:GridColumn.CellTemplate>
                 </dxg:GridColumn>
-                <dxg:GridColumn FieldName="Amount" Width="70">
+                <dxg:GridColumn FieldName="Amount" Width="60">
                     <dxg:GridColumn.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="F2"/>
                     </dxg:GridColumn.EditSettings>
@@ -130,21 +139,23 @@
                 <dxg:GridColumn FieldName="DeltaPercentAmount" Header="+/- %" AllowEditing="False" Width="48">
                     <dxg:GridColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox FontSize="9" FontWeight="Light" HorizontalContentAlignment="Right" Background="Transparent"
-                                     Text="{Binding Path=RowData.Row.DeltaPercentAmount, Mode=OneWay}" />
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPercentAmount, Mode=OneWay}" />
                         </DataTemplate>
                     </dxg:GridColumn.CellTemplate>
                 </dxg:GridColumn>
-                <dxg:GridColumn FieldName="Workers" Width="70" />
+                <dxg:GridColumn FieldName="Workers" Width="60" />
                 <dxg:GridColumn FieldName="DeltaPercentWorkers" Header="+/- %" AllowEditing="False" Width="48">
                     <dxg:GridColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox FontSize="9" FontWeight="Light" HorizontalContentAlignment="Right" Background="Transparent"
-                                     Text="{Binding Path=RowData.Row.DeltaPercentWorkers, Mode=OneWay}" />
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPercentWorkers, Mode=OneWay}" />
                         </DataTemplate>
                     </dxg:GridColumn.CellTemplate>
                 </dxg:GridColumn>
-                <dxg:GridColumn FieldName="Speed" Width="70">
+                <dxg:GridColumn FieldName="Speed" Width="60">
                     <dxg:GridColumn.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="F4"/>
                     </dxg:GridColumn.EditSettings>
@@ -152,8 +163,9 @@
                 <dxg:GridColumn FieldName="DeltaPercentSpeed" Header="+/- %" AllowEditing="False" Width="48">
                     <dxg:GridColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox FontSize="9" FontWeight="Light" HorizontalContentAlignment="Right" Background="Transparent"
-                                     Text="{Binding Path=RowData.Row.DeltaPercentSpeed, Mode=OneWay}"/>
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPercentSpeed, Mode=OneWay}"/>
                         </DataTemplate>
                     </dxg:GridColumn.CellTemplate>
                 </dxg:GridColumn>
@@ -163,19 +175,21 @@
                                ShowGroupFooters="False" AllowScrollToFocusedRow="False"
                                NavigationStyle="Row" AnimateConditionalFormattingTransition="True"
                                AllowConditionalFormattingMenu="True" AllowDataUpdateFormatConditionMenu="True">
+                    <dxg:TableView.CellStyle>
+                        <Style BasedOn="{StaticResource {dxgt:GridRowThemeKey ResourceKey=LightweightCellStyle}}" 
+                               TargetType="{x:Type dxg:LightweightCellEditor}">
+                            <Setter Property="Height" Value="19"/>
+                            <Setter Property="FontSize" Value="11"/>
+                            <Setter Property="FontFamily" Value="Arial"/>
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </dxg:TableView.CellStyle>
                     <dxg:TableView.FormatConditions>
-                        <!--<dxg:IconSetFormatCondition FieldName="Price" Expression="[DeltaPrice]" PredefinedFormatName="PositiveNegativeTrianglesIconSet"/>-->
                         <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase"/>
                         <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease"/>
-                        <!--<dxg:IconSetFormatCondition FieldName="Amount" Expression="[DeltaPercentAmount]" PredefinedFormatName="PositiveNegativeTrianglesIconSet"/>-->
                         <dxg:DataUpdateFormatCondition FieldName="Amount" Expression="[Amount]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase"/>
                         <dxg:DataUpdateFormatCondition FieldName="Amount" Expression="[Amount]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease"/>
-                        <!--<dxg:IconSetFormatCondition FieldName="Workers" Expression="[DeltaPercentWorkers]" PredefinedFormatName="PositiveNegativeTrianglesIconSet"/>-->
-                        <!--<dxg:DataUpdateFormatCondition FieldName="Workers" Expression="[Workers]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase"/>
-                        <dxg:DataUpdateFormatCondition FieldName="Workers" Expression="[Workers]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease"/>-->
-                        <!--<dxg:IconSetFormatCondition FieldName="Speed" Expression="[DeltaPercentSpeed]" PredefinedFormatName="PositiveNegativeTrianglesIconSet"/>-->
-                        <!--<dxg:DataUpdateFormatCondition FieldName="Speed" Expression="[Speed]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase" />
-                        <dxg:DataUpdateFormatCondition FieldName="Speed" Expression="[Speed]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease" />-->
                         <dxg:ColorScaleFormatCondition FieldName="Amount" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
                         <dxg:ColorScaleFormatCondition FieldName="Workers" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
                         <dxg:ColorScaleFormatCondition FieldName="Speed" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />

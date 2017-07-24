@@ -5,8 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Threading;
 using NiceHashMarket.Core.Helpers;
-using NiceHashMarket.Core.Interfaces;
-using NiceHashMarket.Model;
 using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Core
@@ -20,13 +18,13 @@ namespace NiceHashMarket.Core
 
         public IAlgo Algo { get; set; }
         public ApiClient ApiClient { get; set; }
-        public BindingList<T> Entities { get; set; }
+        public NiceBindingList<T> Entities { get; set; }
 
         public DataStorage(ApiClient apiClient, IAlgo algo, int frequencyQueryMilliseconds, Dispatcher currentDispatcher)
         {
             _currentDispatcher = currentDispatcher;
 
-            Entities = new BindingList<T>();
+            Entities = new NiceBindingList<T>();
 
             Algo = algo;
 
@@ -51,6 +49,14 @@ namespace NiceHashMarket.Core
 
         public void UpdateBindingList(IEnumerable<T> entities)
         {
+            if (entities.Any())
+            {
+                var entitiesIds = entities.Select(e => e.Id).ToList();
+                var closedEntities = Entities.Where(e => !entitiesIds.Contains(e.Id)).Select(e => e.Id).ToList();
+
+                closedEntities.ForEach(eid => Entities.Remove(Entities.First(e => e.Id == eid)));
+            }
+
             foreach (var entity in entities)
             {
                 var knownEntity = Entities.FirstOrDefault(x => x.Id == entity.Id);

@@ -6,7 +6,7 @@ using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Model
 {
-    public class Order : IHaveId, INotifyPropertyChanged
+    public class Order : IHaveId, ICloneable, INotifyPropertyChanged
     {
         private int _id;
         private decimal _price;
@@ -191,6 +191,11 @@ namespace NiceHashMarket.Model
         public override string ToString()
         {
             return $"Id={Id};\tPrice={Price};\tDeltaPrice={DeltaPrice};\tAmount={Amount};\tWorkers={Workers};\tSpeed={Speed};\tActive={Active}";
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

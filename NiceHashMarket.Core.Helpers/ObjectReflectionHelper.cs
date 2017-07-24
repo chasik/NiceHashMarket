@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NiceHashMarket.Logger;
-using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Core.Helpers
 {
@@ -39,7 +37,8 @@ namespace NiceHashMarket.Core.Helpers
                 var sourceValue = srcProp.GetValue(source, null);
                 var destinationValue = targetProperty.GetValue(destination, null);
 
-                if (!Equals(sourceValue, destinationValue) && !DontCopyProperties.Any(p => string.Equals(p, targetProperty.Name, StringComparison.InvariantCultureIgnoreCase)))
+                if (!Equals(sourceValue, destinationValue) 
+                    && !DontCopyProperties.Any(p => string.Equals(p, targetProperty.Name, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     targetProperty.SetValue(destination, sourceValue, null);
                     //MarketLogger.Information("set property reflection {@propertyName}: {@orderId} {@sourceValue} {@destinationValue}", targetProperty.Name, (destination as IHaveId)?.Id, sourceValue, destinationValue);

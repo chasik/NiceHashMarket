@@ -113,6 +113,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NiceHashMarket.Core.Helpers\NiceHashMarket.Core.Helpers.csproj">
+      <Project>{EF7CE819-802A-41B1-8B30-DC551985F585}</Project>
+      <Name>NiceHashMarket.Core.Helpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NiceHashMarket.Core.Interfaces\NiceHashMarket.Core.Interfaces.csproj">
       <Project>{7F2A4C8D-9DC1-48A0-84FD-0D365191A04D}</Project>
       <Name>NiceHashMarket.Core.Interfaces</Name>
@@ -129,6 +133,9 @@
       <Project>{91636E6F-612E-443E-89F5-A5BACA2F05CB}</Project>
       <Name>NiceHashMarket.Model</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TemplateSelectors\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
