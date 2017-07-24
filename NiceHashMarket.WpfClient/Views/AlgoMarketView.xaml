@@ -8,26 +8,74 @@
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys"
+             xmlns:model="clr-namespace:NiceHashMarket.Model;assembly=NiceHashMarket.Model"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="900"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:AlgoMarketViewModel}}">
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
+            <ColumnDefinition Width="80"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <dxg:GridControl Grid.Column="0" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
                          SelectionMode="Row"
                          ItemsSource="{Binding OrdersEurope}">
             <dxg:GridControl.Columns>
-                <dxg:GridColumn FieldName="Type" Width="50" SortOrder="Descending" SortIndex="1"/>
-                <dxg:GridColumn FieldName="Active" Width="40" SortOrder="Descending" SortIndex="2"/>
-                <dxg:GridColumn FieldName="Id" Width="60" />
+                <dxg:GridColumn FieldName="Type" Width="50" SortOrder="Descending" SortIndex="1" Visible="False"/>
+                <dxg:GridColumn FieldName="Active" Width="40" SortOrder="Descending" SortIndex="2" Visible="False"/>
+                <dxg:GridColumn FieldName="Id" Width="60">
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,0,2">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static model:OrderTypeEnum.Fixed}">
+                                                <Setter Property="BorderBrush" Value="LightSlateGray" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Active}" Value="False">
+                                                <Setter Property="BorderBrush" Value="OrangeRed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock TextAlignment="Center" VerticalAlignment="Center"
+                                           Text="{Binding Path=RowData.Row.Id, Mode=OneWay}" />
+                            </Border>
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="PriceChanged" Width="40" SortOrder="Descending" SortIndex="4" Visible="False"/>
                 <dxg:GridColumn FieldName="Price" Width="60" SortOrder="Descending" SortIndex="3">
                     <dxg:GridColumn.EditSettings>
-                        <dxe:TextEditSettings DisplayFormat="F4"/>
+                        <dxe:TextEditSettings DisplayFormat="F4" />
                     </dxg:GridColumn.EditSettings>
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,0,2">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static model:OrderTypeEnum.Fixed}">
+                                                <Setter Property="BorderBrush" Value="LightSlateGray" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Active}" Value="False">
+                                                <Setter Property="BorderBrush" Value="OrangeRed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock TextAlignment="Right" VerticalAlignment="Center"
+                                           Text="{Binding Path=RowData.Row.Price, Mode=OneWay, StringFormat=F4}" />
+                            </Border>
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
                 </dxg:GridColumn>
+                
                 <dxg:GridColumn FieldName="DeltaPrice" Header="+/-" AllowEditing="False" Width="48">
                     <dxg:GridColumn.CellTemplate>
                         <DataTemplate>
@@ -110,18 +158,63 @@
             </dxg:GridControl.View>
         </dxg:GridControl>
         
-        <dxg:GridControl Grid.Column="1" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True"
+        <dxg:GridControl Grid.Column="2" AutoGenerateColumns="None" EnableSmartColumnsGeneration="True"
                          SelectionMode="Row"
                          ItemsSource="{Binding OrdersUsa}">
             <dxg:GridControl.Columns>
-                <dxg:GridColumn FieldName="Type" Width="50" SortOrder="Descending" SortIndex="1"/>
-                <dxg:GridColumn FieldName="Active" Width="40" SortOrder="Descending" SortIndex="2"/>
-                <dxg:GridColumn FieldName="Id" Width="60" />
+                <dxg:GridColumn FieldName="Type" Width="50" SortOrder="Descending" SortIndex="1" Visible="False"/>
+                <dxg:GridColumn FieldName="Active" Width="40" SortOrder="Descending" SortIndex="2" Visible="False"/>
+                <dxg:GridColumn FieldName="Id" Width="60">
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,0,2">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static model:OrderTypeEnum.Fixed}">
+                                                <Setter Property="BorderBrush" Value="LightSlateGray" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Active}" Value="False">
+                                                <Setter Property="BorderBrush" Value="OrangeRed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock TextAlignment="Center" VerticalAlignment="Center"
+                                           Text="{Binding Path=RowData.Row.Id, Mode=OneWay}" />
+                            </Border>
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="PriceChanged" Width="40" SortOrder="Descending" SortIndex="4" Visible="False"/>
                 <dxg:GridColumn FieldName="Price" Width="60" SortOrder="Descending" SortIndex="3">
                     <dxg:GridColumn.EditSettings>
-                        <dxe:TextEditSettings DisplayFormat="F4"/>
+                        <dxe:TextEditSettings DisplayFormat="F4" />
                     </dxg:GridColumn.EditSettings>
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,0,2">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static model:OrderTypeEnum.Fixed}">
+                                                <Setter Property="BorderBrush" Value="LightSlateGray" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Active}" Value="False">
+                                                <Setter Property="BorderBrush" Value="OrangeRed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock TextAlignment="Right" VerticalAlignment="Center"
+                                           Text="{Binding Path=RowData.Row.Price, Mode=OneWay, StringFormat=F4}" />
+                            </Border>
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
                 </dxg:GridColumn>
+
                 <dxg:GridColumn FieldName="DeltaPrice" Header="+/-" AllowEditing="False" Width="48">
                     <dxg:GridColumn.CellTemplate>
                         <DataTemplate>

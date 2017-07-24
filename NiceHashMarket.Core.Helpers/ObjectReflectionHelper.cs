@@ -7,7 +7,7 @@ namespace NiceHashMarket.Core.Helpers
 {
     public static class ObjectReflectionHelper
     {
-        private static readonly IEnumerable<string> DontCopyProperties = new List<string>{"DeltaPercentPrice", "DeltaPercentAmount", "DeltaPercentSpeed", "DeltaPercentWorkers" };
+        private static readonly IEnumerable<string> DontCopyProperties = new List<string>{"DeltaPercentPrice", "DeltaPercentAmount", "DeltaPercentSpeed", "DeltaPercentWorkers", "PriceChanged" };
 
         public static void CopyProperties(this object source, object destination)
         {

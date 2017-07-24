@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using DevExpress.Mvvm.DataAnnotations;
-using DevExpress.Xpf.Grid;
 using NiceHashMarket.Core;
 using NiceHashMarket.Core.Helpers;
 using NiceHashMarket.Model;

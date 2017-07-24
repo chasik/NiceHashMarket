@@ -19,6 +19,7 @@ namespace NiceHashMarket.Model
         private int _deltaPercentWorkers;
         private int _deltaPercentSpeed;
         private OrderTypeEnum _type;
+        private DateTime? _priceChanged;
 
         public Order(int id, decimal price, decimal amount, decimal speed, int workers, int type, int active, ServerEnum server = ServerEnum.Unknown)
         {
@@ -65,6 +66,7 @@ namespace NiceHashMarket.Model
 
                 //MarketLogger.Information("set price 2: {@orderId} price: {@price} value: {@value})", Id, _price, value);
                 _price = value;
+                _priceChanged = DateTime.Now;
                 OnPropertyChanged();
             }
         }
@@ -79,6 +81,19 @@ namespace NiceHashMarket.Model
 
                 //MarketLogger.Information("set deltaPrice 2: {@orderId} deltaPrice: {@deltaPrice} value: {@value})", Id, _deltaPrice, value);
                 _deltaPrice = value; 
+                OnPropertyChanged();
+            }
+        }
+
+        public DateTime? PriceChanged
+        {
+            get => _priceChanged;
+            set
+            {
+                if (_priceChanged == value) return;
+
+                _priceChanged = value; 
+
                 OnPropertyChanged();
             }
         }

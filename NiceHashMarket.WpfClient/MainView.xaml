@@ -15,7 +15,6 @@
 
         <dxdo:DockLayoutManager HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <dxdo:LayoutGroup>
-                <dxdo:LayoutPanel Caption="Navigation menu" ItemWidth="140"/>
                 <dxdo:DocumentGroup>
                     <dxdo:DocumentPanel Caption="Document">
                         <views:AlgoMarketView/>
