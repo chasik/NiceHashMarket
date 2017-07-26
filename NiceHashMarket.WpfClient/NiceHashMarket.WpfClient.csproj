@@ -146,6 +146,10 @@
       <Project>{91636E6F-612E-443E-89F5-A5BACA2F05CB}</Project>
       <Name>NiceHashMarket.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.NiceHashBotLib\NiceHashBotLib.csproj">
+      <Project>{B5B243E4-0497-42CB-AFBF-A4ED3B4343D6}</Project>
+      <Name>NiceHashBotLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using DevExpress.Mvvm.DataAnnotations;
+using NiceHashBotLib;
 using NiceHashMarket.Core;
 using NiceHashMarket.Core.Helpers;
-using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
+using Order = NiceHashMarket.Model.Order;
 
 namespace NiceHashMarket.WpfClient.ViewModels
 {
@@ -14,6 +16,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
     public class AlgoMarketViewModel
     {
         private readonly OrdersStorage _ordersStorage;
+
+        public virtual double MaxPermittedPrice { get; set; }
 
         public virtual NiceBindingList<Order> OrdersEurope { get; set; } = new NiceBindingList<Order>();
         public virtual NiceBindingList<Order> OrdersUsa { get; set; } = new NiceBindingList<Order>();
@@ -23,10 +27,18 @@ namespace NiceHashMarket.WpfClient.ViewModels
             var client = new ApiClient();
             var algoList = new Algorithms();
 
-            _ordersStorage = new OrdersStorage(client, algoList.First(a => a.Id == (byte)AlgoNiceHashEnum.Sha256), 1000, Application.Current.Dispatcher);
+            _ordersStorage = new OrdersStorage(client, algoList.First(a => a.Id == (byte)AlgoNiceHashEnum.Equihash), 1000, Application.Current.Dispatcher);
 
             _ordersStorage.Entities.ListChanged += Entities_ListChanged;
             _ordersStorage.Entities.BeforeRemove += Entities_BeforeRemove;
+
+            var timer = new Timer(t =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MaxPermittedPrice = HandlerClass.HandleOrder(CoinsWhatToMineEnum.Zec);
+                });
+            }, null, 0, 1000);
         }
 
         private void Entities_BeforeRemove(Order deletedItem)

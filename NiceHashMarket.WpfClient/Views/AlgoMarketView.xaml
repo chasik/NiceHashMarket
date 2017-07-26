@@ -18,8 +18,9 @@
         </Grid.ColumnDefinitions>
 
         <views:OneServerMarketView Grid.Column="0" dxmvvm:ViewModelExtensions.Parameter="{Binding DataContext.OrdersEurope, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-
         <views:OneServerMarketView Grid.Column="2" dxmvvm:ViewModelExtensions.Parameter="{Binding DataContext.OrdersUsa, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+
+        <TextBlock Grid.Column="1" Text="{Binding MaxPermittedPrice}" />
 
     </Grid>
 </UserControl>

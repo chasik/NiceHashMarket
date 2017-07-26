@@ -10,11 +10,11 @@ namespace NiceHashBotLib
 {
     public class HandlerClass
     {
-        public static void HandleOrder(CoinsWhatToMineEnum coin)
+        public static double HandleOrder(CoinsWhatToMineEnum coin)
         {
             // Retreive JSON data from API server. Replace URL with your own API request URL.
             var jsonData = GetHTTPResponseInJSON($"http://www.whattomine.com/coins/{(byte)coin}.json");
-            if (jsonData == null) return;
+            if (jsonData == null) return -1;
 
             // Serialize returned JSON data.
             WhattomineResponse response;
@@ -24,7 +24,7 @@ namespace NiceHashBotLib
             }
             catch
             {
-                return;
+                return -2;
             }
 
             // Check if exchange rate is provided - at least one exchange must be included.
@@ -32,7 +32,7 @@ namespace NiceHashBotLib
             var ExchangeRate = response.exchange_rate;
 
             // Calculate mining profitability in BTC per 1 TH of hashpower.
-            var HT = response.difficulty * (Math.Pow(2.0, 32) / (1000000000000.0));
+            var HT = response.difficulty * (Math.Pow(2.0, 32) / 1000000000000.0);
             var CPD = response.block_reward * 24.0 * 3600.0 / HT;
             var C = CPD * ExchangeRate;
 
@@ -45,8 +45,7 @@ namespace NiceHashBotLib
             // Set new maximal price.
             var maxPrice = Math.Floor(C * 10000) / 10000;
 
-            // Example how to print some data on console...
-            Console.WriteLine($"{response.algorithm} maximal price to: {maxPrice:F4}");
+            return maxPrice;
         }
 
         /// <summary>
