@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using NiceHashMarket.Model;
+using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
 using RestSharp;
 

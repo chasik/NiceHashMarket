@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using NiceHashMarket.Logger;
+using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Model

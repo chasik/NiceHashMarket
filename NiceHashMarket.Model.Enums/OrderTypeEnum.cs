@@ -1,4 +1,4 @@
-﻿namespace NiceHashMarket.Model
+﻿namespace NiceHashMarket.Model.Enums
 {
     public enum OrderTypeEnum
     {

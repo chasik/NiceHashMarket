@@ -6,6 +6,7 @@ using DevExpress.Mvvm.DataAnnotations;
 using NiceHashMarket.Core;
 using NiceHashMarket.Core.Helpers;
 using NiceHashMarket.Model;
+using NiceHashMarket.Model.Enums;
 
 namespace NiceHashMarket.WpfClient.ViewModels
 {
@@ -22,7 +23,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
             var client = new ApiClient();
             var algoList = new Algorithms();
 
-            _ordersStorage = new OrdersStorage(client, algoList.First(a => a.Id == 23), 1000, Application.Current.Dispatcher);
+            _ordersStorage = new OrdersStorage(client, algoList.First(a => a.Id == (byte)AlgoNiceHashEnum.Sha256), 1000, Application.Current.Dispatcher);
 
             _ordersStorage.Entities.ListChanged += Entities_ListChanged;
             _ordersStorage.Entities.BeforeRemove += Entities_BeforeRemove;

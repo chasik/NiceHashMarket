@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
 using NiceHashMarket.Core;
 using System.Linq;
-using NiceHashMarket.Model;
+using System.Threading;
+using NiceHashBotLib;
+using NiceHashMarket.Model.Enums;
 
 namespace NiceHashMarket.Console
 {
@@ -9,11 +11,25 @@ namespace NiceHashMarket.Console
     {
         static void Main(string[] args)
         {
+            double maxPrice = 0;
+            double limit = 0;
+
+            while (!System.Console.KeyAvailable)
+            {
+                HandlerClass.HandleOrder(CoinsWhatToMineEnum.Lbc);
+                Thread.Sleep(20000);
+            }
+
+            System.Console.ReadLine();
+        }
+
+        static void MainOld(string[] args)
+        {
             var client = new ApiClient();
             var algoList = new Algorithms();
 
             
-            var ordersStorage = new OrdersStorage(client, algoList.First(a => a.Id == 23), 2000);
+            var ordersStorage = new OrdersStorage(client, algoList.First(a => a.Id == (byte)AlgoNiceHashEnum.Lbry), 2000);
             ordersStorage.Entities.ListChanged += EntitiesOnListChanged;
 
             System.Console.WriteLine();
@@ -26,13 +42,6 @@ namespace NiceHashMarket.Console
             if (storage == null) return;
 
             var order = storage[listChangedEventArgs.NewIndex];
-
-            //if (listChangedEventArgs.PropertyDescriptor?.Name == "DeltaPrice")
-            //    System.Console.WriteLine($"(LIST CHANGED) {listChangedEventArgs.ListChangedType}\t{listChangedEventArgs.PropertyDescriptor?.Name}\t{order}");
-
-            //MarketLogger.Information(
-            //    "(LIST CHANGED: {@orderId}) {@changeType} {@property} " + order, order.Id, listChangedEventArgs.ListChangedType, listChangedEventArgs.PropertyDescriptor?.Name);
         }
-
     }
 }

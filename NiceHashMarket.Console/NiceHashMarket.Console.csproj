@@ -63,6 +63,10 @@
       <Project>{EC5235B5-D2B2-4883-B0E8-4A1532B04784}</Project>
       <Name>NiceHashMarket.Logger</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Model.Enums\NiceHashMarket.Model.Enums.csproj">
+      <Project>{4291B820-6118-46BC-A0E7-359D2CAA9D9D}</Project>
+      <Name>NiceHashMarket.Model.Enums</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NiceHashMarket.Model.Interfaces\NiceHashMarket.Model.Interfaces.csproj">
       <Project>{5236C511-7B02-4952-B9D8-D98291E7A6DE}</Project>
       <Name>NiceHashMarket.Model.Interfaces</Name>
@@ -70,6 +74,10 @@
     <ProjectReference Include="..\NiceHashMarket.Model\NiceHashMarket.Model.csproj">
       <Project>{91636E6F-612E-443E-89F5-A5BACA2F05CB}</Project>
       <Name>NiceHashMarket.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.NiceHashBotLib\NiceHashBotLib.csproj">
+      <Project>{B5B243E4-0497-42CB-AFBF-A4ED3B4343D6}</Project>
+      <Name>NiceHashBotLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

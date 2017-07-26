@@ -10,6 +10,7 @@
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys"
              xmlns:templateSelectors="clr-namespace:NiceHashMarket.WpfClient.TemplateSelectors"
+             xmlns:enums="clr-namespace:NiceHashMarket.Model.Enums;assembly=NiceHashMarket.Model.Enums"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:OneServerMarketViewModel}}">
@@ -28,7 +29,7 @@
                                 <Style TargetType="Border">
                                     <Setter Property="BorderBrush" Value="Transparent" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static model:OrderTypeEnum.Fixed}">
+                                        <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static enums:OrderTypeEnum.Fixed}">
                                             <Setter Property="BorderBrush" Value="LightSlateGray" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding Path=RowData.Row.Active}" Value="False">
@@ -55,7 +56,7 @@
                                 <Style TargetType="Border">
                                     <Setter Property="BorderBrush" Value="Transparent" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static model:OrderTypeEnum.Fixed}">
+                                        <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static enums:OrderTypeEnum.Fixed}">
                                             <Setter Property="BorderBrush" Value="LightSlateGray" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding Path=RowData.Row.Active}" Value="False">
