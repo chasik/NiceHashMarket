@@ -113,13 +113,11 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="App.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NiceHashMarket.Core.Helpers\NiceHashMarket.Core.Helpers.csproj">
@@ -149,6 +147,10 @@
     <ProjectReference Include="..\NiceHashMarket.NiceHashBotLib\NiceHashBotLib.csproj">
       <Project>{B5B243E4-0497-42CB-AFBF-A4ED3B4343D6}</Project>
       <Name>NiceHashBotLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Services\NiceHashMarket.Services.csproj">
+      <Project>{CB1457E2-5F9C-4EDC-B8DF-007173C31A37}</Project>
+      <Name>NiceHashMarket.Services</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

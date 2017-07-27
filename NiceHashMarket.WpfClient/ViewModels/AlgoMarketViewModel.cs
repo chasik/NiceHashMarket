@@ -9,18 +9,25 @@ using NiceHashMarket.Core;
 using NiceHashMarket.Core.Helpers;
 using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
+using NiceHashMarket.Services;
 using Order = NiceHashMarket.Model.Order;
 
 namespace NiceHashMarket.WpfClient.ViewModels
 {
     [POCOViewModel]
-    public class AlgoMarketViewModel
+    public class AlgoMarketViewModel : IDataCallBacks
     {
-        private readonly OrdersStorage _ordersStorage;
+        #region | Fields |
+
         private readonly Timer _timer;
-        private AlgoNiceHashEnum _currentAlgo;
+        private readonly OrdersStorage _ordersStorage;
         private Algorithms _algoList;
+        private AlgoNiceHashEnum _currentAlgo;
         private CoinsWhatToMineEnum _currentCoin;
+
+        #endregion
+
+        #region | Properties |
 
         public virtual double MaxPermittedPrice { get; set; }
 
@@ -34,10 +41,10 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     _ordersStorage.Entities.ListChanged -= Entities_ListChanged;
                     _ordersStorage.Entities.BeforeRemove -= Entities_BeforeRemove;
 
-                    _ordersStorage.SelectAnotherAlgo(_algoList.First(a => a.Id == (byte) value));
+                    _ordersStorage.SelectAnotherAlgo(_algoList.First(a => a.Id == (byte)value));
                 }
 
-                _currentAlgo = value; 
+                _currentAlgo = value;
             }
         }
 
@@ -56,6 +63,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
         public virtual NiceBindingList<Order> OrdersEurope { get; set; } = new NiceBindingList<Order>();
         public virtual NiceBindingList<Order> OrdersUsa { get; set; } = new NiceBindingList<Order>();
 
+        #endregion
+
         public AlgoMarketViewModel()
         {
             var client = new ApiClient();
@@ -72,6 +81,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             _timer = new Timer(WhatToTimeTimerHandler, null, 0, 3000);
         }
+
+        #region | Private methods |
 
         private void OrdersStorageOnAlgoChanged(DataStorage<Order> sender, IAlgo oldalgo, IAlgo newalgo)
         {
@@ -120,8 +131,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 case ListChangedType.ItemMoved:
                     break;
                 case ListChangedType.ItemChanged:
-                    var orderChanged = OrdersEurope.FirstOrDefault(o => o.Id == orderNewIndex?.Id) 
-                          ?? OrdersUsa.FirstOrDefault(o => o.Id == orderNewIndex?.Id);
+                    var orderChanged = OrdersEurope.FirstOrDefault(o => o.Id == orderNewIndex?.Id)
+                                       ?? OrdersUsa.FirstOrDefault(o => o.Id == orderNewIndex?.Id);
 
                     if (orderChanged == null)
                         return;
@@ -139,5 +150,11 @@ namespace NiceHashMarket.WpfClient.ViewModels
             }
         }
 
+        #endregion
+
+        void IDataCallBacks.OrderAdded(Order order)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

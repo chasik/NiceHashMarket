@@ -25,13 +25,25 @@ namespace NiceHashMarket.WpfClient.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx")]
+        [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
         public string NiceApiKey {
             get {
                 return ((string)(this["NiceApiKey"]));
             }
             set {
                 this["NiceApiKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("xxxx-sample")]
+        public string NiceApiId {
+            get {
+                return ((string)(this["NiceApiId"]));
+            }
+            set {
+                this["NiceApiId"] = value;
             }
         }
     }

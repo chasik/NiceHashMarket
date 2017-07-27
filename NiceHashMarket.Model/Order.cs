@@ -1,12 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using NiceHashMarket.Logger;
 using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Model
 {
+    [DataContract]
     public class Order : IHaveId, ICloneable, INotifyPropertyChanged
     {
         private int _id;
@@ -41,7 +43,7 @@ namespace NiceHashMarket.Model
             //MarketLogger.Information("counstructor: {@orderId})", Id);
         }
 
-
+        [DataMember]
         public int Id
         {
             get => _id;
@@ -54,6 +56,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public decimal Price
         {
             get => _price;
@@ -72,6 +75,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public decimal DeltaPrice
         {
             get => _deltaPrice;
@@ -86,6 +90,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public DateTime? PriceChanged
         {
             get => _priceChanged;
@@ -99,6 +104,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public decimal Amount
         {
             get => _amount;
@@ -113,6 +119,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public int DeltaPercentAmount
         {
             get => _deltaPercentAmount;
@@ -125,6 +132,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public decimal Speed
         {
             get => _speed;
@@ -139,6 +147,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public int DeltaPercentSpeed
         {
             get => _deltaPercentSpeed;
@@ -151,6 +160,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public int Workers
         {
             get => _workers;
@@ -165,6 +175,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public int DeltaPercentWorkers
         {
             get => _deltaPercentWorkers;
@@ -177,6 +188,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public bool Active
         {
             get => _active;
@@ -189,6 +201,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public OrderTypeEnum Type
         {
             get => _type;
@@ -201,6 +214,7 @@ namespace NiceHashMarket.Model
             }
         }
 
+        [DataMember]
         public ServerEnum Server { get; set; }
 
 

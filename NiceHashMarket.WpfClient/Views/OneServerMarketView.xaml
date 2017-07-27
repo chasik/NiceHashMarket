@@ -6,12 +6,10 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:viewModels="clr-namespace:NiceHashMarket.WpfClient.ViewModels"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-             xmlns:model="clr-namespace:NiceHashMarket.Model;assembly=NiceHashMarket.Model"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys"
              xmlns:templateSelectors="clr-namespace:NiceHashMarket.WpfClient.TemplateSelectors"
              xmlns:enums="clr-namespace:NiceHashMarket.Model.Enums;assembly=NiceHashMarket.Model.Enums"
-             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="440"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:OneServerMarketViewModel}}">
