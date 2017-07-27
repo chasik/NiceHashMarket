@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using NiceHashBotLib;
 using NiceHashMarket.Model.Enums;
+using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Console
 {
@@ -24,11 +25,10 @@ namespace NiceHashMarket.Console
 
         static void MainOld(string[] args)
         {
-            var client = new ApiClient();
             var algoList = new Algorithms();
 
             
-            var ordersStorage = new OrdersStorage(client, algoList.First(a => a.Id == (byte)AlgoNiceHashEnum.Lbry), 2000);
+            var ordersStorage = new OrdersStorage(algoList.First(a => a.Id == (byte)AlgoNiceHashEnum.Lbry), 2000);
             ordersStorage.Entities.ListChanged += EntitiesOnListChanged;
 
             System.Console.WriteLine();

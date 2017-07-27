@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using System.ServiceModel;
 using System.Threading;
 using System.Windows;
 using DevExpress.Mvvm.DataAnnotations;
@@ -67,17 +68,29 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         public AlgoMarketViewModel()
         {
-            var client = new ApiClient();
             _algoList = new Algorithms();
-
-            CurrentAlgo = AlgoNiceHashEnum.Lbry;
             CurrentCoin = CoinsWhatToMineEnum.Lbc;
+            CurrentAlgo = AlgoNiceHashEnum.Lbry;
 
-            _ordersStorage = new OrdersStorage(client, _algoList.First(a => a.Id == (byte) CurrentAlgo), 1000,
-                Application.Current.Dispatcher);
+            #region | local DataSource |
+
+            _ordersStorage = new OrdersStorage(_algoList.First(a => a.Id == (byte)CurrentAlgo), 1000, Application.Current.Dispatcher);
 
             OrdersStorageOnAlgoChanged(_ordersStorage, null, null);
             _ordersStorage.AlgoChanged += OrdersStorageOnAlgoChanged;
+
+            #endregion
+
+            #region | Wcf service DataSource |
+
+            //var factory = new DuplexChannelFactory<IDataService>(this, "netTcpBinding_dataService");
+
+            //var client = factory.CreateChannel();
+
+            //client.ListenAlgo(_algoList.First(a => a.Id == (byte)CurrentAlgo));            
+
+            #endregion
+
 
             _timer = new Timer(WhatToTimeTimerHandler, null, 0, 3000);
         }
@@ -154,7 +167,23 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         void IDataCallBacks.OrderAdded(Order order)
         {
-            throw new NotImplementedException();
+            //var orderClone = (Order)order?.Clone();
+
+            if (order.Server == ServerEnum.Europe)
+                OrdersEurope.Add(order);
+            else if (order.Server == ServerEnum.Usa)
+                OrdersUsa.Add(order);
+        }
+
+        void IDataCallBacks.OrderChanged(Order order)
+        {
+            var orderChanged = OrdersEurope.FirstOrDefault(o => o.Id == order?.Id)
+                               ?? OrdersUsa.FirstOrDefault(o => o.Id == order?.Id);
+
+            if (orderChanged == null)
+                return;
+
+            order.CopyProperties(orderChanged);
         }
     }
 }

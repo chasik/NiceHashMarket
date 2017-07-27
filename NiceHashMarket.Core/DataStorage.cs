@@ -25,7 +25,7 @@ namespace NiceHashMarket.Core
         public ApiClient ApiClient { get; set; }
         public NiceBindingList<T> Entities { get; set; }
 
-        public DataStorage(ApiClient apiClient, IAlgo algo, int frequencyQueryMilliseconds, Dispatcher currentDispatcher)
+        public DataStorage(IAlgo algo, int frequencyQueryMilliseconds, Dispatcher currentDispatcher = null)
         {
             _currentDispatcher = currentDispatcher;
 
@@ -33,7 +33,7 @@ namespace NiceHashMarket.Core
 
             Algo = algo;
 
-            ApiClient = apiClient;
+            ApiClient = new ApiClient();
 
             _frequencyQueryMilliseconds = frequencyQueryMilliseconds;
 

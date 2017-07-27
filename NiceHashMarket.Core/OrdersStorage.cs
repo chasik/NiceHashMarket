@@ -7,8 +7,8 @@ namespace NiceHashMarket.Core
 {
     public class OrdersStorage : DataStorage<Order>
     {
-        public OrdersStorage(ApiClient apiClient, IAlgo algo, int frequencyQueryMilliseconds, Dispatcher currentDispatcher = null) 
-            : base(apiClient, algo, frequencyQueryMilliseconds, currentDispatcher)
+        public OrdersStorage(IAlgo algo, int frequencyQueryMilliseconds, Dispatcher currentDispatcher = null) 
+            : base(algo, frequencyQueryMilliseconds, currentDispatcher)
         {
 
         }

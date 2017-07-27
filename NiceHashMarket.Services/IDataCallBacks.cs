@@ -6,7 +6,10 @@ namespace NiceHashMarket.Services
     [ServiceContract]
     public interface IDataCallBacks
     {
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         void OrderAdded(Order order);
+
+        [OperationContract(IsOneWay = true)]
+        void OrderChanged(Order order);
     }
 }
