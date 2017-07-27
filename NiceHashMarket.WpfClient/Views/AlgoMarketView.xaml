@@ -8,6 +8,7 @@
              xmlns:views="clr-namespace:NiceHashMarket.WpfClient.Views"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:enums="clr-namespace:NiceHashMarket.Model.Enums;assembly=NiceHashMarket.Model.Enums"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="900"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:AlgoMarketViewModel}}">
@@ -35,21 +36,26 @@
         <views:OneServerMarketView Grid.Column="0" dxmvvm:ViewModelExtensions.Parameter="{Binding DataContext.OrdersEurope, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         <views:OneServerMarketView Grid.Column="2" dxmvvm:ViewModelExtensions.Parameter="{Binding DataContext.OrdersUsa, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <ComboBox VerticalAlignment="Top"
+        <DockPanel Grid.Column="1" LastChildFill="True">
+            <ComboBox DockPanel.Dock="Top" VerticalAlignment="Top"
                       SelectedItem="{Binding CurrentAlgo}"
                       ItemsSource="{Binding Source={StaticResource AlgosFromEnum}}" />
-            <ComboBox Grid.Row="1" VerticalAlignment="Top" 
+            <ComboBox DockPanel.Dock="Top" VerticalAlignment="Top"
                       SelectedItem="{Binding CurrentCoin}"
                       ItemsSource="{Binding Source={StaticResource CoinsFromEnum}}" />
 
-            <TextBlock Grid.Row="2" Text="{Binding MaxPermittedPrice}" />
-        </Grid>
+            <TextBlock DockPanel.Dock="Top" Text="MaxPrice:" FontWeight="Bold" />
+            <TextBlock DockPanel.Dock="Top" Foreground="Red" FontWeight="Medium" HorizontalAlignment="Right"
+                        Text="{Binding MaxPermittedPrice}" />
+            
+            <StackPanel DockPanel.Dock="Bottom">
+                <TextBlock Text="Ордера:" />
+                <dxe:ListBoxEdit Height="100" ItemsSource="{Binding MyOrders}"></dxe:ListBoxEdit>
+            </StackPanel>
+            
+            <StackPanel></StackPanel>
+
+        </DockPanel>
     </Grid>
 </UserControl>
 

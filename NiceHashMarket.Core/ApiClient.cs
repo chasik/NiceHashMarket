@@ -20,13 +20,11 @@ namespace NiceHashMarket.Core
             _client = new RestClient("https://www.nicehash.com");
         }
 
-        private IRestResponse RequestToApi(IAlgo algo)
+        private IRestResponse RequestPubJson(string queryShortString)
         {
-            //var request = new RestRequest($"api/method=orders.get&location=0&algo={algo.Id}");
-            // https://www.nicehash.com/livePubJSON?l=0&a=20&callback=jQuery111307128799129489092_1500027074289&_=1500027074293
             var unixTimestamp = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
 
-            var request = new RestRequest($"livePubJSON?l=0&a={algo.Id}&callback=jQuery111307128799129489092_{unixTimestamp}&_={unixTimestamp + 111}");
+            var request = new RestRequest($"livePubJSON?{queryShortString}&callback=jQuery111307128799129489092_{unixTimestamp}&_={unixTimestamp + 111}");
             return _client.Execute(request);
         }
 
@@ -45,15 +43,10 @@ namespace NiceHashMarket.Core
                 )).ToList();
         }
 
-        public string GetOrdersAsString(IAlgo algo)
-        {
-            return RequestToApi(algo).Content;
-        }
-
         public IEnumerable<Order> GetOrders(IAlgo algo)
         {
             var regex = new Regex(@"^.*\((?<json>(?:.*))\)");
-            var match = regex.Match(RequestToApi(algo).Content);
+            var match = regex.Match(RequestPubJson($"l=0&a={algo.Id}").Content);
 
             if (!match.Success || string.IsNullOrEmpty(match.Groups["json"].Value))
                 return null;

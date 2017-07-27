@@ -11,6 +11,7 @@
              xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys"
              xmlns:templateSelectors="clr-namespace:NiceHashMarket.WpfClient.TemplateSelectors"
              xmlns:enums="clr-namespace:NiceHashMarket.Model.Enums;assembly=NiceHashMarket.Model.Enums"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="440"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:OneServerMarketViewModel}}">
@@ -172,8 +173,8 @@
                 </dxg:TableView.RowDetailsTemplateSelector>
 
                 <dxg:TableView.FormatConditions>
-                    <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase"/>
-                    <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease"/>
+                    <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase" />
+                    <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease" />
                     <dxg:DataUpdateFormatCondition FieldName="Amount" Expression="[Amount]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase"/>
                     <dxg:DataUpdateFormatCondition FieldName="Amount" Expression="[Amount]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease"/>
                     <dxg:ColorScaleFormatCondition FieldName="Amount" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
@@ -191,3 +192,6 @@
     </dxg:GridControl>
 
 </UserControl>
+
+
+

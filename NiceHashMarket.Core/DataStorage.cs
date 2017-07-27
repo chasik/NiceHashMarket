@@ -43,9 +43,9 @@ namespace NiceHashMarket.Core
         private void TimerOnElapsed(object state)
         {
             if (_currentDispatcher == null)
-                ApiQueryExecute();
+                JsonQueryExecute();
             else
-                _currentDispatcher.Invoke(ApiQueryExecute);
+                _currentDispatcher.Invoke(JsonQueryExecute);
         }
 
         public virtual void SelectAnotherAlgo(IAlgo newAlgo)
@@ -57,7 +57,7 @@ namespace NiceHashMarket.Core
             AlgoChanged?.Invoke(this, oldAlgo, newAlgo);
         }
 
-        public virtual void ApiQueryExecute()
+        public virtual void JsonQueryExecute()
         {
         }
 

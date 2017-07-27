@@ -51,6 +51,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
             }
         }
 
+        public virtual NiceBindingList<Order> MyOrders { get; set; } = new NiceBindingList<Order>();
+
         public virtual NiceBindingList<Order> OrdersEurope { get; set; } = new NiceBindingList<Order>();
         public virtual NiceBindingList<Order> OrdersUsa { get; set; } = new NiceBindingList<Order>();
 
@@ -82,9 +84,11 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         private void WhatToTimeTimerHandler(object state)
         {
+            var maxPermittedPrice = HandlerClass.HandleOrder(CurrentCoin);
+
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MaxPermittedPrice = HandlerClass.HandleOrder(CurrentCoin);
+                MaxPermittedPrice = maxPermittedPrice;
             });
         }
 

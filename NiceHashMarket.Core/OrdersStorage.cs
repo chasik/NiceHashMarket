@@ -13,7 +13,7 @@ namespace NiceHashMarket.Core
 
         }
 
-        public override void ApiQueryExecute()
+        public override void JsonQueryExecute()
         {
             var algo = Algo;
             var orders = ApiClient.GetOrders(algo);
@@ -23,7 +23,7 @@ namespace NiceHashMarket.Core
 
             UpdateBindingList(orders);
 
-            base.ApiQueryExecute();
+            base.JsonQueryExecute();
         }
     }
 }
