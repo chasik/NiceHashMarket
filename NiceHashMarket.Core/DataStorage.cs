@@ -9,12 +9,17 @@ using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Core
 {
+    public delegate void AlgoChangedDelegate<T>(DataStorage<T> sender, IAlgo oldAlgo, IAlgo newAlgo) 
+        where T : IHaveId, INotifyPropertyChanged;
+
     public class DataStorage<T> : IEnumerable<T>
         where T : IHaveId, INotifyPropertyChanged
     {
         private Timer _timer;
         private readonly Dispatcher _currentDispatcher;
         private readonly int _frequencyQueryMilliseconds;
+
+        public event AlgoChangedDelegate<T> AlgoChanged;
 
         public IAlgo Algo { get; set; }
         public ApiClient ApiClient { get; set; }
@@ -41,6 +46,15 @@ namespace NiceHashMarket.Core
                 ApiQueryExecute();
             else
                 _currentDispatcher.Invoke(ApiQueryExecute);
+        }
+
+        public virtual void SelectAnotherAlgo(IAlgo newAlgo)
+        {
+            Entities = new NiceBindingList<T>();
+            var oldAlgo = Algo;
+            Algo = newAlgo;
+
+            AlgoChanged?.Invoke(this, oldAlgo, newAlgo);
         }
 
         public virtual void ApiQueryExecute()

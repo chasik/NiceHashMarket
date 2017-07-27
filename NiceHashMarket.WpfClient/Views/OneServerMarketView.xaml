@@ -12,15 +12,15 @@
              xmlns:templateSelectors="clr-namespace:NiceHashMarket.WpfClient.TemplateSelectors"
              xmlns:enums="clr-namespace:NiceHashMarket.Model.Enums;assembly=NiceHashMarket.Model.Enums"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="300" d:DesignWidth="440"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:OneServerMarketViewModel}}">
     
     <dxg:GridControl AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
                      SelectionMode="Row"
                      ItemsSource="{Binding Parameter}">
         <dxg:GridControl.Columns>
-            <dxg:GridColumn FieldName="Type" Width="50" SortOrder="Descending" SortIndex="1" Visible="False"/>
-            <dxg:GridColumn FieldName="Active" Width="40" SortOrder="Descending" SortIndex="2" Visible="False"/>
+            <dxg:GridColumn FieldName="Type" SortOrder="Descending" SortIndex="1" Visible="False"/>
+            <dxg:GridColumn FieldName="Active" SortOrder="Descending" SortIndex="2" Visible="False"/>
             <dxg:GridColumn FieldName="Id" Width="60">
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
@@ -44,8 +44,8 @@
                     </DataTemplate>
                 </dxg:GridColumn.CellTemplate>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="PriceChanged" Width="40" SortOrder="Descending" SortIndex="4" Visible="False"/>
-            <dxg:GridColumn FieldName="Price" Width="60" SortOrder="Descending" SortIndex="3">
+            <dxg:GridColumn FieldName="PriceChanged" Width="4" SortOrder="Descending" SortIndex="4" Visible="False"/>
+            <dxg:GridColumn FieldName="Price" Width="50" SortOrder="Descending" SortIndex="3">
                 <dxg:GridColumn.EditSettings>
                     <dxe:TextEditSettings DisplayFormat="F4" />
                 </dxg:GridColumn.EditSettings>
@@ -72,7 +72,7 @@
                 </dxg:GridColumn.CellTemplate>
             </dxg:GridColumn>
 
-            <dxg:GridColumn FieldName="DeltaPrice" Header="+/-" AllowEditing="False" Width="48">
+            <dxg:GridColumn FieldName="DeltaPrice" Header="+/-" AllowEditing="False" Width="36">
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
@@ -81,12 +81,12 @@
                     </DataTemplate>
                 </dxg:GridColumn.CellTemplate>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="Amount" Width="60">
+            <dxg:GridColumn FieldName="Amount" Width="50">
                 <dxg:GridColumn.EditSettings>
                     <dxe:TextEditSettings DisplayFormat="F2"/>
                 </dxg:GridColumn.EditSettings>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="DeltaPercentAmount" Header="+/- %" AllowEditing="False" Width="48">
+            <dxg:GridColumn FieldName="DeltaPercentAmount" Header="+/- %" AllowEditing="False" Width="36">
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
@@ -95,8 +95,8 @@
                     </DataTemplate>
                 </dxg:GridColumn.CellTemplate>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="Workers" Width="60" />
-            <dxg:GridColumn FieldName="DeltaPercentWorkers" Header="+/- %" AllowEditing="False" Width="48">
+            <dxg:GridColumn FieldName="Workers" Width="50" />
+            <dxg:GridColumn FieldName="DeltaPercentWorkers" Header="+/- %" AllowEditing="False" Width="36">
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
@@ -105,12 +105,12 @@
                     </DataTemplate>
                 </dxg:GridColumn.CellTemplate>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="Speed" Width="60">
+            <dxg:GridColumn FieldName="Speed" Width="50">
                 <dxg:GridColumn.EditSettings>
                     <dxe:TextEditSettings DisplayFormat="F4"/>
                 </dxg:GridColumn.EditSettings>
             </dxg:GridColumn>
-            <dxg:GridColumn FieldName="DeltaPercentSpeed" Header="+/- %" AllowEditing="False" Width="48">
+            <dxg:GridColumn FieldName="DeltaPercentSpeed" Header="+/- %" AllowEditing="False" Width="36">
                 <dxg:GridColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"

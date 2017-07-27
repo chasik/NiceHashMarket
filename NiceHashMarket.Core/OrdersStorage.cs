@@ -1,4 +1,5 @@
-﻿using System.Windows.Threading;
+﻿using System.Linq;
+using System.Windows.Threading;
 using NiceHashMarket.Model;
 using NiceHashMarket.Model.Interfaces;
 
@@ -14,9 +15,10 @@ namespace NiceHashMarket.Core
 
         public override void ApiQueryExecute()
         {
-            var orders = ApiClient.GetOrders(Algo);
-
-            if (orders == null)
+            var algo = Algo;
+            var orders = ApiClient.GetOrders(algo);
+        
+            if (orders == null || !orders.Any() || algo != Algo)
                 return;
 
             UpdateBindingList(orders);

@@ -8,6 +8,7 @@ using NiceHashBotLib;
 using NiceHashMarket.Core;
 using NiceHashMarket.Core.Helpers;
 using NiceHashMarket.Model.Enums;
+using NiceHashMarket.Model.Interfaces;
 using Order = NiceHashMarket.Model.Order;
 
 namespace NiceHashMarket.WpfClient.ViewModels
@@ -16,8 +17,39 @@ namespace NiceHashMarket.WpfClient.ViewModels
     public class AlgoMarketViewModel
     {
         private readonly OrdersStorage _ordersStorage;
+        private readonly Timer _timer;
+        private AlgoNiceHashEnum _currentAlgo;
+        private Algorithms _algoList;
+        private CoinsWhatToMineEnum _currentCoin;
 
         public virtual double MaxPermittedPrice { get; set; }
+
+        public virtual AlgoNiceHashEnum CurrentAlgo
+        {
+            get => _currentAlgo;
+            set
+            {
+                if (_ordersStorage != null)
+                {
+                    _ordersStorage.Entities.ListChanged -= Entities_ListChanged;
+                    _ordersStorage.Entities.BeforeRemove -= Entities_BeforeRemove;
+
+                    _ordersStorage.SelectAnotherAlgo(_algoList.First(a => a.Id == (byte) value));
+                }
+
+                _currentAlgo = value; 
+            }
+        }
+
+        public virtual CoinsWhatToMineEnum CurrentCoin
+        {
+            get => _currentCoin;
+            set
+            {
+                _currentCoin = value;
+                WhatToTimeTimerHandler(null);
+            }
+        }
 
         public virtual NiceBindingList<Order> OrdersEurope { get; set; } = new NiceBindingList<Order>();
         public virtual NiceBindingList<Order> OrdersUsa { get; set; } = new NiceBindingList<Order>();
@@ -25,20 +57,35 @@ namespace NiceHashMarket.WpfClient.ViewModels
         public AlgoMarketViewModel()
         {
             var client = new ApiClient();
-            var algoList = new Algorithms();
+            _algoList = new Algorithms();
 
-            _ordersStorage = new OrdersStorage(client, algoList.First(a => a.Id == (byte)AlgoNiceHashEnum.Equihash), 1000, Application.Current.Dispatcher);
+            CurrentAlgo = AlgoNiceHashEnum.Lbry;
+            CurrentCoin = CoinsWhatToMineEnum.Lbc;
 
-            _ordersStorage.Entities.ListChanged += Entities_ListChanged;
-            _ordersStorage.Entities.BeforeRemove += Entities_BeforeRemove;
+            _ordersStorage = new OrdersStorage(client, _algoList.First(a => a.Id == (byte) CurrentAlgo), 1000,
+                Application.Current.Dispatcher);
 
-            var timer = new Timer(t =>
+            OrdersStorageOnAlgoChanged(_ordersStorage, null, null);
+            _ordersStorage.AlgoChanged += OrdersStorageOnAlgoChanged;
+
+            _timer = new Timer(WhatToTimeTimerHandler, null, 0, 3000);
+        }
+
+        private void OrdersStorageOnAlgoChanged(DataStorage<Order> sender, IAlgo oldalgo, IAlgo newalgo)
+        {
+            sender.Entities.ListChanged += Entities_ListChanged;
+            sender.Entities.BeforeRemove += Entities_BeforeRemove;
+
+            OrdersEurope.Clear();
+            OrdersUsa.Clear();
+        }
+
+        private void WhatToTimeTimerHandler(object state)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    MaxPermittedPrice = HandlerClass.HandleOrder(CoinsWhatToMineEnum.Zec);
-                });
-            }, null, 0, 1000);
+                MaxPermittedPrice = HandlerClass.HandleOrder(CurrentCoin);
+            });
         }
 
         private void Entities_BeforeRemove(Order deletedItem)

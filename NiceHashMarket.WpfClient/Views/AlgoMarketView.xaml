@@ -6,22 +6,56 @@
              xmlns:viewModels="clr-namespace:NiceHashMarket.WpfClient.ViewModels"
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:views="clr-namespace:NiceHashMarket.WpfClient.Views"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:enums="clr-namespace:NiceHashMarket.Model.Enums;assembly=NiceHashMarket.Model.Enums"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="900"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:AlgoMarketViewModel}}">
     
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="AlgosFromEnum" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:AlgoNiceHashEnum"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="CoinsFromEnum" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:CoinsWhatToMineEnum"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
-            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="100"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
         <views:OneServerMarketView Grid.Column="0" dxmvvm:ViewModelExtensions.Parameter="{Binding DataContext.OrdersEurope, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         <views:OneServerMarketView Grid.Column="2" dxmvvm:ViewModelExtensions.Parameter="{Binding DataContext.OrdersUsa, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
-        <TextBlock Grid.Column="1" Text="{Binding MaxPermittedPrice}" />
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <ComboBox VerticalAlignment="Top"
+                      SelectedItem="{Binding CurrentAlgo}"
+                      ItemsSource="{Binding Source={StaticResource AlgosFromEnum}}" />
+            <ComboBox Grid.Row="1" VerticalAlignment="Top" 
+                      SelectedItem="{Binding CurrentCoin}"
+                      ItemsSource="{Binding Source={StaticResource CoinsFromEnum}}" />
 
+            <TextBlock Grid.Row="2" Text="{Binding MaxPermittedPrice}" />
+        </Grid>
     </Grid>
 </UserControl>
+
+
+
+
+
+
 
