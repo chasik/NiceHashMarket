@@ -7,8 +7,23 @@ namespace NiceHashMarket.Core.Helpers
 {
     public static class ObjectReflectionHelper
     {
-        private static readonly IEnumerable<string> DontCopyProperties = new List<string>{"DeltaPercentPrice", "DeltaPercentAmount", "DeltaPercentSpeed", "DeltaPercentWorkers", "PriceChanged" };
+        private static readonly IEnumerable<string> DontCopyProperties = new List<string>
+        {
+            "DeltaPercentPrice",
+            "DeltaPercentAmount",
+            "DeltaPercentSpeed",
+            "DeltaPercentWorkers",
+            "PriceChanged",
+            "History",
+            "LastUpdate",
+            "LastUpdateBackTenMinutes"
+        };
 
+        /// <summary>
+        /// Copy properties values from source to destination
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
         public static void CopyProperties(this object source, object destination)
         {
             if (source == null || destination == null)

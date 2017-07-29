@@ -10,9 +10,15 @@
              xmlns:dxgt="http://schemas.devexpress.com/winfx/2008/xaml/grid/themekeys"
              xmlns:templateSelectors="clr-namespace:NiceHashMarket.WpfClient.TemplateSelectors"
              xmlns:enums="clr-namespace:NiceHashMarket.Model.Enums;assembly=NiceHashMarket.Model.Enums"
+             xmlns:wpfClient="clr-namespace:NiceHashMarket.WpfClient"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="440"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:OneServerMarketViewModel}}">
+
+    <UserControl.Resources>
+        <wpfClient:HistoryCollectionConverter x:Key="HistoryCollectionConverter" />
+    </UserControl.Resources>
+    
     
     <dxg:GridControl AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
                      SelectionMode="Row"
@@ -155,12 +161,35 @@
                                         <ControlTemplate>
                                             <Border BorderThickness="0,0,0,2" BorderBrush="Red" Padding="2" Background="WhiteSmoke"
                                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition />
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBlock Text="{Binding Row.Price}" />
-                                                </Grid>
+                                                <StackPanel Orientation="Vertical">
+                                                    <dxe:SparklineEdit EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=1}"
+                                                                       Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue">
+                                                        <dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:BarSparklineStyleSettings NegativePointBrush="Red"/>
+                                                        </dxe:SparklineEdit.StyleSettings>
+                                                        <dxe:SparklineEdit.PointArgumentRange>
+                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                        </dxe:SparklineEdit.PointArgumentRange>
+                                                    </dxe:SparklineEdit>
+                                                    <dxe:SparklineEdit EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=2}"
+                                                                       Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue">
+                                                        <dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:BarSparklineStyleSettings NegativePointBrush="Red"/>
+                                                        </dxe:SparklineEdit.StyleSettings>
+                                                        <dxe:SparklineEdit.PointArgumentRange>
+                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                        </dxe:SparklineEdit.PointArgumentRange>
+                                                    </dxe:SparklineEdit>
+                                                    <dxe:SparklineEdit EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=3}"
+                                                                       Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue">
+                                                        <dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:BarSparklineStyleSettings NegativePointBrush="Red"/>
+                                                        </dxe:SparklineEdit.StyleSettings>
+                                                        <dxe:SparklineEdit.PointArgumentRange>
+                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                        </dxe:SparklineEdit.PointArgumentRange>
+                                                    </dxe:SparklineEdit>
+                                                </StackPanel>
                                             </Border>
                                         </ControlTemplate>
                                     </dxg:RowDetailContainerControl.Template>

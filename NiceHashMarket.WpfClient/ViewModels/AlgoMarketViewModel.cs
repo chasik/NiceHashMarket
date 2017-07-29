@@ -150,6 +150,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     if (orderChanged == null)
                         return;
 
+                    orderChanged.History.AddValue(e.PropertyDescriptor.Name, orderChanged, orderNewIndex);
+
                     orderNewIndex.CopyProperties(orderChanged);
                     break;
                 case ListChangedType.PropertyDescriptorAdded:
@@ -166,8 +168,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
         #endregion
 
         void IDataCallBacks.OrderAdded(Order order)
-        {
             //var orderClone = (Order)order?.Clone();
+        {
 
             if (order.Server == ServerEnum.Europe)
                 OrdersEurope.Add(order);

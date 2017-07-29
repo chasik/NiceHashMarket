@@ -23,6 +23,7 @@ namespace NiceHashMarket.Model
         private int _deltaPercentSpeed;
         private OrderTypeEnum _type;
         private DateTime? _priceChanged;
+        private HistoryDictionary _history;
 
         public Order(int id, decimal price, decimal amount, decimal speed, int workers, int type, int active, ServerEnum server = ServerEnum.Unknown)
         {
@@ -42,6 +43,15 @@ namespace NiceHashMarket.Model
 
             //MarketLogger.Information("counstructor: {@orderId})", Id);
         }
+
+        public HistoryDictionary History
+        {
+            get => _history ?? (_history = new HistoryDictionary());
+            set => _history = value;
+        }
+
+        public DateTime? LastUpdate { get; set; }
+        public DateTime? LastUpdateBackTenMinutes { get; set; }
 
         [DataMember]
         public int Id
@@ -232,6 +242,9 @@ namespace NiceHashMarket.Model
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            LastUpdate = DateTime.Now;
+            LastUpdateBackTenMinutes = LastUpdate - new TimeSpan(0, 30, 0);
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
