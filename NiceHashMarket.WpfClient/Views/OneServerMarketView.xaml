@@ -161,35 +161,101 @@
                                         <ControlTemplate>
                                             <Border BorderThickness="0,0,0,2" BorderBrush="Red" Padding="2" Background="WhiteSmoke"
                                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <StackPanel Orientation="Vertical">
-                                                    <dxe:SparklineEdit EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=1}"
-                                                                       Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="58" />
+                                                        <ColumnDefinition Width="86" />
+                                                        <ColumnDefinition Width="86" />
+                                                        <ColumnDefinition Width="86" />
+                                                        <ColumnDefinition Width="86" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <dxe:SparklineEdit Grid.Row="0" Grid.Column="1" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=1}">
                                                         <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:BarSparklineStyleSettings NegativePointBrush="Red"/>
+                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red" />
                                                         </dxe:SparklineEdit.StyleSettings>
                                                         <dxe:SparklineEdit.PointArgumentRange>
                                                             <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
                                                         </dxe:SparklineEdit.PointArgumentRange>
                                                     </dxe:SparklineEdit>
-                                                    <dxe:SparklineEdit EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=2}"
-                                                                       Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue">
+                                                    <dxe:SparklineEdit Grid.Row="1" Grid.Column="1" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=2}">
                                                         <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:BarSparklineStyleSettings NegativePointBrush="Red"/>
+                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
                                                         </dxe:SparklineEdit.StyleSettings>
                                                         <dxe:SparklineEdit.PointArgumentRange>
                                                             <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
                                                         </dxe:SparklineEdit.PointArgumentRange>
                                                     </dxe:SparklineEdit>
-                                                    <dxe:SparklineEdit EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=3}"
-                                                                       Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue">
+                                                    
+                                                    
+                                                    <dxe:SparklineEdit Grid.Row="0" Grid.Column="2" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=3}">
                                                         <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:BarSparklineStyleSettings NegativePointBrush="Red"/>
+                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
                                                         </dxe:SparklineEdit.StyleSettings>
                                                         <dxe:SparklineEdit.PointArgumentRange>
                                                             <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
                                                         </dxe:SparklineEdit.PointArgumentRange>
                                                     </dxe:SparklineEdit>
-                                                </StackPanel>
+                                                    <dxe:SparklineEdit Grid.Row="1" Grid.Column="2" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=4}">
+                                                        <dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                        </dxe:SparklineEdit.StyleSettings>
+                                                        <dxe:SparklineEdit.PointArgumentRange>
+                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                        </dxe:SparklineEdit.PointArgumentRange>
+                                                    </dxe:SparklineEdit>
+                                                    
+                                                    
+                                                    <dxe:SparklineEdit Grid.Row="0" Grid.Column="3" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=5}">
+                                                        <dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                        </dxe:SparklineEdit.StyleSettings>
+                                                        <dxe:SparklineEdit.PointArgumentRange>
+                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                        </dxe:SparklineEdit.PointArgumentRange>
+                                                    </dxe:SparklineEdit>
+                                                    <dxe:SparklineEdit Grid.Row="1" Grid.Column="3" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=6}">
+                                                        <dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                        </dxe:SparklineEdit.StyleSettings>
+                                                        <dxe:SparklineEdit.PointArgumentRange>
+                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                        </dxe:SparklineEdit.PointArgumentRange>
+                                                    </dxe:SparklineEdit>
+                                                    
+                                                    
+                                                    <dxe:SparklineEdit Grid.Row="0" Grid.Column="4" Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=7}">
+                                                        <dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                        </dxe:SparklineEdit.StyleSettings>
+                                                        <dxe:SparklineEdit.PointArgumentRange>
+                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                        </dxe:SparklineEdit.PointArgumentRange>
+                                                    </dxe:SparklineEdit>
+                                                    <dxe:SparklineEdit Grid.Row="1" Grid.Column="4" Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=8}">
+                                                        <dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                        </dxe:SparklineEdit.StyleSettings>
+                                                        <dxe:SparklineEdit.PointArgumentRange>
+                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                        </dxe:SparklineEdit.PointArgumentRange>
+                                                    </dxe:SparklineEdit>
+
+
+                                                </Grid>
                                             </Border>
                                         </ControlTemplate>
                                     </dxg:RowDetailContainerControl.Template>
@@ -219,6 +285,18 @@
     </dxg:GridControl>
 
 </UserControl>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

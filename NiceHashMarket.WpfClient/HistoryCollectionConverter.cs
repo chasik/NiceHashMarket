@@ -15,11 +15,21 @@ namespace NiceHashMarket.WpfClient
             var propertyId = System.Convert.ToByte(parameter);
 
             if (propertyId == 1)
-                collectionName = "Amount";
+                collectionName = "Price";
             else if (propertyId == 2)
-                collectionName = "Speed";
+                collectionName = "DeltaPrice";
             else if (propertyId == 3)
+                collectionName = "Amount";
+            else if (propertyId == 4)
+                collectionName = "DeltaPercentAmount";
+            else if (propertyId == 5)
                 collectionName = "Workers";
+            else if (propertyId == 6)
+                collectionName = "DeltaPercentWorkers";
+            else if (propertyId == 7)
+                collectionName = "Speed";
+            else if (propertyId == 8)
+                collectionName = "DeltaPercentSpeed";
             else
                 return null;
 

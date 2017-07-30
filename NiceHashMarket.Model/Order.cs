@@ -243,7 +243,7 @@ namespace NiceHashMarket.Model
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             LastUpdate = DateTime.Now;
-            LastUpdateBackTenMinutes = LastUpdate - new TimeSpan(0, 30, 0);
+            LastUpdateBackTenMinutes = LastUpdate - new TimeSpan(0, 10, 0);
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
