@@ -21,6 +21,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
         #region | Fields |
 
         private readonly Timer _timer;
+        private int _timerCounter;
         private readonly OrdersStorage _ordersStorage;
         private Algorithms _algoList;
         private AlgoNiceHashEnum _currentAlgo;
@@ -30,7 +31,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         #region | Properties |
 
-        public virtual double MaxPermittedPrice { get; set; }
+        public virtual WhattomineResult WhattomineResult { get; set; }
 
         public virtual AlgoNiceHashEnum CurrentAlgo
         {
@@ -91,7 +92,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             #endregion
 
-
+            _timerCounter = 0;
             _timer = new Timer(WhatToTimeTimerHandler, null, 0, 3000);
         }
 
@@ -108,11 +109,13 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         private void WhatToTimeTimerHandler(object state)
         {
-            var maxPermittedPrice = HandlerClass.HandleOrder(CurrentCoin);
+            _timerCounter++;
+
+            var result = HandlerClass.HandleOrder(CurrentCoin);
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MaxPermittedPrice = maxPermittedPrice;
+                WhattomineResult = result;
             });
         }
 
@@ -170,7 +173,6 @@ namespace NiceHashMarket.WpfClient.ViewModels
         void IDataCallBacks.OrderAdded(Order order)
             //var orderClone = (Order)order?.Clone();
         {
-
             if (order.Server == ServerEnum.Europe)
                 OrdersEurope.Add(order);
             else if (order.Server == ServerEnum.Usa)

@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack, Version=1.5.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.5.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -54,6 +57,7 @@
     <Compile Include="NiceBindingList.cs" />
     <Compile Include="OrdersStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SuprNovaApi.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NiceHashMarket.Core.Helpers\NiceHashMarket.Core.Helpers.csproj">

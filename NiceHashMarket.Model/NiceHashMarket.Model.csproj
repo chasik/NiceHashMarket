@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algo.cs" />
+    <Compile Include="BlockInfo.cs" />
     <Compile Include="HistoryDictionary.cs" />
     <Compile Include="Order.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

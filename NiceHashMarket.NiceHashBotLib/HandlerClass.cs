@@ -10,11 +10,11 @@ namespace NiceHashBotLib
 {
     public class HandlerClass
     {
-        public static double HandleOrder(CoinsWhatToMineEnum coin)
+        public static WhattomineResult HandleOrder(CoinsWhatToMineEnum coin)
         {
             // Retreive JSON data from API server. Replace URL with your own API request URL.
             var jsonData = GetHTTPResponseInJSON($"http://www.whattomine.com/coins/{(byte)coin}.json");
-            if (jsonData == null) return -1;
+            if (jsonData == null) return new WhattomineResult();
 
             // Serialize returned JSON data.
             WhattomineResponse response;
@@ -24,28 +24,10 @@ namespace NiceHashBotLib
             }
             catch
             {
-                return -2;
+                return new WhattomineResult();
             }
 
-            // Check if exchange rate is provided - at least one exchange must be included.
-            //if (Response.Length == 0) return;
-            var ExchangeRate = response.exchange_rate;
-
-            // Calculate mining profitability in BTC per 1 TH of hashpower.
-            var HT = response.difficulty * (Math.Pow(2.0, 32) / 1000000000000.0);
-            var CPD = response.block_reward * 24.0 * 3600.0 / HT;
-            var C = CPD * ExchangeRate;
-
-            // Subtract service fees.
-            C -= 0.04 * C;
-
-            // Subtract minimal % profit we want to get.
-            C -= 0.1 * C;
-
-            // Set new maximal price.
-            var maxPrice = Math.Floor(C * 10000) / 10000;
-
-            return maxPrice;
+            return new WhattomineResult(response);
         }
 
         /// <summary>
@@ -53,7 +35,7 @@ namespace NiceHashBotLib
         /// It allows us to parse JSON with one line of code and easily access every data contained in JSON message.
         /// </summary>
 #pragma warning disable 0649
-        class WhattomineResponse
+        public class WhattomineResponse
         {
             public string name;
             public string tag;
@@ -81,11 +63,6 @@ namespace NiceHashBotLib
             public int timestamp;
         }
 #pragma warning restore 0649
-
-        /// <summary>
-        /// Property used for measuring time.
-        /// </summary>
-        private static int Tick = -10;
 
         // Following methods do not need to be altered.
         #region PRIVATE_METHODS
@@ -119,5 +96,37 @@ namespace NiceHashBotLib
         }
 
         #endregion
+    }
+
+    public class WhattomineResult
+    {
+        public double MaxPrice { get; set; }
+        public double MaxPrice24 { get; set; }
+
+        public double Difficulty { get; set; }
+        public double Difficulty24 { get; set; }
+
+        public WhattomineResult()
+        {
+
+        }
+
+        public WhattomineResult(HandlerClass.WhattomineResponse response)
+        {
+            MaxPrice = Math.Floor(CalcPriceByDifficulty(response.difficulty, response.exchange_rate, response.block_reward) * 10000) / 10000;
+            MaxPrice24 = Math.Floor(CalcPriceByDifficulty(response.difficulty24, response.exchange_rate24, response.block_reward24) * 10000) / 10000;
+
+            Difficulty = response.difficulty;
+            Difficulty24 = response.difficulty24;
+        }
+
+        private static double CalcPriceByDifficulty(double difficulty, double exchangeRate, double blockReward)
+        {
+            // Calculate mining profitability in BTC per 1 TH of hashpower.
+            var HT = difficulty * (Math.Pow(2.0, 32) / 1000000000000.0);
+            var CPD = blockReward * 24.0 * 3600.0 / HT;
+
+            return CPD * exchangeRate;
+        }
     }
 }

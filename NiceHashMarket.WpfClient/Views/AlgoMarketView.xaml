@@ -44,9 +44,16 @@
                       SelectedItem="{Binding CurrentCoin}"
                       ItemsSource="{Binding Source={StaticResource CoinsFromEnum}}" />
 
-            <TextBlock DockPanel.Dock="Top" Text="MaxPrice:" FontWeight="Bold" />
+            <TextBlock DockPanel.Dock="Top" Text="Difficulty:" FontWeight="Medium" FontSize="9"/>
+            <TextBlock DockPanel.Dock="Top" Foreground="LimeGreen" FontWeight="Medium" HorizontalAlignment="Right" FontSize="8"
+                        Text="{Binding WhattomineResult.Difficulty, StringFormat=current:   {0:### ### ###.0000}}" />
+            <TextBlock DockPanel.Dock="Top" Foreground="Red" FontWeight="Medium" HorizontalAlignment="Right" FontSize="8"
+                       Text="{Binding WhattomineResult.Difficulty24, StringFormat=24h:   {0:### ### ###.0000}}" />
+            <TextBlock DockPanel.Dock="Top" Text="MaxPrice:" FontWeight="Bold" FontSize="9"/>
+            <TextBlock DockPanel.Dock="Top" Foreground="LimeGreen" FontWeight="Medium" HorizontalAlignment="Right"
+                       Text="{Binding WhattomineResult.MaxPrice, StringFormat=current:   {0:### ### ###.0000}}" />
             <TextBlock DockPanel.Dock="Top" Foreground="Red" FontWeight="Medium" HorizontalAlignment="Right"
-                        Text="{Binding MaxPermittedPrice}" />
+                       Text="{Binding WhattomineResult.MaxPrice24, StringFormat=24h:   {0:### ### ###.0000}}" />
             
             <StackPanel DockPanel.Dock="Bottom">
                 <TextBlock Text="Ордера:" />

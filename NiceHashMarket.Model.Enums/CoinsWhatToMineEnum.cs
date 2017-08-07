@@ -8,6 +8,7 @@
         Eth = 151,
         Lbc = 164,
         Zec = 166,
-        Music = 178
+        Music = 178,
+        Zen = 185
     }
 }
