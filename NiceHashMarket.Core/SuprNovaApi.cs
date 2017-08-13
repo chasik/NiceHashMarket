@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -16,15 +14,20 @@ namespace NiceHashMarket.Core
         private readonly string _host;
         private Timer _timer;
         private readonly string _restRequest;
+        private int _currentTimeZoneHoursOffset;
 
-        public event EventHandler<BlockInfo> OnRowOfBlockParsed;
+        public event EventHandler<BlockInfo> RowOfBlockParsed;
+        public event EventHandler<BlockInfo> NewBlockFounded;
+        public event EventHandler<BlockInfo> BlockUpdated;
 
-        public ConcurrentDictionary<DateTime, List<BlockInfo>> Blocks { get; set; }
+        public ConcurrentQueue<BlockInfo> Blocks { get; set; }
 
 
-        public SuprNovaApi(string host, int period)
+        public SuprNovaApi(string host, int period, int currentTimeZoneHoursOffset)
         {
-            Blocks = new ConcurrentDictionary<DateTime, List<BlockInfo>>();
+            _currentTimeZoneHoursOffset = currentTimeZoneHoursOffset;
+
+            Blocks = new ConcurrentQueue<BlockInfo>();
 
             _restRequest = $"{host}/index.php?page=statistics&action=blocks";
 
@@ -62,19 +65,44 @@ namespace NiceHashMarket.Core
                 if (id == null) return;
 
                 var percent = r.Descendants("td").LastOrDefault()?.Descendants("font").Single().InnerText;
+                var dateTime = r.Descendants("td").Skip(3).FirstOrDefault()?.InnerText;
 
-                var block = new BlockInfo(id, percent);
+                var block = new BlockInfo(id, percent, DateTime.ParseExact(dateTime, "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture).AddHours(_currentTimeZoneHoursOffset));
 
-                OnOnRowOfBlockParsed(block);
+                OnRowOfBlockParsed(block);
 
+                var existBlock = Blocks.FirstOrDefault(b => b.Id == block.Id);
+
+                if (existBlock == null)
+                {
+                    Blocks.Enqueue(block);
+
+                    OnNewBlockFounded(block);
+                }
+                else if (Math.Abs(existBlock.Percent - block.Percent) > 0.001 && existBlock.Percent < block.Percent)
+                {
+                    existBlock.Percent = block.Percent;
+                    OnBlockUpdated(existBlock);
+                }
+                
             });
 
 
         }
 
-        protected virtual void OnOnRowOfBlockParsed(BlockInfo block)
+        protected virtual void OnRowOfBlockParsed(BlockInfo block)
         {
-            OnRowOfBlockParsed?.Invoke(this, block);
+            RowOfBlockParsed?.Invoke(this, block);
+        }
+
+        protected virtual void OnNewBlockFounded(BlockInfo e)
+        {
+            NewBlockFounded?.Invoke(this, e);
+        }
+
+        protected virtual void OnBlockUpdated(BlockInfo e)
+        {
+            BlockUpdated?.Invoke(this, e);
         }
     }
 }

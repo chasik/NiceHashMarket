@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Data;
 using NiceHashMarket.Model;
 
-namespace NiceHashMarket.WpfClient
+namespace NiceHashMarket.WpfClient.Converters
 {
     public class HistoryCollectionConverter : IValueConverter
     {

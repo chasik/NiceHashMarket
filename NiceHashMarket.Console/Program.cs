@@ -18,25 +18,17 @@ namespace NiceHashMarket.Console
 
         static void Main(string[] args)
         {
-            var sn = new SuprNovaApi("https://lbry.suprnova.cc", 2000);
+            //var sn = new SuprNovaApi("https://lbry.suprnova.cc", 5000);
 
-            sn.OnRowOfBlockParsed += (sender, block) =>
-            {
-                var existedBlock = _blocksInfo.FirstOrDefault(b => b.Id == block.Id);
+            //sn.RowOfBlockParsed += (sender, block) => { };
 
-                if (existedBlock != null && Math.Abs((existedBlock?.Percent - block?.Percent).Value) < 0.001)
-                    return;
+            //sn.NewBlockFounded += (sender, block) => { System.Console.WriteLine($"Added ({DateTime.Now}) ID:{block.Id} Percent:{block.Percent}"); };
+            //sn.BlockUpdated += (sender, block) => { System.Console.WriteLine($"Changed ({DateTime.Now}) ID:{block.Id} Percent:{block.Percent}"); };
 
-                if (_blocksInfo.Any(b => b.Id == block.Id))
-                {
-                    _blocksInfo.First(b => b.Id == block.Id).Percent = block.Percent;
-                    System.Console.WriteLine($"Changed ({DateTime.Now}) ID:{block.Id} Percent:{block.Percent}");
-                    return;
-                }
+            APIWrapper.Initialize(Properties.Settings.Default.NiceApiId, Properties.Settings.Default.NiceApiKey);
+            var o = APIWrapper.GetMyOrders(0, (byte) AlgoNiceHashEnum.Equihash);
 
-                _blocksInfo.Add(block);
-                System.Console.WriteLine($"Added ({DateTime.Now}) ID:{block.Id} Percent:{block.Percent}");
-            };
+            o.ForEach(ord => System.Console.WriteLine(ord.ID));
 
             System.Console.ReadKey();
         }

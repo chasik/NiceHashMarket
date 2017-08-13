@@ -7,8 +7,10 @@
              xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:views="clr-namespace:NiceHashMarket.WpfClient.Views"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:enums="clr-namespace:NiceHashMarket.Model.Enums;assembly=NiceHashMarket.Model.Enums"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
+             xmlns:enums="clr-namespace:NiceHashMarket.Model.Enums;assembly=NiceHashMarket.Model.Enums"
+             xmlns:converters="clr-namespace:NiceHashMarket.WpfClient.Converters"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="900"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:AlgoMarketViewModel}}">
@@ -32,11 +34,81 @@
             <ColumnDefinition Width="100"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
 
-        <views:OneServerMarketView Grid.Column="0" dxmvvm:ViewModelExtensions.Parameter="{Binding DataContext.OrdersEurope, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-        <views:OneServerMarketView Grid.Column="2" dxmvvm:ViewModelExtensions.Parameter="{Binding DataContext.OrdersUsa, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="3" LastChildFill="True">
 
-        <DockPanel Grid.Column="1" LastChildFill="True">
+            <StackPanel DockPanel.Dock="Right" Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Background="DodgerBlue" HorizontalAlignment="Right" Width="290">
+                    <TextBlock HorizontalAlignment="Left" Foreground="Azure"
+                               Text="{Binding LastBlocksSuprNova, Converter={converters:LastBlockPercentValueConverter}, StringFormat=SuprNova {0}}" Margin="20,0" />
+                    <TextBlock HorizontalAlignment="Right" Foreground="Azure"
+                               Text="{Binding LastBlocksSuprNova, Converter={converters:LastBlockCreatedValueConverter}, StringFormat=\{0:hh\\:mm\\:ss\}}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Background="Magenta" HorizontalAlignment="Right" Width="290">
+                    <TextBlock HorizontalAlignment="Left" Foreground="Azure"
+                               Text="{Binding LastBlocksCoinMinePl, Converter={converters:LastBlockPercentValueConverter}, StringFormat=CoinMain {0}}" Margin="20,0" />
+                    <TextBlock HorizontalAlignment="Right" Foreground="Azure" 
+                               Text="{Binding LastBlocksCoinMinePl, Converter={converters:LastBlockCreatedValueConverter}, StringFormat=\{0:hh\\:mm\\:ss\}}" />
+                </StackPanel>
+            </StackPanel>
+
+            <dxc:ChartControl Height="110" Margin="0,0,0,0" DockPanel.Dock="Left">
+                <dxc:ChartControl.Palette>
+                    <dxc:CustomPalette>
+                        <dxc:CustomPalette.Colors>
+                            <Color>DodgerBlue</Color>
+                            <Color>Magenta</Color>
+                        </dxc:CustomPalette.Colors>
+                    </dxc:CustomPalette>
+                </dxc:ChartControl.Palette>
+                <dxc:XYDiagram2D Margin="-15,-20,-20,-15">
+                    <dxc:XYDiagram2D.AxisX>
+                        <dxc:AxisX2D>
+                           <dxc:AxisX2D.DateTimeScaleOptions>
+                                <dxc:ContinuousDateTimeScaleOptions />
+                            </dxc:AxisX2D.DateTimeScaleOptions>
+                            <dxc:AxisX2D.WholeRange>
+                                <dxc:Range MinValue="{Binding MinDateTimeOfBlock}" MaxValue="{Binding MaxDateTimeOfBlock}"/>
+                            </dxc:AxisX2D.WholeRange>
+                        </dxc:AxisX2D>
+                    </dxc:XYDiagram2D.AxisX>
+                    <!--<dxc:XYDiagram2D.AxisY>
+                        <dxc:AxisY2D Logarithmic="True" LogarithmicBase="10">
+                            <dxc:AxisY2D.VisualRange>
+                                <dxc:Range AutoSideMargins="True" />
+                            </dxc:AxisY2D.VisualRange>
+                        </dxc:AxisY2D>
+                    </dxc:XYDiagram2D.AxisY>-->
+                    <dxc:XYDiagram2D.Series>
+                        <dxc:BarSideBySideSeries2D ArgumentDataMember="Created" ValueDataMember="Percent" LabelsVisibility="True"
+                                                   DataSource="{Binding LastBlocksSuprNova}">
+                            <dxc:BarSideBySideSeries2D.Label>
+                                <dxc:SeriesLabel ResolveOverlappingMode="Default" ConnectorVisible="False" ConnectorThickness="1" Opacity="0.7" Indent="20"/>
+                            </dxc:BarSideBySideSeries2D.Label>
+                        </dxc:BarSideBySideSeries2D>
+                        <dxc:BarSideBySideSeries2D ArgumentDataMember="Created" ValueDataMember="Percent" LabelsVisibility="True"
+                                                   DataSource="{Binding LastBlocksCoinMinePl}">
+                            <dxc:BarSideBySideSeries2D.Label>
+                                <dxc:SeriesLabel ResolveOverlappingMode="Default" ConnectorVisible="False" ConnectorThickness="1" Opacity="0.7" Indent="20"/>
+                            </dxc:BarSideBySideSeries2D.Label>
+                        </dxc:BarSideBySideSeries2D>
+                    </dxc:XYDiagram2D.Series>
+                </dxc:XYDiagram2D>
+            </dxc:ChartControl>
+        </DockPanel>
+
+        <views:OneServerMarketView Grid.Column="0"  Grid.Row="1" 
+                                   dxmvvm:ViewModelExtensions.Parameter="{x:Static enums:ServerEnum.Europe}"
+                                   dxmvvm:ViewModelExtensions.ParentViewModel="{Binding DataContext,  RelativeSource={RelativeSource AncestorType=UserControl}}" />
+        <views:OneServerMarketView Grid.Column="2"  Grid.Row="1" 
+                                   dxmvvm:ViewModelExtensions.Parameter="{x:Static enums:ServerEnum.Usa}"
+                                   dxmvvm:ViewModelExtensions.ParentViewModel="{Binding DataContext,  RelativeSource={RelativeSource AncestorType=UserControl}}" />
+
+        <DockPanel Grid.Column="1" Grid.Row="1" LastChildFill="True"> 
             <ComboBox DockPanel.Dock="Top" VerticalAlignment="Top"
                       SelectedItem="{Binding CurrentAlgo}"
                       ItemsSource="{Binding Source={StaticResource AlgosFromEnum}}" />
@@ -55,9 +127,12 @@
             <TextBlock DockPanel.Dock="Top" Foreground="Red" FontWeight="Medium" HorizontalAlignment="Right"
                        Text="{Binding WhattomineResult.MaxPrice24, StringFormat=24h:   {0:### ### ###.0000}}" />
             
+          
             <StackPanel DockPanel.Dock="Bottom">
                 <TextBlock Text="Ордера:" />
-                <dxe:ListBoxEdit Height="100" ItemsSource="{Binding MyOrders}"></dxe:ListBoxEdit>
+                <dxe:ListBoxEdit Height="100" ItemsSource="{Binding MyOrders}" ValueMember="Id" DisplayMember="Id">
+                    
+                </dxe:ListBoxEdit>
             </StackPanel>
             
             <StackPanel></StackPanel>

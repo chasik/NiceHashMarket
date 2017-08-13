@@ -7,8 +7,9 @@
         xmlns:viewModels="clr-namespace:NiceHashMarket.WpfClient.ViewModels"
         xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
         xmlns:views="clr-namespace:NiceHashMarket.WpfClient.Views"
-        mc:Ignorable="d" Width="900" Height="500"
-        Title="MainWindow" SizeToContent="WidthAndHeight"
+        mc:Ignorable="d" Width="900" Height="500" 
+        Title="Nice Hash Market" Padding="0" Margin="0"
+        BorderThickness="0" WindowState="Maximized"
         DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:MainViewModel}}">
     
     <Grid>
@@ -25,18 +26,3 @@
 
     </Grid>
 </Window>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

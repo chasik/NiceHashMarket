@@ -11,20 +11,21 @@
              xmlns:templateSelectors="clr-namespace:NiceHashMarket.WpfClient.TemplateSelectors"
              xmlns:enums="clr-namespace:NiceHashMarket.Model.Enums;assembly=NiceHashMarket.Model.Enums"
              xmlns:wpfClient="clr-namespace:NiceHashMarket.WpfClient"
+             xmlns:converters="clr-namespace:NiceHashMarket.WpfClient.Converters"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="440"
              DataContext="{dxmvvm:ViewModelSource Type={x:Type viewModels:OneServerMarketViewModel}}">
 
     <UserControl.Resources>
-        <wpfClient:HistoryCollectionConverter x:Key="HistoryCollectionConverter" />
+        <converters:HistoryCollectionConverter x:Key="HistoryCollectionConverter" />
     </UserControl.Resources>
     
     
     <dxg:GridControl AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
                      SelectionMode="Row"
-                     ItemsSource="{Binding Parameter}">
+                     ItemsSource="{Binding Orders}">
         <dxg:GridControl.Columns>
-            <dxg:GridColumn FieldName="Type" SortOrder="Descending" SortIndex="1" Visible="False"/>
+            <dxg:GridColumn FieldName="Type" SortOrder="Ascending" SortIndex="1" Visible="False"/>
             <dxg:GridColumn FieldName="Active" SortOrder="Descending" SortIndex="2" Visible="False"/>
             <dxg:GridColumn FieldName="Id" Width="60">
                 <dxg:GridColumn.CellTemplate>

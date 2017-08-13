@@ -19,6 +19,7 @@ namespace NiceHashMarket.Core
         private readonly Dispatcher _currentDispatcher;
         private readonly int _frequencyQueryMilliseconds;
 
+        public event AlgoChangedDelegate<T> AlgoChanging;
         public event AlgoChangedDelegate<T> AlgoChanged;
 
         public IAlgo Algo { get; set; }
@@ -50,8 +51,10 @@ namespace NiceHashMarket.Core
 
         public virtual void SelectAnotherAlgo(IAlgo newAlgo)
         {
-            Entities = new NiceBindingList<T>();
             var oldAlgo = Algo;
+            AlgoChanging?.Invoke(this, oldAlgo, newAlgo);
+
+            Entities = new NiceBindingList<T>();
             Algo = newAlgo;
 
             AlgoChanged?.Invoke(this, oldAlgo, newAlgo);
