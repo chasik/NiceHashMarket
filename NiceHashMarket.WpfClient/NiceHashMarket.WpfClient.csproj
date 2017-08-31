@@ -69,9 +69,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\DetectMyOrderConverter.cs" />
     <Compile Include="Converters\LastBlockCreatedValueConverter.cs" />
     <Compile Include="Converters\LastBlockPercentValueConverter.cs" />
     <Compile Include="Converters\HistoryCollectionConverter.cs" />
+    <Compile Include="Interfaces\ICanJump.cs" />
+    <Compile Include="Interfaces\IHaveMyOrders.cs" />
     <Compile Include="Interfaces\IHaveOrdersStorage.cs" />
     <Compile Include="TemplateSelectors\OrderDetailTemplateSelector.cs" />
     <Compile Include="ViewModels\AlgoMarketViewModel.cs" />
@@ -141,6 +144,10 @@
     <ProjectReference Include="..\NiceHashMarket.Core\NiceHashMarket.Core.csproj">
       <Project>{050A8E9C-7CA6-4DC2-B6DC-8FF3ED4A7B6F}</Project>
       <Name>NiceHashMarket.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Logger\NiceHashMarket.Logger.csproj">
+      <Project>{EC5235B5-D2B2-4883-B0E8-4A1532B04784}</Project>
+      <Name>NiceHashMarket.Logger</Name>
     </ProjectReference>
     <ProjectReference Include="..\NiceHashMarket.Model.Enums\NiceHashMarket.Model.Enums.csproj">
       <Project>{4291B820-6118-46BC-A0E7-359D2CAA9D9D}</Project>

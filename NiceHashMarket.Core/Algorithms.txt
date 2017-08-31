@@ -27,3 +27,4 @@
 26 = X11Gost
 27 = Sia
 28 = Blake2s
+29 = Skunk

@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MetricPrefixHelper.cs" />
     <Compile Include="ObjectReflectionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -47,6 +48,10 @@
     <ProjectReference Include="..\NiceHashMarket.Logger\NiceHashMarket.Logger.csproj">
       <Project>{EC5235B5-D2B2-4883-B0E8-4A1532B04784}</Project>
       <Name>NiceHashMarket.Logger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Model.Enums\NiceHashMarket.Model.Enums.csproj">
+      <Project>{4291B820-6118-46BC-A0E7-359D2CAA9D9D}</Project>
+      <Name>NiceHashMarket.Model.Enums</Name>
     </ProjectReference>
     <ProjectReference Include="..\NiceHashMarket.Model.Interfaces\NiceHashMarket.Model.Interfaces.csproj">
       <Project>{5236c511-7b02-4952-b9d8-d98291e7a6de}</Project>

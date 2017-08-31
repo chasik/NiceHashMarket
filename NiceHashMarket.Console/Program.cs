@@ -18,7 +18,7 @@ namespace NiceHashMarket.Console
 
         static void Main(string[] args)
         {
-            //var sn = new SuprNovaApi("https://lbry.suprnova.cc", 5000);
+            //var sn = new MiningPortalApi("https://lbry.suprnova.cc", 5000);
 
             //sn.RowOfBlockParsed += (sender, block) => { };
 
@@ -48,7 +48,7 @@ namespace NiceHashMarket.Console
         {
             while (!System.Console.KeyAvailable)
             {
-                var maxPrice = HandlerClass.HandleOrder(CoinsWhatToMineEnum.Lbc);
+                var maxPrice = HandlerClass.HandleOrder(CoinsWhatToMineEnum.Lbc, 0);
                 // Example how to print some data on console...
                 System.Console.WriteLine($"{maxPrice:F4}");
                 Thread.Sleep(20000);

@@ -3,22 +3,28 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
 using NiceHashBotLib;
 using NiceHashMarket.Core;
+using NiceHashMarket.Logger;
 using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Services;
 using NiceHashMarket.WpfClient.Interfaces;
+using NiceHashMarket.WpfClient.Properties;
 using Order = NiceHashMarket.Model.Order;
 
 namespace NiceHashMarket.WpfClient.ViewModels
 {
     [POCOViewModel]
-    public class AlgoMarketViewModel : IHaveOrdersStorage, IDataCallBacks
+    public class AlgoMarketViewModel : IHaveMyOrders, IHaveOrdersStorage, IDataCallBacks, ICanJump
     {
+        private const string LbrySuprnovaUrl = "https://lbry-api.suprnova.cc";
+        private const string LbryCoinmineUrl = "https://www2.coinmine.pl/lbc";
+
         #region | Fields |
 
         private readonly Timer _timer;
@@ -65,6 +71,20 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         public virtual NiceBindingList<Order> MyOrders { get; set; } = new NiceBindingList<Order>();
 
+        public virtual int CurrentDifficulty { get; set; }
+        public virtual int MinDifficulity { get; set; }
+        public virtual int MaxDifficulity { get; set; }
+        public virtual BindingList<DashboardPoolResult> DashboardResults { get; set; } = new BindingList<DashboardPoolResult>();
+
+
+        public virtual BindingList<BindingList<DashboardPoolResult>> HashRates { get; set; } =
+            new BindingList<BindingList<DashboardPoolResult>>
+            {
+                new BindingList<DashboardPoolResult>(),
+                new BindingList<DashboardPoolResult>(),
+                new BindingList<DashboardPoolResult>()
+            };
+
         public virtual BindingList<BlockInfo> LastBlocksSuprNova
         {
             get => _lastBlocksSuprNova ?? (_lastBlocksSuprNova = new BindingList<BlockInfo>());
@@ -106,18 +126,27 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             #region | SuprNova api |
 
-            GetLastBlocksFromPool(new SuprNovaApi("https://lbry.suprnova.cc/", 5000, +3), LastBlocksSuprNova);
-            GetLastBlocksFromPool(new SuprNovaApi("https://www2.coinmine.pl/lbc", 5000, +1), LastBlocksCoinMinePl);
+            GetLastBlocksFromPool(
+                new MiningPortalApi(LbrySuprnovaUrl, 5000, +3, MetricPrefixEnum.Mega, Settings.Default.LbrySuprnovaApiKey, Settings.Default.LbrySuprnovaUserId)
+                    , LastBlocksSuprNova);
+
+            GetLastBlocksFromPool(
+                new MiningPortalApi(LbryCoinmineUrl, 5000, +1, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
+                    , LastBlocksCoinMinePl);
 
             #endregion
 
             #region | NiceHash api |
 
-            //APIWrapper.Initialize(Properties.Settings.Default.NiceApiId, Properties.Settings.Default.NiceApiKey);
-            //APIWrapper.GetMyOrders(0, (byte)CurrentAlgo).ForEach(o =>
-            //{
-            //    MyOrders.Add(new Order(o.ID, (decimal)o.Price, (decimal)o.SpeedLimit, (decimal)o.Speed, o.Workers, o.OrderType, o.Alive ? 0 : 1, ServerEnum.Europe));
-            //});
+            APIWrapper.Initialize(Properties.Settings.Default.NiceApiId, Properties.Settings.Default.NiceApiKey);
+            APIWrapper.GetMyOrders(0, (byte)CurrentAlgo).ForEach(o =>
+            {
+                MyOrders.Add(new Order(o.ID, (decimal)o.Price, (decimal)o.SpeedLimit, (decimal)o.Speed, o.Workers, o.OrderType, o.Alive ? 0 : 1, ServerEnum.Europe));
+            });
+            APIWrapper.GetMyOrders(1, (byte)CurrentAlgo).ForEach(o =>
+            {
+                MyOrders.Add(new Order(o.ID, (decimal)o.Price, (decimal)o.SpeedLimit, (decimal)o.Speed, o.Workers, o.OrderType, o.Alive ? 0 : 1, ServerEnum.Usa));
+            });
 
             #endregion
 
@@ -126,10 +155,10 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         }
 
-        private void GetLastBlocksFromPool(SuprNovaApi poolApiInstance, IList<BlockInfo> blocks)
+        private void GetLastBlocksFromPool(MiningPortalApi miningPortalApiInstance, IList<BlockInfo> blocks)
         {
-            poolApiInstance.RowOfBlockParsed += (sender, block) => { };
-            poolApiInstance.NewBlockFounded += (sender, block) =>
+            miningPortalApiInstance.RowOfBlockParsed += (sender, block) => { };
+            miningPortalApiInstance.NewBlockFounded += (sender, block) =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -138,13 +167,58 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     MaxDateTimeOfBlock = new DateTime(Math.Max(MaxDateTimeOfBlock.Ticks, block.Created.Ticks));
                 });
             };
-            poolApiInstance.BlockUpdated += (sender, block) =>
+            miningPortalApiInstance.BlockUpdated += (sender, block) =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     var updatedBlock = blocks.First(b => b.Id == block.Id);
                     var index = blocks.IndexOf(updatedBlock);
                     blocks[index].Percent = block.Percent;
+                });
+            };
+
+            miningPortalApiInstance.DifficultyChanged += (sender, dashboardResult) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    DashboardResults.Add(dashboardResult);
+
+                    CurrentDifficulty = dashboardResult.Difficulty;
+                    MinDifficulity = DashboardResults.OrderBy(x => x.Difficulty).FirstOrDefault()?.Difficulty ?? 0;
+                    MaxDifficulity =
+                        DashboardResults.OrderByDescending(x => x.Difficulty).FirstOrDefault()?.Difficulty ?? 0;
+
+                    //MarketLogger.Information($"{DateTime.Now.TimeOfDay:g} DiffChanged {dashboardResult.Difficulty}");
+                });
+            };
+
+            miningPortalApiInstance.PoolHashRateChanged += (sender, dashboardResult) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (dashboardResult.Host.Equals(LbrySuprnovaUrl))
+                        HashRates[1].Add(dashboardResult);
+                    else if (dashboardResult.Host.Equals(LbryCoinmineUrl))
+                        HashRates[2].Add(dashboardResult);
+
+                    this.RaisePropertyChanged(vm => vm.HashRates);
+                });
+            };
+
+            miningPortalApiInstance.GlobalHashRateChanged += (sender, dashboardResult) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    HashRates[0].Add(dashboardResult);
+                    this.RaisePropertyChanged(vm => vm.HashRates);
+                });
+            };
+
+            miningPortalApiInstance.RoundProgressChanged += (sender, dashBoardResult) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    //MarketLogger.Information($"{DateTime.Now.TimeOfDay:g} {dashBoardResult.Host} {dashBoardResult.RoundProgress}");
                 });
             };
         }
@@ -155,7 +229,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
         {
             _timerCounter++;
 
-            var result = HandlerClass.HandleOrder(CurrentCoin);
+            var result = HandlerClass.HandleOrder(CurrentCoin, CurrentDifficulty);
 
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -189,5 +263,38 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             //order.CopyProperties(orderChanged);
         }
+
+        public DateTime DoJump(Order order)
+        {
+            var myOrderForJump = MyOrders.OrderByDescending(o => o.Price).FirstOrDefault(o => o.Server == order.Server);
+            var newPrice = order.Price + 0.0001m;
+
+            if (myOrderForJump == null 
+                || myOrderForJump.Price >= newPrice 
+                || (decimal)WhattomineResult.MaxPrice24 < newPrice
+                || Math.Abs((LastOrderJumpDateTime - DateTime.Now).TotalMilliseconds) < 1000)
+                return DateTime.Now;
+
+            MarketLogger.Information($"{order.Server} Jump my order {myOrderForJump.Id} {myOrderForJump.Price} jump to:{newPrice}");
+
+            LastOrderJumpDateTime = DateTime.Now;
+
+            //Task.Factory.StartNew(() => -1/*APIWrapper.OrderSetPrice(myOrderForJump.Server == ServerEnum.Europe ? 0 : 1, (int)CurrentAlgo, myOrderForJump.Id, newPrice)*/ )
+            Task.Factory.StartNew(() => APIWrapper.OrderSetPrice(myOrderForJump.Server == ServerEnum.Europe ? 0 : 1, (int)CurrentAlgo, myOrderForJump.Id, (double)newPrice))
+                .ContinueWith(t =>
+                {
+                    var priceResult = t.Result;
+
+                    if (priceResult == -1)
+                        MarketLogger.Error($"{DateTime.Now} server:{order.Server} id:{myOrderForJump.Id} price NOT changed!");
+                    else
+                        MarketLogger.Information($"{DateTime.Now} server:{order.Server} id:{myOrderForJump.Id} price changed, new price:{priceResult}");
+
+                });
+
+            return LastOrderJumpDateTime;
+        }
+
+        public DateTime LastOrderJumpDateTime { get; set; }
     }
 }

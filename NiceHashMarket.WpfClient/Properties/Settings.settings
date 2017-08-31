@@ -6,7 +6,19 @@
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
     <Setting Name="NiceApiId" Type="System.String" Scope="User">
-      <Value Profile="(Default)">xxxx-sample</Value>
+      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
+    </Setting>
+    <Setting Name="LbrySuprnovaApiKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
+    </Setting>
+    <Setting Name="LbrySuprnovaUserId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
+    </Setting>
+    <Setting Name="LbryCoinMineApiKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
+    </Setting>
+    <Setting Name="LbryCoinMineUserId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
   </Settings>
 </SettingsFile>

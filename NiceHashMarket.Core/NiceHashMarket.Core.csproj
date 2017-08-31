@@ -54,10 +54,11 @@
     <Compile Include="Algorithms.cs" />
     <Compile Include="ApiClient.cs" />
     <Compile Include="DataStorage.cs" />
+    <Compile Include="DashboardPoolResult.cs" />
     <Compile Include="NiceBindingList.cs" />
     <Compile Include="OrdersStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SuprNovaApi.cs" />
+    <Compile Include="MiningPortalApi.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NiceHashMarket.Core.Helpers\NiceHashMarket.Core.Helpers.csproj">
@@ -67,6 +68,10 @@
     <ProjectReference Include="..\NiceHashMarket.Core.Interfaces\NiceHashMarket.Core.Interfaces.csproj">
       <Project>{7F2A4C8D-9DC1-48A0-84FD-0D365191A04D}</Project>
       <Name>NiceHashMarket.Core.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Logger\NiceHashMarket.Logger.csproj">
+      <Project>{EC5235B5-D2B2-4883-B0E8-4A1532B04784}</Project>
+      <Name>NiceHashMarket.Logger</Name>
     </ProjectReference>
     <ProjectReference Include="..\NiceHashMarket.Model.Enums\NiceHashMarket.Model.Enums.csproj">
       <Project>{4291B820-6118-46BC-A0E7-359D2CAA9D9D}</Project>

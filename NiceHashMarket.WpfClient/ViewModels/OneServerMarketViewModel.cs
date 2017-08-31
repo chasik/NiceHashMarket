@@ -4,8 +4,10 @@ using System.Linq;
 using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
+using DevExpress.Mvvm.POCO;
 using NiceHashMarket.Core;
 using NiceHashMarket.Core.Helpers;
+using NiceHashMarket.Logger;
 using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
@@ -16,12 +18,20 @@ namespace NiceHashMarket.WpfClient.ViewModels
     [POCOViewModel]
     public class OneServerMarketViewModel : ISupportParentViewModel, ISupportParameter
     {
+        private DateTime _lastJumpOnServerDateTime;
         public virtual ServerEnum Server { get; set; }
         public virtual NiceBindingList<Order> Orders { get; set; }
 
         public virtual object Parameter { get; set; }
 
         public virtual object ParentViewModel { get; set; }
+
+        public virtual Order OrderUpJumpLevel { get; set; }
+        public virtual NiceBindingList<Order> JumpedOrders { get; set; } = new NiceBindingList<Order>();
+
+        public virtual bool CatchUp { get; set; }
+        public virtual decimal CatchUpMaxPrice { get; set; }
+
 
         protected void OnParameterChanged()
         {
@@ -94,7 +104,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     if (orderChanged == null)
                     {
                         Orders.Add((Order)orderNewIndex.Clone());
-                        return;
+                        break;
                     }
 
                     orderChanged.History.AddValue(e.PropertyDescriptor.Name, orderChanged, orderNewIndex);
@@ -110,6 +120,53 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            CalcLevelForJump();
+        }
+
+        private void CalcLevelForJump()
+        {
+            OrderUpJumpLevel = null;
+            JumpedOrders.Clear();
+            var speedLimit = 0.1m;
+            var workersLimit = 800;
+            var speedSumm = 0m;
+            var workersSumm = 0;
+
+            Orders.Where(o => o.Workers > 0
+                && o.Active && o.Type == OrderTypeEnum.Standart
+                && (ParentViewModel as IHaveMyOrders == null || ((IHaveMyOrders)ParentViewModel).MyOrders.All(myOrder => myOrder.Id != o.Id)))
+                .OrderBy(o => o.Price).ForEach(o =>
+                {
+                    if (OrderUpJumpLevel != null)
+                        return;
+
+                    JumpedOrders.Add(o);
+
+                    speedSumm += o.Speed;
+                    workersSumm += o.Workers;
+
+                    if (/*speedSumm > speedLimit || */workersSumm > workersLimit)
+                        OrderUpJumpLevel = o;
+                });
+
+            this.RaisePropertyChanged(vm => vm.JumpedOrders);
+
+            if (OrderUpJumpLevel == null || Math.Abs((_lastJumpOnServerDateTime - DateTime.Now).TotalMilliseconds) < 100)
+                return;
+
+            //MarketLogger.Information(
+            //    $"OneServerMarketViewModel JumpedOrders.Count:{JumpedOrders.Count} {Server} JumpTo OrderId: {OrderUpJumpLevel.Id} OrderPrice:{OrderUpJumpLevel.Price} speedSumBelow:{speedSumm}");
+
+            if (CatchUp)
+                DoJump(OrderUpJumpLevel);
+            else
+                _lastJumpOnServerDateTime = DateTime.Now;
+        }
+
+        private void DoJump(Order order)
+        {
+            _lastJumpOnServerDateTime = (ParentViewModel as ICanJump)?.DoJump(order) ?? DateTime.Now;
         }
     }
 }

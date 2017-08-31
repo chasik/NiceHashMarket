@@ -18,273 +18,307 @@
 
     <UserControl.Resources>
         <converters:HistoryCollectionConverter x:Key="HistoryCollectionConverter" />
+        <converters:DetectMyOrderConverter x:Key="DetectMyOrderConverter" />
     </UserControl.Resources>
-    
-    
-    <dxg:GridControl AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
-                     SelectionMode="Row"
-                     ItemsSource="{Binding Orders}">
-        <dxg:GridControl.Columns>
-            <dxg:GridColumn FieldName="Type" SortOrder="Ascending" SortIndex="1" Visible="False"/>
-            <dxg:GridColumn FieldName="Active" SortOrder="Descending" SortIndex="2" Visible="False"/>
-            <dxg:GridColumn FieldName="Id" Width="60">
-                <dxg:GridColumn.CellTemplate>
-                    <DataTemplate>
-                        <Border BorderThickness="0,0,0,2">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="BorderBrush" Value="Transparent" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static enums:OrderTypeEnum.Fixed}">
-                                            <Setter Property="BorderBrush" Value="LightSlateGray" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=RowData.Row.Active}" Value="False">
-                                            <Setter Property="BorderBrush" Value="OrangeRed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center"
-                                       Text="{Binding Path=RowData.Row.Id, Mode=OneWay}" />
-                        </Border>
-                    </DataTemplate>
-                </dxg:GridColumn.CellTemplate>
-            </dxg:GridColumn>
-            <dxg:GridColumn FieldName="PriceChanged" Width="4" SortOrder="Descending" SortIndex="4" Visible="False"/>
-            <dxg:GridColumn FieldName="Price" Width="50" SortOrder="Descending" SortIndex="3">
-                <dxg:GridColumn.EditSettings>
-                    <dxe:TextEditSettings DisplayFormat="F4" />
-                </dxg:GridColumn.EditSettings>
-                <dxg:GridColumn.CellTemplate>
-                    <DataTemplate>
-                        <Border BorderThickness="0,0,0,2">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="BorderBrush" Value="Transparent" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static enums:OrderTypeEnum.Fixed}">
-                                            <Setter Property="BorderBrush" Value="LightSlateGray" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Path=RowData.Row.Active}" Value="False">
-                                            <Setter Property="BorderBrush" Value="OrangeRed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <TextBlock TextAlignment="Right" VerticalAlignment="Center"
-                                       Text="{Binding Path=RowData.Row.Price, Mode=OneWay, StringFormat=F4}" />
-                        </Border>
-                    </DataTemplate>
-                </dxg:GridColumn.CellTemplate>
-            </dxg:GridColumn>
 
-            <dxg:GridColumn FieldName="DeltaPrice" Header="+/-" AllowEditing="False" Width="36">
-                <dxg:GridColumn.CellTemplate>
-                    <DataTemplate>
-                        <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
-                                   VerticalAlignment="Center" Margin="4,0"
-                                   Text="{Binding Path=RowData.Row.DeltaPrice, Mode=OneWay}" />
-                    </DataTemplate>
-                </dxg:GridColumn.CellTemplate>
-            </dxg:GridColumn>
-            <dxg:GridColumn FieldName="Amount" Width="50">
-                <dxg:GridColumn.EditSettings>
-                    <dxe:TextEditSettings DisplayFormat="F2"/>
-                </dxg:GridColumn.EditSettings>
-            </dxg:GridColumn>
-            <dxg:GridColumn FieldName="DeltaPercentAmount" Header="+/- %" AllowEditing="False" Width="36">
-                <dxg:GridColumn.CellTemplate>
-                    <DataTemplate>
-                        <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
-                                   VerticalAlignment="Center" Margin="4,0"
-                                   Text="{Binding Path=RowData.Row.DeltaPercentAmount, Mode=OneWay}" />
-                    </DataTemplate>
-                </dxg:GridColumn.CellTemplate>
-            </dxg:GridColumn>
-            <dxg:GridColumn FieldName="Workers" Width="50" />
-            <dxg:GridColumn FieldName="DeltaPercentWorkers" Header="+/- %" AllowEditing="False" Width="36">
-                <dxg:GridColumn.CellTemplate>
-                    <DataTemplate>
-                        <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
-                                   VerticalAlignment="Center" Margin="4,0"
-                                   Text="{Binding Path=RowData.Row.DeltaPercentWorkers, Mode=OneWay}" />
-                    </DataTemplate>
-                </dxg:GridColumn.CellTemplate>
-            </dxg:GridColumn>
-            <dxg:GridColumn FieldName="Speed" Width="50">
-                <dxg:GridColumn.EditSettings>
-                    <dxe:TextEditSettings DisplayFormat="F4"/>
-                </dxg:GridColumn.EditSettings>
-            </dxg:GridColumn>
-            <dxg:GridColumn FieldName="DeltaPercentSpeed" Header="+/- %" AllowEditing="False" Width="36">
-                <dxg:GridColumn.CellTemplate>
-                    <DataTemplate>
-                        <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
-                                   VerticalAlignment="Center" Margin="4,0"
-                                   Text="{Binding Path=RowData.Row.DeltaPercentSpeed, Mode=OneWay}"/>
-                    </DataTemplate>
-                </dxg:GridColumn.CellTemplate>
-            </dxg:GridColumn>
-        </dxg:GridControl.Columns>
-        <dxg:GridControl.View>
-            <dxg:TableView AllowPerPixelScrolling="True" ShowTotalSummary="False" 
-                           AllowScrollToFocusedRow="False" ShowIndicator="False" ShowGroupPanel="False"
-                           NavigationStyle="Row" AnimateConditionalFormattingTransition="True"
-                           AllowConditionalFormattingMenu="True" AllowDataUpdateFormatConditionMenu="True">
-                <dxg:TableView.RowStyle>
-                    <Style TargetType="{x:Type dxg:RowControl}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
-                                <Setter Property="Background" Value="#5500F500" />
-                            </DataTrigger>
-                            <Trigger Property="dxg:GridViewBase.IsFocusedRow" Value="True">
-                                <Setter Property="Background" Value="#5500F500" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </dxg:TableView.RowStyle>
-                <dxg:TableView.CellStyle>
-                    <Style BasedOn="{StaticResource {dxgt:GridRowThemeKey ResourceKey=LightweightCellStyle}}" 
-                           TargetType="{x:Type dxg:LightweightCellEditor}">
-                        <Setter Property="Height" Value="19"/>
-                        <Setter Property="FontSize" Value="11"/>
-                        <Setter Property="FontFamily" Value="Arial"/>
-                        <Setter Property="Padding" Value="0" />
-                        <Setter Property="Margin" Value="0" />
-                    </Style>
-                </dxg:TableView.CellStyle>
-                <dxg:TableView.RowDetailsTemplateSelector>
-                    <templateSelectors:OrderDetailTemplateSelector>
-                        <templateSelectors:OrderDetailTemplateSelector.DefaultTemplate>
-                            <DataTemplate>
-                                <dxg:RowDetailContainerControl Content="{Binding}">
-                                    <dxg:RowDetailContainerControl.Template>
-                                        <ControlTemplate>
-                                            <Border BorderThickness="0,0,0,2" BorderBrush="Red" Padding="2" Background="WhiteSmoke"
-                                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="58" />
-                                                        <ColumnDefinition Width="86" />
-                                                        <ColumnDefinition Width="86" />
-                                                        <ColumnDefinition Width="86" />
-                                                        <ColumnDefinition Width="86" />
-                                                    </Grid.ColumnDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-                                                    <dxe:SparklineEdit Grid.Row="0" Grid.Column="1" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
-                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=1}">
-                                                        <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red" />
-                                                        </dxe:SparklineEdit.StyleSettings>
-                                                        <dxe:SparklineEdit.PointArgumentRange>
-                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
-                                                        </dxe:SparklineEdit.PointArgumentRange>
-                                                    </dxe:SparklineEdit>
-                                                    <dxe:SparklineEdit Grid.Row="1" Grid.Column="1" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
-                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=2}">
-                                                        <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
-                                                        </dxe:SparklineEdit.StyleSettings>
-                                                        <dxe:SparklineEdit.PointArgumentRange>
-                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
-                                                        </dxe:SparklineEdit.PointArgumentRange>
-                                                    </dxe:SparklineEdit>
+        <WrapPanel Orientation="Horizontal">
+            <TextBlock Text="Догнать" />
+            <CheckBox IsChecked="{Binding CatchUp}" Margin="0,0,20,0" />
+            <TextBlock Text="Максимальная цена:" />
+            <TextBox Text="{Binding CatchUpMaxPrice}" Margin="0,0,20,0" />
+            <TextBlock Text="Jump to:" />
+            <TextBox Text="{Binding OrderUpJumpLevel.Price}" Margin="0,0,20,0" />
+        </WrapPanel>
+        
+        <dxg:GridControl Grid.Row="1"  SelectionMode="Row"
+                         AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
+                         ItemsSource="{Binding Orders}">
+            <dxg:GridControl.Columns>
+                <dxg:GridColumn FieldName="Type" SortOrder="Ascending" SortIndex="1" Visible="False"/>
+                <dxg:GridColumn FieldName="Active" SortOrder="Descending" SortIndex="2" Visible="False"/>
+                <dxg:GridColumn FieldName="Id" Width="60">
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,0,2">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static enums:OrderTypeEnum.Fixed}">
+                                                <Setter Property="BorderBrush" Value="LightSlateGray" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Active}" Value="False">
+                                                <Setter Property="BorderBrush" Value="OrangeRed" />
+                                            </DataTrigger>
+                                            <DataTrigger Value="True">
+                                                <DataTrigger.Binding>
+                                                    <MultiBinding Converter="{StaticResource DetectMyOrderConverter}">
+                                                        <Binding Path="RowData.Row.Id" />
+                                                        <Binding Path="DataContext.ParentViewModel.MyOrders" RelativeSource="{RelativeSource AncestorType=UserControl, Mode=FindAncestor}" />
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="Background" Value="Red" />
+                                            </DataTrigger>
+                                            <DataTrigger Value="True">
+                                                <DataTrigger.Binding>
+                                                    <MultiBinding Converter="{StaticResource DetectMyOrderConverter}">
+                                                        <Binding Path="RowData.Row.Id" />
+                                                        <Binding Path="DataContext.JumpedOrders" RelativeSource="{RelativeSource AncestorType=UserControl, Mode=FindAncestor}" />
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="Background" Value="BlueViolet" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock TextAlignment="Center" VerticalAlignment="Center"
+                                           Text="{Binding Path=RowData.Row.Id, Mode=OneWay}" />
+                            </Border>
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="PriceChanged" Width="4" SortOrder="Descending" SortIndex="4" Visible="False"/>
+                <dxg:GridColumn FieldName="Price" Width="50" SortOrder="Descending" SortIndex="3">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:TextEditSettings DisplayFormat="F4" />
+                    </dxg:GridColumn.EditSettings>
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,0,2">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Type}" Value="{x:Static enums:OrderTypeEnum.Fixed}">
+                                                <Setter Property="BorderBrush" Value="LightSlateGray" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=RowData.Row.Active}" Value="False">
+                                                <Setter Property="BorderBrush" Value="OrangeRed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock TextAlignment="Right" VerticalAlignment="Center"
+                                           Text="{Binding Path=RowData.Row.Price, Mode=OneWay, StringFormat=F4}" />
+                            </Border>
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
+                </dxg:GridColumn>
+
+                <dxg:GridColumn FieldName="DeltaPrice" Header="+/-" AllowEditing="False" Width="36">
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPrice, Mode=OneWay}" />
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="Amount" Width="50">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:TextEditSettings DisplayFormat="F2"/>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="DeltaPercentAmount" Header="+/- %" AllowEditing="False" Width="36">
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPercentAmount, Mode=OneWay}" />
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="Workers" Width="50" />
+                <dxg:GridColumn FieldName="DeltaPercentWorkers" Header="+/- %" AllowEditing="False" Width="36">
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPercentWorkers, Mode=OneWay}" />
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="Speed" Width="50">
+                    <dxg:GridColumn.EditSettings>
+                        <dxe:TextEditSettings DisplayFormat="F4"/>
+                    </dxg:GridColumn.EditSettings>
+                </dxg:GridColumn>
+                <dxg:GridColumn FieldName="DeltaPercentSpeed" Header="+/- %" AllowEditing="False" Width="36">
+                    <dxg:GridColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock FontSize="9" FontWeight="Light" TextAlignment="Right" Background="Transparent"
+                                       VerticalAlignment="Center" Margin="4,0"
+                                       Text="{Binding Path=RowData.Row.DeltaPercentSpeed, Mode=OneWay}"/>
+                        </DataTemplate>
+                    </dxg:GridColumn.CellTemplate>
+                </dxg:GridColumn>
+            </dxg:GridControl.Columns>
+            <dxg:GridControl.View>
+                <dxg:TableView AllowPerPixelScrolling="True" ShowTotalSummary="False" 
+                               AllowScrollToFocusedRow="False" ShowIndicator="False" ShowGroupPanel="False"
+                               NavigationStyle="Row" AnimateConditionalFormattingTransition="True"
+                               AllowConditionalFormattingMenu="True" AllowDataUpdateFormatConditionMenu="True">
+                    <dxg:TableView.RowStyle>
+                        <Style TargetType="{x:Type dxg:RowControl}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=IsSelected}" Value="True">
+                                    <Setter Property="Background" Value="#5500F500" />
+                                </DataTrigger>
+                                <Trigger Property="dxg:GridViewBase.IsFocusedRow" Value="True">
+                                    <Setter Property="Background" Value="#5500F500" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </dxg:TableView.RowStyle>
+                    <dxg:TableView.CellStyle>
+                        <Style BasedOn="{StaticResource {dxgt:GridRowThemeKey ResourceKey=LightweightCellStyle}}" 
+                               TargetType="{x:Type dxg:LightweightCellEditor}">
+                            <Setter Property="Height" Value="19"/>
+                            <Setter Property="FontSize" Value="11"/>
+                            <Setter Property="FontFamily" Value="Arial"/>
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </dxg:TableView.CellStyle>
+                    <dxg:TableView.RowDetailsTemplateSelector>
+                        <templateSelectors:OrderDetailTemplateSelector>
+                            <templateSelectors:OrderDetailTemplateSelector.DefaultTemplate>
+                                <DataTemplate>
+                                    <dxg:RowDetailContainerControl Content="{Binding}">
+                                        <dxg:RowDetailContainerControl.Template>
+                                            <ControlTemplate>
+                                                <Border BorderThickness="0,0,0,2" BorderBrush="Red" Padding="2" Background="WhiteSmoke"
+                                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="58" />
+                                                            <ColumnDefinition Width="86" />
+                                                            <ColumnDefinition Width="86" />
+                                                            <ColumnDefinition Width="86" />
+                                                            <ColumnDefinition Width="86" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <dxe:SparklineEdit Grid.Row="0" Grid.Column="1" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                           EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=1}">
+                                                            <dxe:SparklineEdit.StyleSettings>
+                                                                <dxe:AreaSparklineStyleSettings NegativePointBrush="Red" />
+                                                            </dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:SparklineEdit.PointArgumentRange>
+                                                                <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                            </dxe:SparklineEdit.PointArgumentRange>
+                                                        </dxe:SparklineEdit>
+                                                        <dxe:SparklineEdit Grid.Row="1" Grid.Column="1" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                           EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=2}">
+                                                            <dxe:SparklineEdit.StyleSettings>
+                                                                <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                            </dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:SparklineEdit.PointArgumentRange>
+                                                                <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                            </dxe:SparklineEdit.PointArgumentRange>
+                                                        </dxe:SparklineEdit>
                                                     
                                                     
-                                                    <dxe:SparklineEdit Grid.Row="0" Grid.Column="2" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
-                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=3}">
-                                                        <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
-                                                        </dxe:SparklineEdit.StyleSettings>
-                                                        <dxe:SparklineEdit.PointArgumentRange>
-                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
-                                                        </dxe:SparklineEdit.PointArgumentRange>
-                                                    </dxe:SparklineEdit>
-                                                    <dxe:SparklineEdit Grid.Row="1" Grid.Column="2" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
-                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=4}">
-                                                        <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
-                                                        </dxe:SparklineEdit.StyleSettings>
-                                                        <dxe:SparklineEdit.PointArgumentRange>
-                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
-                                                        </dxe:SparklineEdit.PointArgumentRange>
-                                                    </dxe:SparklineEdit>
+                                                        <dxe:SparklineEdit Grid.Row="0" Grid.Column="2" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                           EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=3}">
+                                                            <dxe:SparklineEdit.StyleSettings>
+                                                                <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                            </dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:SparklineEdit.PointArgumentRange>
+                                                                <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                            </dxe:SparklineEdit.PointArgumentRange>
+                                                        </dxe:SparklineEdit>
+                                                        <dxe:SparklineEdit Grid.Row="1" Grid.Column="2" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                           EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=4}">
+                                                            <dxe:SparklineEdit.StyleSettings>
+                                                                <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                            </dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:SparklineEdit.PointArgumentRange>
+                                                                <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                            </dxe:SparklineEdit.PointArgumentRange>
+                                                        </dxe:SparklineEdit>
                                                     
                                                     
-                                                    <dxe:SparklineEdit Grid.Row="0" Grid.Column="3" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
-                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=5}">
-                                                        <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
-                                                        </dxe:SparklineEdit.StyleSettings>
-                                                        <dxe:SparklineEdit.PointArgumentRange>
-                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
-                                                        </dxe:SparklineEdit.PointArgumentRange>
-                                                    </dxe:SparklineEdit>
-                                                    <dxe:SparklineEdit Grid.Row="1" Grid.Column="3" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
-                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=6}">
-                                                        <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
-                                                        </dxe:SparklineEdit.StyleSettings>
-                                                        <dxe:SparklineEdit.PointArgumentRange>
-                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
-                                                        </dxe:SparklineEdit.PointArgumentRange>
-                                                    </dxe:SparklineEdit>
+                                                        <dxe:SparklineEdit Grid.Row="0" Grid.Column="3" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                           EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=5}">
+                                                            <dxe:SparklineEdit.StyleSettings>
+                                                                <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                            </dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:SparklineEdit.PointArgumentRange>
+                                                                <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                            </dxe:SparklineEdit.PointArgumentRange>
+                                                        </dxe:SparklineEdit>
+                                                        <dxe:SparklineEdit Grid.Row="1" Grid.Column="3" Margin="3" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                           EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=6}">
+                                                            <dxe:SparklineEdit.StyleSettings>
+                                                                <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                            </dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:SparklineEdit.PointArgumentRange>
+                                                                <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                            </dxe:SparklineEdit.PointArgumentRange>
+                                                        </dxe:SparklineEdit>
                                                     
                                                     
-                                                    <dxe:SparklineEdit Grid.Row="0" Grid.Column="4" Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue"
-                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=7}">
-                                                        <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
-                                                        </dxe:SparklineEdit.StyleSettings>
-                                                        <dxe:SparklineEdit.PointArgumentRange>
-                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
-                                                        </dxe:SparklineEdit.PointArgumentRange>
-                                                    </dxe:SparklineEdit>
-                                                    <dxe:SparklineEdit Grid.Row="1" Grid.Column="4" Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue"
-                                                                       EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=8}">
-                                                        <dxe:SparklineEdit.StyleSettings>
-                                                            <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
-                                                        </dxe:SparklineEdit.StyleSettings>
-                                                        <dxe:SparklineEdit.PointArgumentRange>
-                                                            <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
-                                                        </dxe:SparklineEdit.PointArgumentRange>
-                                                    </dxe:SparklineEdit>
+                                                        <dxe:SparklineEdit Grid.Row="0" Grid.Column="4" Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                           EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=7}">
+                                                            <dxe:SparklineEdit.StyleSettings>
+                                                                <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                            </dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:SparklineEdit.PointArgumentRange>
+                                                                <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                            </dxe:SparklineEdit.PointArgumentRange>
+                                                        </dxe:SparklineEdit>
+                                                        <dxe:SparklineEdit Grid.Row="1" Grid.Column="4" Margin="0,2,0,2" PointArgumentMember="Created" PointValueMember="NewValue"
+                                                                           EditValue="{Binding Row.History, Converter={StaticResource HistoryCollectionConverter}, ConverterParameter=8}">
+                                                            <dxe:SparklineEdit.StyleSettings>
+                                                                <dxe:AreaSparklineStyleSettings NegativePointBrush="Red"/>
+                                                            </dxe:SparklineEdit.StyleSettings>
+                                                            <dxe:SparklineEdit.PointArgumentRange>
+                                                                <dxe:Range Auto="False" Limit1="{Binding Row.LastUpdateBackTenMinutes}" Limit2="{Binding Row.LastUpdate}"/>
+                                                            </dxe:SparklineEdit.PointArgumentRange>
+                                                        </dxe:SparklineEdit>
 
 
-                                                </Grid>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </dxg:RowDetailContainerControl.Template>
-                                </dxg:RowDetailContainerControl>
-                            </DataTemplate>
-                        </templateSelectors:OrderDetailTemplateSelector.DefaultTemplate>
-                    </templateSelectors:OrderDetailTemplateSelector>
-                </dxg:TableView.RowDetailsTemplateSelector>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </dxg:RowDetailContainerControl.Template>
+                                    </dxg:RowDetailContainerControl>
+                                </DataTemplate>
+                            </templateSelectors:OrderDetailTemplateSelector.DefaultTemplate>
+                        </templateSelectors:OrderDetailTemplateSelector>
+                    </dxg:TableView.RowDetailsTemplateSelector>
 
-                <dxg:TableView.FormatConditions>
-                    <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase" />
-                    <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease" />
-                    <dxg:DataUpdateFormatCondition FieldName="Amount" Expression="[Amount]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase"/>
-                    <dxg:DataUpdateFormatCondition FieldName="Amount" Expression="[Amount]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease"/>
-                    <dxg:ColorScaleFormatCondition FieldName="Amount" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
-                    <dxg:ColorScaleFormatCondition FieldName="Workers" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
-                    <dxg:ColorScaleFormatCondition FieldName="Speed" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
+                    <dxg:TableView.FormatConditions>
+                        <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase" />
+                        <dxg:DataUpdateFormatCondition FieldName="Price" Expression="[Price]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease" />
+                        <dxg:DataUpdateFormatCondition FieldName="Amount" Expression="[Amount]" PredefinedFormatName="GreenFillWithDarkGreenText" Rule="Increase"/>
+                        <dxg:DataUpdateFormatCondition FieldName="Amount" Expression="[Amount]" PredefinedFormatName="LightRedFillWithDarkRedText" Rule="Decrease"/>
+                        <dxg:ColorScaleFormatCondition FieldName="Amount" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
+                        <dxg:ColorScaleFormatCondition FieldName="Workers" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
+                        <dxg:ColorScaleFormatCondition FieldName="Speed" PredefinedFormatName="GreenWhiteColorScale" AnimateTransition="False" />
 
-                    <dxg:DataBarFormatCondition FieldName="DeltaPrice" PredefinedFormatName="GreenGradientDataBar" />
-                    <dxg:DataBarFormatCondition FieldName="DeltaPercentAmount" PredefinedFormatName="GreenGradientDataBar"  MinValue="-100" MaxValue="100" />
-                    <dxg:DataBarFormatCondition FieldName="DeltaPercentWorkers" PredefinedFormatName="GreenGradientDataBar" MinValue="-100" MaxValue="100" />
-                    <dxg:DataBarFormatCondition FieldName="DeltaPercentSpeed" PredefinedFormatName="GreenGradientDataBar"  MinValue="-100" MaxValue="100" />
-                </dxg:TableView.FormatConditions>
-            </dxg:TableView>
+                        <dxg:DataBarFormatCondition FieldName="DeltaPrice" PredefinedFormatName="GreenGradientDataBar" />
+                        <dxg:DataBarFormatCondition FieldName="DeltaPercentAmount" PredefinedFormatName="GreenGradientDataBar"  MinValue="-100" MaxValue="100" />
+                        <dxg:DataBarFormatCondition FieldName="DeltaPercentWorkers" PredefinedFormatName="GreenGradientDataBar" MinValue="-100" MaxValue="100" />
+                        <dxg:DataBarFormatCondition FieldName="DeltaPercentSpeed" PredefinedFormatName="GreenGradientDataBar"  MinValue="-100" MaxValue="100" />
+                    </dxg:TableView.FormatConditions>
+                </dxg:TableView>
 
-        </dxg:GridControl.View>
-    </dxg:GridControl>
+            </dxg:GridControl.View>
+        </dxg:GridControl>
 
+    </Grid>
 </UserControl>
 
 

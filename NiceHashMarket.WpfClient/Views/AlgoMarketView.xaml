@@ -48,63 +48,114 @@
                     <TextBlock HorizontalAlignment="Right" Foreground="Azure"
                                Text="{Binding LastBlocksSuprNova, Converter={converters:LastBlockCreatedValueConverter}, StringFormat=\{0:hh\\:mm\\:ss\}}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Background="Magenta" HorizontalAlignment="Right" Width="290">
-                    <TextBlock HorizontalAlignment="Left" Foreground="Azure"
+                <StackPanel Orientation="Horizontal" Background="Yellow" HorizontalAlignment="Right" Width="290">
+                    <TextBlock HorizontalAlignment="Left" Foreground="DarkBlue"
                                Text="{Binding LastBlocksCoinMinePl, Converter={converters:LastBlockPercentValueConverter}, StringFormat=CoinMain {0}}" Margin="20,0" />
-                    <TextBlock HorizontalAlignment="Right" Foreground="Azure" 
+                    <TextBlock HorizontalAlignment="Right" Foreground="DarkBlue" 
                                Text="{Binding LastBlocksCoinMinePl, Converter={converters:LastBlockCreatedValueConverter}, StringFormat=\{0:hh\\:mm\\:ss\}}" />
                 </StackPanel>
             </StackPanel>
 
-            <dxc:ChartControl Height="110" Margin="0,0,0,0" DockPanel.Dock="Left">
+            <dxc:ChartControl Height="200" Margin="0,0,0,0" DockPanel.Dock="Left">
                 <dxc:ChartControl.Palette>
                     <dxc:CustomPalette>
                         <dxc:CustomPalette.Colors>
                             <Color>DodgerBlue</Color>
-                            <Color>Magenta</Color>
+                            <Color>Yellow</Color>
+                            <Color>LimeGreen</Color>
                         </dxc:CustomPalette.Colors>
                     </dxc:CustomPalette>
                 </dxc:ChartControl.Palette>
-                <dxc:XYDiagram2D Margin="-15,-20,-20,-15">
+                <dxc:XYDiagram2D Margin="-15,-20,-20,-15" EnableAxisXNavigation="True">
+
+                    <dxc:XYDiagram2D.PanesPanel>
+                        <ItemsPanelTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="10*" />
+                                    <RowDefinition Height="10*" />
+                                    <RowDefinition Height="1*" />
+                                </Grid.RowDefinitions>
+                            </Grid>
+                        </ItemsPanelTemplate>
+                    </dxc:XYDiagram2D.PanesPanel>
+                    <dxc:XYDiagram2D.DefaultPane>
+                        <dxc:Pane x:Name="BlocksAndDifficultyPane" Grid.Row="0">
+                            <dxc:Pane.AxisXScrollBarOptions>
+                                <dxc:ScrollBarOptions Visible="False" />
+                            </dxc:Pane.AxisXScrollBarOptions>
+                        </dxc:Pane>
+                    </dxc:XYDiagram2D.DefaultPane>
+                    
+                    <dxc:XYDiagram2D.Panes>
+                        <dxc:Pane x:Name="HashRatesPane" Grid.Row="1">
+                            
+                        </dxc:Pane>
+                    </dxc:XYDiagram2D.Panes>
+
                     <dxc:XYDiagram2D.AxisX>
                         <dxc:AxisX2D>
                            <dxc:AxisX2D.DateTimeScaleOptions>
                                 <dxc:ContinuousDateTimeScaleOptions />
                             </dxc:AxisX2D.DateTimeScaleOptions>
                             <dxc:AxisX2D.WholeRange>
-                                <dxc:Range MinValue="{Binding MinDateTimeOfBlock}" MaxValue="{Binding MaxDateTimeOfBlock}"/>
+                                <dxc:Range MinValue="{Binding MinDateTimeOfBlock}" MaxValue="{Binding MaxDateTimeOfBlock}" />
                             </dxc:AxisX2D.WholeRange>
                         </dxc:AxisX2D>
                     </dxc:XYDiagram2D.AxisX>
-                    <!--<dxc:XYDiagram2D.AxisY>
-                        <dxc:AxisY2D Logarithmic="True" LogarithmicBase="10">
-                            <dxc:AxisY2D.VisualRange>
-                                <dxc:Range AutoSideMargins="True" />
-                            </dxc:AxisY2D.VisualRange>
-                        </dxc:AxisY2D>
-                    </dxc:XYDiagram2D.AxisY>-->
+                    <dxc:XYDiagram2D.SecondaryAxesY>
+                        <dxc:SecondaryAxisY2D x:Name="DifficulityAxisY2D">
+                            <dxc:SecondaryAxisY2D.WholeRange>
+                                <dxc:Range MinValue="{Binding MinDifficulity}" MaxValue="{Binding MaxDifficulity}" />
+                            </dxc:SecondaryAxisY2D.WholeRange>
+                        </dxc:SecondaryAxisY2D>
+                        <dxc:SecondaryAxisY2D x:Name="HashRatesAxisY2D" />
+                    </dxc:XYDiagram2D.SecondaryAxesY>
+                   
                     <dxc:XYDiagram2D.Series>
-                        <dxc:BarSideBySideSeries2D ArgumentDataMember="Created" ValueDataMember="Percent" LabelsVisibility="True"
+                        <dxc:BarSideBySideSeries2D ArgumentDataMember="Created" ValueDataMember="Percent" LabelsVisibility="False" 
                                                    DataSource="{Binding LastBlocksSuprNova}">
-                            <dxc:BarSideBySideSeries2D.Label>
-                                <dxc:SeriesLabel ResolveOverlappingMode="Default" ConnectorVisible="False" ConnectorThickness="1" Opacity="0.7" Indent="20"/>
-                            </dxc:BarSideBySideSeries2D.Label>
+                            <dxc:BarSideBySideSeries2D.Model>
+                                <dxc:SimpleBar2DModel />
+                            </dxc:BarSideBySideSeries2D.Model>
                         </dxc:BarSideBySideSeries2D>
-                        <dxc:BarSideBySideSeries2D ArgumentDataMember="Created" ValueDataMember="Percent" LabelsVisibility="True"
+                        <dxc:BarSideBySideSeries2D ArgumentDataMember="Created" ValueDataMember="Percent" LabelsVisibility="False"
                                                    DataSource="{Binding LastBlocksCoinMinePl}">
-                            <dxc:BarSideBySideSeries2D.Label>
-                                <dxc:SeriesLabel ResolveOverlappingMode="Default" ConnectorVisible="False" ConnectorThickness="1" Opacity="0.7" Indent="20"/>
-                            </dxc:BarSideBySideSeries2D.Label>
+                            <dxc:BarSideBySideSeries2D.Model>
+                                <dxc:SimpleBar2DModel />
+                            </dxc:BarSideBySideSeries2D.Model>
                         </dxc:BarSideBySideSeries2D>
+                        <dxc:LineStepSeries2D ArgumentDataMember="QueryDateTime" ValueDataMember="Difficulty" LabelsVisibility="True" 
+                                              dxc:XYDiagram2D.SeriesAxisY="{Binding ElementName=DifficulityAxisY2D}"
+                                              DataSource="{Binding DashboardResults}">
+                            <dxc:LineStepSeries2D.LineStyle>
+                                <dxc:LineStyle Thickness="3" />
+                            </dxc:LineStepSeries2D.LineStyle>
+                            <dxc:LineStepSeries2D.Label>
+                                <dxc:SeriesLabel ResolveOverlappingMode="HideOverlapped" ConnectorVisible="True" ConnectorThickness="1" Opacity="0.6" Indent="10"/>
+                            </dxc:LineStepSeries2D.Label>
+                        </dxc:LineStepSeries2D>
+                        <dxc:LineSeries2D DataSource="{Binding Path=HashRates[1]}" ArgumentDataMember="QueryDateTime" ValueDataMember="PoolHashRate" 
+                                          dxc:XYDiagram2D.SeriesAxisY="{Binding ElementName=HashRatesAxisY2D}"
+                                          dxc:XYDiagram2D.SeriesPane="{Binding Path=Panes[0], RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=dxc:XYDiagram2D}}">
+                        </dxc:LineSeries2D>
+                        <dxc:LineSeries2D DataSource="{Binding Path=HashRates[2]}" ArgumentDataMember="QueryDateTime" ValueDataMember="PoolHashRate" 
+                                          dxc:XYDiagram2D.SeriesAxisY="{Binding ElementName=HashRatesAxisY2D}"
+                                          dxc:XYDiagram2D.SeriesPane="{Binding Path=Panes[0], RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=dxc:XYDiagram2D}}">
+                        </dxc:LineSeries2D>
+                        <dxc:LineSeries2D DataSource="{Binding Path=HashRates[0]}" ArgumentDataMember="QueryDateTime" ValueDataMember="GlobalHashRate" 
+                                          dxc:XYDiagram2D.SeriesAxisY="{Binding ElementName=HashRatesAxisY2D}"
+                                          dxc:XYDiagram2D.SeriesPane="{Binding Path=Panes[0], RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=dxc:XYDiagram2D}}">
+                        </dxc:LineSeries2D>
                     </dxc:XYDiagram2D.Series>
                 </dxc:XYDiagram2D>
             </dxc:ChartControl>
         </DockPanel>
 
-        <views:OneServerMarketView Grid.Column="0"  Grid.Row="1" 
+        <views:OneServerMarketView Grid.Column="0" Grid.Row="1" 
                                    dxmvvm:ViewModelExtensions.Parameter="{x:Static enums:ServerEnum.Europe}"
                                    dxmvvm:ViewModelExtensions.ParentViewModel="{Binding DataContext,  RelativeSource={RelativeSource AncestorType=UserControl}}" />
-        <views:OneServerMarketView Grid.Column="2"  Grid.Row="1" 
+        <views:OneServerMarketView Grid.Column="2" Grid.Row="1" 
                                    dxmvvm:ViewModelExtensions.Parameter="{x:Static enums:ServerEnum.Usa}"
                                    dxmvvm:ViewModelExtensions.ParentViewModel="{Binding DataContext,  RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
@@ -140,6 +191,14 @@
         </DockPanel>
     </Grid>
 </UserControl>
+
+
+
+
+
+
+
+
 
 
 

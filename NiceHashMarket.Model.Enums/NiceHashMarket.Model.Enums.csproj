@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="AlgoNiceHashEnum.cs" />
     <Compile Include="CoinsWhatToMineEnum.cs" />
+    <Compile Include="MetricPrefixEnum.cs" />
     <Compile Include="OrderTypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerEnum.cs" />

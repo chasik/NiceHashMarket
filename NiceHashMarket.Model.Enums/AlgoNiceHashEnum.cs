@@ -30,6 +30,7 @@
         Pascal = 25,
         X11Gost = 26,
         Sia = 27,
-        Blake2S = 28
+        Blake2S = 28,
+        Skunk = 29
     }
 }

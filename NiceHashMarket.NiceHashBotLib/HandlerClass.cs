@@ -10,7 +10,7 @@ namespace NiceHashBotLib
 {
     public class HandlerClass
     {
-        public static WhattomineResult HandleOrder(CoinsWhatToMineEnum coin)
+        public static WhattomineResult HandleOrder(CoinsWhatToMineEnum coin, int outterDifficulty)
         {
             // Retreive JSON data from API server. Replace URL with your own API request URL.
             var jsonData = GetHTTPResponseInJSON($"http://www.whattomine.com/coins/{(byte)coin}.json");
@@ -27,7 +27,7 @@ namespace NiceHashBotLib
                 return new WhattomineResult();
             }
 
-            return new WhattomineResult(response);
+            return new WhattomineResult(response, outterDifficulty);
         }
 
         /// <summary>
@@ -111,13 +111,13 @@ namespace NiceHashBotLib
 
         }
 
-        public WhattomineResult(HandlerClass.WhattomineResponse response)
+        public WhattomineResult(HandlerClass.WhattomineResponse response, int outterDifficulty)
         {
-            MaxPrice = Math.Floor(CalcPriceByDifficulty(response.difficulty, response.exchange_rate, response.block_reward) * 10000) / 10000;
-            MaxPrice24 = Math.Floor(CalcPriceByDifficulty(response.difficulty24, response.exchange_rate24, response.block_reward24) * 10000) / 10000;
-
-            Difficulty = response.difficulty;
+            Difficulty = outterDifficulty == 0 ? response.difficulty : outterDifficulty;
             Difficulty24 = response.difficulty24;
+
+            MaxPrice = Math.Floor(CalcPriceByDifficulty(Difficulty, response.exchange_rate, response.block_reward) * 10000) / 10000;
+            MaxPrice24 = Math.Floor(CalcPriceByDifficulty(Difficulty24, response.exchange_rate24, response.block_reward24) * 10000) / 10000;
         }
 
         private static double CalcPriceByDifficulty(double difficulty, double exchangeRate, double blockReward)

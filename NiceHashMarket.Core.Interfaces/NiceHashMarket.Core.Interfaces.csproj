@@ -43,6 +43,7 @@
     <Compile Include="IHaveAlgorithms.cs" />
     <Compile Include="IMarketApi.cs" />
     <Compile Include="IMarketData.cs" />
+    <Compile Include="IPoolApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
