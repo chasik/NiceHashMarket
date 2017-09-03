@@ -30,10 +30,6 @@
         <WrapPanel Orientation="Horizontal">
             <TextBlock Text="Догнать" />
             <CheckBox IsChecked="{Binding CatchUp}" Margin="0,0,20,0" />
-            <TextBlock Text="Максимальная цена:" />
-            <TextBox Text="{Binding CatchUpMaxPrice}" Margin="0,0,20,0" />
-            <TextBlock Text="Jump to:" />
-            <TextBox Text="{Binding OrderUpJumpLevel.Price}" Margin="0,0,20,0" />
         </WrapPanel>
         
         <dxg:GridControl Grid.Row="1"  SelectionMode="Row"

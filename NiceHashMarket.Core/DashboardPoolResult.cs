@@ -52,7 +52,7 @@ namespace NiceHashMarket.Core
             }
             catch (Exception ex)
             {
-                MarketLogger.Error($"DashboardPoolResult {ex.Message}");
+                MarketLogger.Error($"DashboardPoolResult {ex.Message} {response.Content}");
                 return;
             }
 

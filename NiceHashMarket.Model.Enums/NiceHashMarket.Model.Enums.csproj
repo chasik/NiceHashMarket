@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlgoNiceHashEnum.cs" />
+    <Compile Include="PoolEnum.cs" />
     <Compile Include="CoinsWhatToMineEnum.cs" />
     <Compile Include="MetricPrefixEnum.cs" />
     <Compile Include="OrderTypeEnum.cs" />

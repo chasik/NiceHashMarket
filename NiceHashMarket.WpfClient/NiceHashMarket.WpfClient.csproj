@@ -73,6 +73,7 @@
     <Compile Include="Converters\LastBlockCreatedValueConverter.cs" />
     <Compile Include="Converters\LastBlockPercentValueConverter.cs" />
     <Compile Include="Converters\HistoryCollectionConverter.cs" />
+    <Compile Include="Interfaces\ICanAutoStart.cs" />
     <Compile Include="Interfaces\ICanJump.cs" />
     <Compile Include="Interfaces\IHaveMyOrders.cs" />
     <Compile Include="Interfaces\IHaveOrdersStorage.cs" />

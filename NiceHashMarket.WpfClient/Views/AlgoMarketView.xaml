@@ -54,6 +54,16 @@
                     <TextBlock HorizontalAlignment="Right" Foreground="DarkBlue" 
                                Text="{Binding LastBlocksCoinMinePl, Converter={converters:LastBlockCreatedValueConverter}, StringFormat=\{0:hh\\:mm\\:ss\}}" />
                 </StackPanel>
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Left" Background="DodgerBlue" HorizontalAlignment="Left">
+                        <TextBlock Foreground="Azure"
+                                   Text="{Binding ProgressSuprNova, StringFormat=Progress: {0} %}" Margin="20,10" />
+                    </StackPanel>
+                    <StackPanel DockPanel.Dock="Right" Background="Yellow" HorizontalAlignment="Right">
+                        <TextBlock Foreground="DarkBlue"
+                                   Text="{Binding ProgressCoinMinePl, StringFormat=Progress: {0} %}" Margin="20,10" />
+                    </StackPanel>
+                </DockPanel>
             </StackPanel>
 
             <dxc:ChartControl Height="200" Margin="0,0,0,0" DockPanel.Dock="Left">

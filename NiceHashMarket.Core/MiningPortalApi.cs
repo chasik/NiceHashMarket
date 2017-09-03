@@ -70,25 +70,25 @@ namespace NiceHashMarket.Core
 
                         LastQueryDateTime = t.Result.QueryDateTime;
 
-                        if (LastDifficulty != t.Result.Difficulty && t.Result.Difficulty != 1)
+                        if (LastDifficulty != t.Result.Difficulty && t.Result.Difficulty > 1)
                         {
                             OnDifficultyChanged(t.Result);
                             LastDifficulty = t.Result.Difficulty;
                         }
 
-                        if (LastPoolHashRate != t.Result.PoolHashRate)
+                        if (LastPoolHashRate != t.Result.PoolHashRate && t.Result.PoolHashRate > 1)
                         {
                             OnPoolHashRateChanged(t.Result);
                             LastPoolHashRate = t.Result.PoolHashRate;
                         }
 
-                        if (LastGlobalHashRate != t.Result.GlobalHashRate)
+                        if (LastGlobalHashRate != t.Result.GlobalHashRate && t.Result.GlobalHashRate > 1)
                         {
                             OnGlobalHashRateChanged(t.Result);
                             LastGlobalHashRate = t.Result.GlobalHashRate;
                         }
 
-                        if (LastRoundProgress != t.Result.RoundProgress)
+                        if (Math.Abs(LastRoundProgress - t.Result.RoundProgress) > 0.00000001)
                         {
                             OnRoundProgressChanged(t.Result);
                             LastRoundProgress = t.Result.RoundProgress;
@@ -115,7 +115,7 @@ namespace NiceHashMarket.Core
             }
             catch (Exception ex)
             {
-                MarketLogger.Error(ex, $"{ex.Message}");
+                MarketLogger.Error(ex, $"GetStatisticOfBlocks {ex.Message} {_restRequest}");
             }
 
             if (document == null)

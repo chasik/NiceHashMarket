@@ -30,8 +30,13 @@ namespace NiceHashMarket.WpfClient.ViewModels
         public virtual NiceBindingList<Order> JumpedOrders { get; set; } = new NiceBindingList<Order>();
 
         public virtual bool CatchUp { get; set; }
-        public virtual decimal CatchUpMaxPrice { get; set; }
 
+        public virtual bool AutoStartWhenDifficultyLessThan { get; set; }
+
+        protected virtual void OnAutoStartWhenDifficultyLessThanChanged()
+        {
+            CatchUp = true;
+        }
 
         protected void OnParameterChanged()
         {
@@ -58,6 +63,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 {
                     if (Orders.All(oo => o.Id != oo.Id)) Orders.Add((Order) o.Clone());
                 });
+
+            AutoStartWhenDifficultyLessThan = (ParentViewModel as ICanAutoStart).AutoStartWhenDifficultyLessThan;
         }
 
         private void OrdersStorage_AlgoChanging(DataStorage<Order> sender, IAlgo oldAlgo, IAlgo newAlgo)
@@ -110,6 +117,12 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     orderChanged.History.AddValue(e.PropertyDescriptor.Name, orderChanged, orderNewIndex);
 
                     orderNewIndex.CopyProperties(orderChanged);
+
+                    (ParentViewModel as IHaveMyOrders).MyOrders.Where(mo => mo.Id == orderChanged.Id).ForEach(mo =>
+                        {
+                            mo.Price = orderChanged.Price;
+                            mo.Amount = orderChanged.Amount;
+                        });
                     break;
                 case ListChangedType.PropertyDescriptorAdded:
                     break;
@@ -128,25 +141,29 @@ namespace NiceHashMarket.WpfClient.ViewModels
         {
             OrderUpJumpLevel = null;
             JumpedOrders.Clear();
-            var speedLimit = 0.1m;
-            var workersLimit = 800;
-            var speedSumm = 0m;
+            //var speedLimit = 0.1m;
+            var workersPercentLimit = 70;
+            //var speedSumm = 0m;
             var workersSumm = 0;
 
-            Orders.Where(o => o.Workers > 0
+            var calculatedOrders = Orders.Where(o => o.Workers > 0
                 && o.Active && o.Type == OrderTypeEnum.Standart
-                && (ParentViewModel as IHaveMyOrders == null || ((IHaveMyOrders)ParentViewModel).MyOrders.All(myOrder => myOrder.Id != o.Id)))
-                .OrderBy(o => o.Price).ForEach(o =>
+                && (!(ParentViewModel is IHaveMyOrders) || ((IHaveMyOrders)ParentViewModel).MyOrders.All(myOrder => myOrder.Id != o.Id)))
+                .OrderBy(o => o.Price);
+
+            var workersAll = calculatedOrders.Sum(o => o.Workers);
+
+            calculatedOrders.ForEach(o =>
                 {
                     if (OrderUpJumpLevel != null)
                         return;
 
                     JumpedOrders.Add(o);
 
-                    speedSumm += o.Speed;
+                    //speedSumm += o.Speed;
                     workersSumm += o.Workers;
 
-                    if (/*speedSumm > speedLimit || */workersSumm > workersLimit)
+                    if (workersSumm * 100 / workersAll > workersPercentLimit /*speedSumm > speedLimit || */)
                         OrderUpJumpLevel = o;
                 });
 
@@ -164,9 +181,10 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 _lastJumpOnServerDateTime = DateTime.Now;
         }
 
-        private void DoJump(Order order)
+        private void DoJump(Order targetOrder)
         {
-            _lastJumpOnServerDateTime = (ParentViewModel as ICanJump)?.DoJump(order) ?? DateTime.Now;
+            
+            _lastJumpOnServerDateTime = (ParentViewModel as ICanJump)?.DoJump(targetOrder) ?? DateTime.Now;
         }
     }
 }

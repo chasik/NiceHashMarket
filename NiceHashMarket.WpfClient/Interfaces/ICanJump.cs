@@ -5,6 +5,6 @@ namespace NiceHashMarket.WpfClient.Interfaces
 {
     public interface ICanJump
     {
-        DateTime DoJump (Order order);
+        DateTime DoJump (Order targetOrder);
     }
 }
