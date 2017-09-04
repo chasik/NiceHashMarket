@@ -106,15 +106,20 @@ namespace NiceHashBotLib
         public double Difficulty { get; set; }
         public double Difficulty24 { get; set; }
 
+        public double Price { get; set; }
+        public string BlockTime { get; set; }
+
         public WhattomineResult()
         {
-
         }
 
         public WhattomineResult(HandlerClass.WhattomineResponse response, int outterDifficulty)
         {
             Difficulty = outterDifficulty == 0 ? response.difficulty : outterDifficulty;
             Difficulty24 = response.difficulty24;
+
+            Price = response.exchange_rate;
+            BlockTime = response.block_time;
 
             MaxPrice = Math.Floor(CalcPriceByDifficulty(Difficulty, response.exchange_rate, response.block_reward) * 10000) / 10000;
             MaxPrice24 = Math.Floor(CalcPriceByDifficulty(Difficulty24, response.exchange_rate24, response.block_reward24) * 10000) / 10000;

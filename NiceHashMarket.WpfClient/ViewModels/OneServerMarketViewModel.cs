@@ -12,6 +12,7 @@ using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
 using NiceHashMarket.WpfClient.Interfaces;
+using NiceHashMarket.WpfClient.Messages;
 
 namespace NiceHashMarket.WpfClient.ViewModels
 {
@@ -31,11 +32,19 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         public virtual bool CatchUp { get; set; }
 
-        public virtual bool AutoStartWhenDifficultyLessThan { get; set; }
+        public virtual decimal SpeedOnServer { get; set; }
+        public virtual decimal MySpeedOnServer { get; set; }
 
-        protected virtual void OnAutoStartWhenDifficultyLessThanChanged()
+        public virtual int WorkersOnServer { get; set; }
+        public virtual int MyWorkersOnServer { get; set; }
+
+        public OneServerMarketViewModel()
         {
-            CatchUp = true;
+            Messenger.Default.Register<CheckAutoStartMessage>(this, m =>
+            {
+                //CatchUp = m.Checked;
+                MarketLogger.Information("!!! AutoStart message !!!");
+            });
         }
 
         protected void OnParameterChanged()
@@ -63,8 +72,6 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 {
                     if (Orders.All(oo => o.Id != oo.Id)) Orders.Add((Order) o.Clone());
                 });
-
-            AutoStartWhenDifficultyLessThan = (ParentViewModel as ICanAutoStart).AutoStartWhenDifficultyLessThan;
         }
 
         private void OrdersStorage_AlgoChanging(DataStorage<Order> sender, IAlgo oldAlgo, IAlgo newAlgo)
@@ -118,10 +125,16 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
                     orderNewIndex.CopyProperties(orderChanged);
 
-                    (ParentViewModel as IHaveMyOrders).MyOrders.Where(mo => mo.Id == orderChanged.Id).ForEach(mo =>
+                    var myOrders = (ParentViewModel as IHaveMyOrders)?.MyOrders;
+                    myOrders?.Where(mo => mo.Id == orderChanged.Id)
+                        .ForEach(mo =>
                         {
                             mo.Price = orderChanged.Price;
                             mo.Amount = orderChanged.Amount;
+                            mo.Workers = orderChanged.Workers;
+                            mo.Speed = orderChanged.Speed;
+
+                            CalcMyCurrentPowers(myOrders);
                         });
                     break;
                 case ListChangedType.PropertyDescriptorAdded:
@@ -135,6 +148,20 @@ namespace NiceHashMarket.WpfClient.ViewModels
             }
 
             CalcLevelForJump();
+            CalcServersPowers();
+        }
+
+        private void CalcServersPowers()
+        {
+            SpeedOnServer = Orders.Sum(o => o.Speed);
+            WorkersOnServer = Orders.Sum(o => o.Workers);
+        }
+
+        private void CalcMyCurrentPowers(NiceBindingList<Order> myOrders)
+        {
+            MySpeedOnServer = myOrders.Where(o => o.Server == Server).Sum(o => o.Speed);
+            MyWorkersOnServer = myOrders.Where(o => o.Server == Server).Sum(o => o.Workers);
+            //MyAmountOnServer = myOrders.Sum(o => o.Amount);
         }
 
         private void CalcLevelForJump()
@@ -183,8 +210,17 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         private void DoJump(Order targetOrder)
         {
-            
             _lastJumpOnServerDateTime = (ParentViewModel as ICanJump)?.DoJump(targetOrder) ?? DateTime.Now;
+        }
+
+        public void AddNewOrder()
+        {
+            var minPriceOrder = Orders.Where(o => o.Active && o.Type == OrderTypeEnum.Standart && o.Workers < 1)
+                .OrderBy(o => o.Price).FirstOrDefault();
+
+            if (minPriceOrder == null) return;
+
+            (ParentViewModel as ICanAddOrder)?.AddNewOrder(Server, minPriceOrder.Price);
         }
     }
 }

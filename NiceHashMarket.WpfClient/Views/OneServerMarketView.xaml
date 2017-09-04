@@ -27,10 +27,24 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <WrapPanel Orientation="Horizontal">
+        <DockPanel LastChildFill="False">
             <TextBlock Text="Догнать" />
             <CheckBox IsChecked="{Binding CatchUp}" Margin="0,0,20,0" />
-        </WrapPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
+                <TextBlock Text="{DXBinding '`(` + (MySpeedOnServer * 100 / SpeedOnServer).ToString(`F2`) + `%) `'}" FontSize="10" Margin="0,1,0,0" />
+                <TextBlock Text="{Binding MySpeedOnServer}" FontWeight="Medium" />
+                <TextBlock Text="/" FontWeight="DemiBold" />
+                <TextBlock Text="{Binding SpeedOnServer}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
+                <TextBlock Text="{DXBinding '`(` + (MyWorkersOnServer * 100 / WorkersOnServer).ToString(`F2`) + `%) `'}" FontSize="10" Margin="0,1,0,0" />
+                <TextBlock Text="{Binding MyWorkersOnServer}" FontWeight="Medium"/>
+                <TextBlock Text="/" FontWeight="DemiBold"/>
+                <TextBlock Text="{Binding WorkersOnServer}" />
+            </StackPanel>
+            <Button Content="Добавить новый ордер" DockPanel.Dock="Right"
+                    Command="{Binding AddNewOrderCommand}"/>
+        </DockPanel>
         
         <dxg:GridControl Grid.Row="1"  SelectionMode="Row"
                          AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 

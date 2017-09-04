@@ -25,5 +25,12 @@ namespace NiceHashMarket.Core
 
             base.JsonQueryExecute();
         }
+
+        public Order GetOrderById(int orderId)
+        {
+            var order = Entities.FirstOrDefault(o => o.Id == orderId);
+
+            return order;
+        }
     }
 }

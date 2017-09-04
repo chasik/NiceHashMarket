@@ -69,6 +69,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Interfaces\ICanAddOrder.cs" />
+    <Compile Include="Messages\CheckAutoStartMessage.cs" />
     <Compile Include="Converters\DetectMyOrderConverter.cs" />
     <Compile Include="Converters\LastBlockCreatedValueConverter.cs" />
     <Compile Include="Converters\LastBlockPercentValueConverter.cs" />

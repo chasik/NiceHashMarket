@@ -183,12 +183,17 @@
             <TextBlock DockPanel.Dock="Top" Foreground="Red" FontWeight="Medium" HorizontalAlignment="Right" FontSize="8"
                        Text="{Binding WhattomineResult.Difficulty24, StringFormat=24h:   {0:### ### ###.0000}}" />
             <TextBlock DockPanel.Dock="Top" Text="MaxPrice:" FontWeight="Bold" FontSize="9"/>
+
             <TextBlock DockPanel.Dock="Top" Foreground="LimeGreen" FontWeight="Medium" HorizontalAlignment="Right"
                        Text="{Binding WhattomineResult.MaxPrice, StringFormat=current:   {0:### ### ###.0000}}" />
             <TextBlock DockPanel.Dock="Top" Foreground="Red" FontWeight="Medium" HorizontalAlignment="Right"
                        Text="{Binding WhattomineResult.MaxPrice24, StringFormat=24h:   {0:### ### ###.0000}}" />
-            
-          
+
+            <TextBlock DockPanel.Dock="Top" Foreground="Coral" FontWeight="Medium" HorizontalAlignment="Right" Margin="0,10,0,0"
+                       Text="{Binding WhattomineResult.BlockTime, StringFormat=time: {0}}" />
+            <TextBlock DockPanel.Dock="Top" Foreground="BlueViolet" FontWeight="Medium" HorizontalAlignment="Right"
+                       Text="{Binding WhattomineResult.Price, StringFormat=btc: {0:#########.00000000}}" />
+
             <StackPanel DockPanel.Dock="Bottom">
                 <TextBlock Text="Ордера:" />
                 <dxe:ListBoxEdit Height="100" ItemsSource="{Binding MyOrders}" ValueMember="Id" DisplayMember="Id">

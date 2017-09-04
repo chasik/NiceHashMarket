@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using DevExpress.Data.Mask;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
 using NiceHashBotLib;
@@ -15,13 +16,14 @@ using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Services;
 using NiceHashMarket.WpfClient.Interfaces;
+using NiceHashMarket.WpfClient.Messages;
 using NiceHashMarket.WpfClient.Properties;
 using Order = NiceHashMarket.Model.Order;
 
 namespace NiceHashMarket.WpfClient.ViewModels
 {
     [POCOViewModel]
-    public class AlgoMarketViewModel : IHaveMyOrders, IHaveOrdersStorage, IDataCallBacks, ICanJump, ICanAutoStart
+    public class AlgoMarketViewModel : IHaveMyOrders, IHaveOrdersStorage, IDataCallBacks, ICanJump, ICanAutoStart, ICanAddOrder
     {
         private const string LbrySuprnovaUrl = "https://lbry-api.suprnova.cc";
         private const string LbryCoinmineUrl = "https://www2.coinmine.pl/lbc";
@@ -147,21 +149,32 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             #region | NiceHash api |
 
-            APIWrapper.Initialize(Properties.Settings.Default.NiceApiId, Properties.Settings.Default.NiceApiKey);
-            APIWrapper.GetMyOrders(0, (byte)CurrentAlgo).ForEach(o =>
-            {
-                MyOrders.Add(new Order(o.ID, (decimal)o.Price, (decimal)o.SpeedLimit, (decimal)o.Speed, o.Workers, o.OrderType, o.Alive ? 0 : 1, ServerEnum.Europe));
-            });
-            APIWrapper.GetMyOrders(1, (byte)CurrentAlgo).ForEach(o =>
-            {
-                MyOrders.Add(new Order(o.ID, (decimal)o.Price, (decimal)o.SpeedLimit, (decimal)o.Speed, o.Workers, o.OrderType, o.Alive ? 0 : 1, ServerEnum.Usa));
-            });
+            APIWrapper.Initialize(Settings.Default.NiceApiId, Settings.Default.NiceApiKey);
+
+            GetMyOrders();
 
             #endregion
 
             _timerCounter = 0;
             _timer = new Timer(WhatToTimeTimerHandler, null, 0, 3000);
 
+        }
+
+        private void GetMyOrders()
+        {
+            Application.Current.Dispatcher.Invoke(() => { 
+                MyOrders.Clear();
+
+                APIWrapper.GetMyOrders(0, (byte)CurrentAlgo).ForEach(o =>
+                {
+                    MyOrders.Add(new Order(o.ID, (decimal)o.Price, (decimal)o.SpeedLimit, (decimal)o.Speed, o.Workers, o.OrderType, o.Alive ? 0 : 1, ServerEnum.Europe));
+                });
+
+                APIWrapper.GetMyOrders(1, (byte)CurrentAlgo).ForEach(o =>
+                {
+                    MyOrders.Add(new Order(o.ID, (decimal)o.Price, (decimal)o.SpeedLimit, (decimal)o.Speed, o.Workers, o.OrderType, o.Alive ? 0 : 1, ServerEnum.Usa));
+                });
+            });
         }
 
         private void GetLastBlocksFromPool(MiningPortalApi miningPortalApiInstance, IList<BlockInfo> blocks)
@@ -194,9 +207,13 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
                     CurrentDifficulty = dashboardResult.Difficulty;
 
-                    if (CurrentDifficulty < 300000 && !AutoStartWhenDifficultyLessThan)
+                    if (CurrentDifficulty < 300000 && !AutoStartWhenDifficultyLessThan
+                        && ProgressSuprNova < 50)
+                    {
                         AutoStartWhenDifficultyLessThan = true;
-                        
+                        Messenger.Default.Send(new CheckAutoStartMessage{Checked = true});
+                    }
+
                     MinDifficulity = DashboardResults.OrderBy(x => x.Difficulty).FirstOrDefault()?.Difficulty ?? 0;
                     MaxDifficulity =
                         DashboardResults.OrderByDescending(x => x.Difficulty).FirstOrDefault()?.Difficulty ?? 0;
@@ -262,34 +279,21 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         #endregion
 
-        void IDataCallBacks.OrderAdded(Order order)
-        {
-            //if (order.Server == ServerEnum.Europe)
-            //    OrdersEurope.Add(order);
-            //else if (order.Server == ServerEnum.Usa)
-            //    OrdersUsa.Add(order);
-        }
-
-        void IDataCallBacks.OrderChanged(Order order)
-        {
-            //var orderChanged = OrdersEurope.FirstOrDefault(o => o.Id == order?.Id)
-            //                   ?? OrdersUsa.FirstOrDefault(o => o.Id == order?.Id);
-
-            //if (orderChanged == null)
-            //    return;
-
-            //order.CopyProperties(orderChanged);
-        }
-
         public DateTime DoJump(Order targetOrder)
         {
-            var newPrice = targetOrder.Price + _random.Next(1, 9) * 0.0001m; //+ 0.0001m;
+            var newPrice = targetOrder.Price + _random.Next(1, 9) * 0.0001m;
 
             var myOrderForJump = MyOrders.OrderBy(o => o.Price)
                 .FirstOrDefault(o => o.Server == targetOrder.Server && o.Price < targetOrder.Price + 0.0001m);
 
-            if (myOrderForJump == null || (decimal)(WhattomineResult.MaxPrice24 + WhattomineResult.MaxPrice24 / 100 * 20) < newPrice
-                || Math.Abs((GetLastJumpDateTime() - DateTime.Now).TotalMilliseconds) < 2000)
+            if (myOrderForJump == null || _ordersStorage.GetOrderById(myOrderForJump.Id) == null)
+            {
+                //GetMyOrders();
+                return DateTime.Now;
+            }
+
+            if ((decimal)(WhattomineResult.MaxPrice24 + WhattomineResult.MaxPrice24 / 100 * 20) < newPrice
+                || Math.Abs((GetLastJumpDateTime() - DateTime.Now).TotalMilliseconds) < 3000)
                 return DateTime.Now;
 
             MarketLogger.Information($"{targetOrder.Server} Jump my order {myOrderForJump.Id} {myOrderForJump.Price} jump to:{newPrice}");
@@ -333,6 +337,48 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 LastOrderJumpDateTime.Add(orderId, currentDateTime);
 
             return currentDateTime;
+        }
+
+        public void AddNewOrder(ServerEnum server, decimal minPriceOnServer)
+        {
+            var pool = new NiceHashBotLib.Pool{Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x"};
+
+            var price = (double) (minPriceOnServer + _random.Next(1, 99) / 10000.0m);
+            var limit = 3 + _random.Next(1, 99) / 100;
+
+            Task.Factory.StartNew(() =>
+                APIWrapper.OrderCreate(server == ServerEnum.Europe ? 0 : 1, (int)CurrentAlgo, 0.005, price, limit, pool)
+            ).ContinueWith(t =>
+            {
+                if (t.Result == 0)
+                {
+                    MarketLogger.Error($"Add new order failed! {server} price: {price} limit:{limit}");
+                }
+                else
+                {
+                    MarketLogger.Information($"Added new order success! {server} price: id:{t.Result} {price} limit:{limit}");
+                    GetMyOrders();
+                }
+            });
+        }
+
+        void IDataCallBacks.OrderAdded(Order order)
+        {
+            //if (order.Server == ServerEnum.Europe)
+            //    OrdersEurope.Add(order);
+            //else if (order.Server == ServerEnum.Usa)
+            //    OrdersUsa.Add(order);
+        }
+
+        void IDataCallBacks.OrderChanged(Order order)
+        {
+            //var orderChanged = OrdersEurope.FirstOrDefault(o => o.Id == order?.Id)
+            //                   ?? OrdersUsa.FirstOrDefault(o => o.Id == order?.Id);
+
+            //if (orderChanged == null)
+            //    return;
+
+            //order.CopyProperties(orderChanged);
         }
     }
 }
