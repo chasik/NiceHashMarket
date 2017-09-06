@@ -2,6 +2,6 @@
 {
     public interface ICanAutoStart
     {
-        bool AutoStartWhenDifficultyLessThan { get; set; }
+        bool AutoStartActivated { get; set; }
     }
 }

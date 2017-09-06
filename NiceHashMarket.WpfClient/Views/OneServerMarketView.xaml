@@ -42,7 +42,7 @@
                 <TextBlock Text="/" FontWeight="DemiBold"/>
                 <TextBlock Text="{Binding WorkersOnServer}" />
             </StackPanel>
-            <Button Content="Добавить новый ордер" DockPanel.Dock="Right"
+            <Button Content="+1 ордер" DockPanel.Dock="Right"
                     Command="{Binding AddNewOrderCommand}"/>
         </DockPanel>
         

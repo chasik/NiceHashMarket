@@ -16,10 +16,9 @@ namespace NiceHashMarket.Model
         {
             Id = id;
             Created = created;
+            Percent = -1;
 
-            double parsePercent;
-
-            if (double.TryParse(percent, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out parsePercent))
+            if (double.TryParse(percent, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double parsePercent))
                 Percent = parsePercent;
         }
 

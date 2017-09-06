@@ -194,6 +194,16 @@
             <TextBlock DockPanel.Dock="Top" Foreground="BlueViolet" FontWeight="Medium" HorizontalAlignment="Right"
                        Text="{Binding WhattomineResult.Price, StringFormat=btc: {0:#########.00000000}}" />
 
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                <TextBlock Text="LowDiff:" FontSize="10" FontWeight="Medium" />
+                <TextBox Text="{Binding LowLevelDifficulty, UpdateSourceTrigger=LostFocus}" />
+            </StackPanel>
+
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                <TextBlock Text="HeighDiff:" FontSize="10" FontWeight="Medium" />
+                <TextBox Text="{Binding HeighLevelDifficulty, UpdateSourceTrigger=LostFocus}" />
+            </StackPanel>
+
             <StackPanel DockPanel.Dock="Bottom">
                 <TextBlock Text="Ордера:" />
                 <dxe:ListBoxEdit Height="100" ItemsSource="{Binding MyOrders}" ValueMember="Id" DisplayMember="Id">
@@ -202,7 +212,7 @@
             </StackPanel>
             
             <StackPanel></StackPanel>
-
+            
         </DockPanel>
     </Grid>
 </UserControl>

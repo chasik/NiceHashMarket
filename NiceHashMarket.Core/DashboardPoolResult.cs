@@ -27,7 +27,7 @@ namespace NiceHashMarket.Core
         public int GlobalHashRate { get; set; }
         public int PoolHashRate { get; set; }
 
-        public double RoundProgress { get; set; }
+        public double RoundProgress { get; set; } = -1;
 
         public DashboardPoolResult(string host, DateTime queryDateTime, MetricPrefixEnum metricPrefix, string apiKey, string apiId)
         {

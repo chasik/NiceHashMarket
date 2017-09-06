@@ -42,8 +42,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
         {
             Messenger.Default.Register<CheckAutoStartMessage>(this, m =>
             {
-                //CatchUp = m.Checked;
-                MarketLogger.Information("!!! AutoStart message !!!");
+                CatchUp = m.Checked;
+                MarketLogger.Information($"!!! AutoStart message {m.Checked}!!!");
             });
         }
 
@@ -109,6 +109,9 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
                     break;
                 case ListChangedType.ItemDeleted:
+                    // TODO remove from my orders
+                    //var myOrders = (ParentViewModel as IHaveMyOrders)?.MyOrders;
+
                     break;
                 case ListChangedType.ItemMoved:
                     break;
@@ -169,7 +172,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
             OrderUpJumpLevel = null;
             JumpedOrders.Clear();
             //var speedLimit = 0.1m;
-            var workersPercentLimit = 70;
+            var workersPercentLimit = 90;
             //var speedSumm = 0m;
             var workersSumm = 0;
 
@@ -190,7 +193,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     //speedSumm += o.Speed;
                     workersSumm += o.Workers;
 
-                    if (workersSumm * 100 / workersAll > workersPercentLimit /*speedSumm > speedLimit || */)
+                    if (workersSumm * 100 / workersAll >= workersPercentLimit /*speedSumm > speedLimit || */)
                         OrderUpJumpLevel = o;
                 });
 
