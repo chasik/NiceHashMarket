@@ -16,8 +16,8 @@ namespace NiceHashMarket.Core
         where T : IHaveId, INotifyPropertyChanged
     {
         private Timer _timer;
-        private readonly Dispatcher _currentDispatcher;
         private readonly int _frequencyQueryMilliseconds;
+        protected readonly Dispatcher _currentDispatcher;
 
         public event AlgoChangedDelegate<T> AlgoChanging;
         public event AlgoChangedDelegate<T> AlgoChanged;
@@ -29,24 +29,20 @@ namespace NiceHashMarket.Core
         public DataStorage(IAlgo algo, int frequencyQueryMilliseconds, Dispatcher currentDispatcher = null)
         {
             _currentDispatcher = currentDispatcher;
-
-            Entities = new NiceBindingList<T>();
+            _frequencyQueryMilliseconds = frequencyQueryMilliseconds;
 
             Algo = algo;
 
-            ApiClient = new ApiClient();
+            Entities = new NiceBindingList<T>();
 
-            _frequencyQueryMilliseconds = frequencyQueryMilliseconds;
+            ApiClient = new ApiClient();
 
             _timer = new Timer(TimerOnElapsed, null, 0, _frequencyQueryMilliseconds);
         }
 
         private void TimerOnElapsed(object state)
         {
-            if (_currentDispatcher == null)
-                JsonQueryExecute();
-            else
-                _currentDispatcher.Invoke(JsonQueryExecute);
+            JsonQueryExecute();
         }
 
         public virtual void SelectAnotherAlgo(IAlgo newAlgo)

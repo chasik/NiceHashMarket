@@ -84,7 +84,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
         public virtual int MinDifficulity { get; set; }
         public virtual int MaxDifficulity { get; set; }
         public virtual int LowLevelDifficulty { get; set; } = 380000;
-        public virtual int HeighLevelDifficulty { get; set; } = 480000;
+        public virtual int HeighLevelDifficulty { get; set; } = 500000;
         public virtual BindingList<DashboardPoolResult> DashboardResults { get; set; } = new BindingList<DashboardPoolResult>();
         public virtual ConcurrentDictionary<int, ApiCall> LastApiCalls { get; set; } = new ConcurrentDictionary<int, ApiCall>();
 
@@ -143,11 +143,11 @@ namespace NiceHashMarket.WpfClient.ViewModels
             #region | SuprNova api |
 
             GetLastBlocksFromPool(
-                new MiningPortalApi(LbrySuprnovaUrl, 5000, +3, MetricPrefixEnum.Mega, Settings.Default.LbrySuprnovaApiKey, Settings.Default.LbrySuprnovaUserId)
+                new MiningPortalApi(LbrySuprnovaUrl, 4000, +3, MetricPrefixEnum.Mega, Settings.Default.LbrySuprnovaApiKey, Settings.Default.LbrySuprnovaUserId)
                     , LastBlocksSuprNova);
 
             GetLastBlocksFromPool(
-                new MiningPortalApi(LbryCoinmineUrl, 5000, +1, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
+                new MiningPortalApi(LbryCoinmineUrl, 4000, +1, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
                     , LastBlocksCoinMinePl);
 
             #endregion
@@ -163,7 +163,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
             _timerCounter = 0;
             _timer = new Timer(WhatToTimeTimerHandler, null, 0, 3000);
 
-            _tryDecreaseTime = new Timer(TryDecreaseMyOrders, null, 0, 5000);
+            //_tryDecreaseTime = new Timer(TryDecreaseMyOrders, null, 0, 5000);
 
         }
 
@@ -171,17 +171,15 @@ namespace NiceHashMarket.WpfClient.ViewModels
         {
             if (AutoStartActivated) return;
 
-            MyOrders.Where(o => LastApiCalls.ContainsKey(o.Id) && (!LastApiCalls[o.Id].LastTryDecreaseSuccess
-                || Math.Abs((LastApiCalls[o.Id].LastTryDecrease - DateTime.Now).TotalMilliseconds) > 10 * 60 * 1000))
+            MyOrders.Where(o => !LastApiCalls.ContainsKey(o.Id) || LastApiCalls.ContainsKey(o.Id) 
+                && (!LastApiCalls[o.Id].LastTryDecreaseSuccess
+                    && Math.Abs((LastApiCalls[o.Id].LastTryDecrease - DateTime.Now).TotalMilliseconds) > 3 * 60 * 1000
+                    || Math.Abs((LastApiCalls[o.Id].LastTryDecrease - DateTime.Now).TotalMilliseconds) > 10 * 60 * 1000))
                 .ForEach(myOrder =>
                 {
-                    Task.Factory
-                        .StartNew(() =>
+                    Task.Factory.StartNew(() =>
                         {
-                            lock (this)
-                            {
-                                PriceDecreaseOrder(myOrder);
-                            }
+                            PriceDecreaseOrder(myOrder);
                         });
                 });
         }
@@ -313,7 +311,6 @@ namespace NiceHashMarket.WpfClient.ViewModels
             });
         }
 
-
         #endregion
 
         public DateTime DoJump(Order targetOrder)
@@ -329,11 +326,12 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 return DateTime.Now;
             }
 
+            var deltaTime = GetLastApiCallDateTime() - DateTime.Now;
             if ((decimal)(WhattomineResult.MaxPrice24 + WhattomineResult.MaxPrice24 / 100 * 20) < newPrice
-                || Math.Abs((GetLastApiCallDateTime() - DateTime.Now).TotalMilliseconds) < 2000)
+                || deltaTime != null && Math.Abs(deltaTime.Value.TotalMilliseconds) < 2000)
                 return DateTime.Now;
 
-            MarketLogger.Information($"{targetOrder.Server} Jump my order {myOrderForJump.Id} {myOrderForJump.Price} jump to:{newPrice}");
+            //MarketLogger.Information($"{targetOrder.Server} Jump my order {myOrderForJump.Id} {myOrderForJump.Price} jump to:{newPrice}");
 
             AddOrUpdateLastApiCallDateTime(myOrderForJump.Id);
 
@@ -343,20 +341,26 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     var priceResult = t.Result;
 
                     if (Math.Abs(priceResult - -1) < 0.00001)
-                        MarketLogger.Error($"{DateTime.Now} server:{targetOrder.Server} id:{myOrderForJump.Id} price NOT changed!");
+                    {
+                        MarketLogger.Error(
+                            $"{DateTime.Now} server:{targetOrder.Server} id:{myOrderForJump.Id} price NOT changed!");
+                    }
                     else
-                        MarketLogger.Information($"{DateTime.Now} server:{targetOrder.Server} id:{myOrderForJump.Id} price changed, new price:{priceResult}");
+                    {
+                        //MarketLogger.Information(
+                        //    $"{DateTime.Now} server:{targetOrder.Server} id:{myOrderForJump.Id} price changed, new price:{priceResult}");
+                    }
 
                 });
 
             return GetLastApiCallDateTime(myOrderForJump.Id);
         }
 
-
-        private DateTime GetLastApiCallDateTime()
+        private DateTime? GetLastApiCallDateTime()
         {
             var call = LastApiCalls.OrderByDescending(ac => ac.Value?.LastCall).FirstOrDefault();
-            return call.Value?.LastCall ?? DateTime.MinValue;
+            MarketLogger.Information("GetLastApiCallDateTime {@call} {@LastApiCalls}", call, LastApiCalls);
+            return call.Value?.LastCall;
         }
 
         private DateTime GetLastApiCallDateTime(int orderId)
@@ -403,80 +407,99 @@ namespace NiceHashMarket.WpfClient.ViewModels
             }
         }
 
-        private void ChangeLimitMyOrder(Order myOrder, double newLimit)
+        private void ChangeLimitMyOrder(Order myOrder, double newLimit, byte iterationNumber = 0)
         {
+            iterationNumber++;
+
+            MarketLogger.Information($"Изменение лимита {newLimit} iteration: {iterationNumber} idOrder:{myOrder}");
+
             WaitAllowApiCommand(2000);
 
             var changedLimit = APIWrapper.OrderSetLimit(myOrder.Server == ServerEnum.Europe ? 0 : 1, (int)CurrentAlgo, myOrder.Id, newLimit);
 
-            if (changedLimit < 0)
-                MarketLogger.Error($"Ошибка изменения ЛИМИТА для ордера idOrder:{myOrder} newLimit:{newLimit}");
-            else
-                MarketLogger.Information($"ЛИМИТ ордера успешно изменен до {newLimit} idOrder:{myOrder} changedLimit:{changedLimit}");
-
             AddOrUpdateLastApiCallDateTime(myOrder.Id);
+
+            if (changedLimit < 0)
+            {
+                MarketLogger.Error($"Ошибка изменения ЛИМИТА для ордера iteration: {iterationNumber} idOrder:{myOrder} newLimit:{newLimit}");
+
+                if (iterationNumber < 3)
+                {
+                    ChangeLimitMyOrder(myOrder, newLimit, iterationNumber);
+                }
+            }
+            else
+                MarketLogger.Information(
+                    $"ЛИМИТ ордера успешно изменен до {newLimit} iteration: {iterationNumber} idOrder:{myOrder} changedLimit:{changedLimit}");
         }
 
-        private void PriceDecreaseOrder(Order myOrder)
+        private void PriceDecreaseOrder(Order myOrder, byte iterationNumber = 0)
         {
+            iterationNumber++;
+
+            MarketLogger.Information($"Понижение цены iteration: {iterationNumber} idOrder:{myOrder}");
+
             WaitAllowApiCommand(2000);
 
             var lastApiCallForOrder = LastApiCalls.FirstOrDefault(c => c.Key == myOrder.Id).Value;
 
-            var newPrice = APIWrapper.OrderSetPriceDecrease(myOrder.Server == ServerEnum.Europe ? 0 : 1, (int)CurrentAlgo, myOrder.Id);
+            var newPrice = APIWrapper.OrderSetPriceDecrease(myOrder.Server == ServerEnum.Europe ? 0 : 1, (int) CurrentAlgo, myOrder.Id);
+
+            AddOrUpdateLastApiCallDateTime(myOrder.Id);
+
+            if (lastApiCallForOrder == null)
+                lastApiCallForOrder = LastApiCalls.FirstOrDefault(c => c.Key == myOrder.Id).Value;
 
             if (newPrice < 0)
             {
                 MarketLogger.Error($"Ошибка понижения ЦЕНЫ для ордера idOrder:{myOrder}");
+                lastApiCallForOrder.LastTryDecrease = DateTime.Now;
                 lastApiCallForOrder.LastTryDecreaseSuccess = false;
             }
             else
             {
                 MarketLogger.Information($"ЦЕНА ордера успешно понижена до {newPrice} idOrder:{myOrder}");
+                lastApiCallForOrder.LastTryDecrease = DateTime.Now;
                 lastApiCallForOrder.LastTryDecreaseSuccess = true;
             }
-
-            if (lastApiCallForOrder != null)
-            {
-                lastApiCallForOrder.LastTryDecrease = DateTime.Now;
-            }
-
-            AddOrUpdateLastApiCallDateTime(myOrder.Id);
         }
 
         private void WaitAllowApiCommand(int milliseconds)
         {
-            while (Math.Abs((GetLastApiCallDateTime() - DateTime.Now).TotalMilliseconds) < milliseconds)
+            var iterationCounter = 0;
+            DateTime? lastCall;
+            do
             {
-                Thread.Sleep(100);
+                iterationCounter++;
+                Thread.Sleep(500);
+                MarketLogger.Information($"WaitAllowApiCommand iterationCounter:{iterationCounter} / milliseconds:{milliseconds} ");
+                lastCall = GetLastApiCallDateTime();
             }
+            while (lastCall != null && Math.Abs((lastCall - DateTime.Now).Value.TotalMilliseconds) < milliseconds);
         }
 
         private void CheckAutoStartConditions()
         {
-            var lastSuprnovaBlock = LastBlocksSuprNova.OrderByDescending(b => b.Created).FirstOrDefault();
-            var newBlockDetected = lastSuprnovaBlock != null && Math.Abs(lastSuprnovaBlock.Percent) < 0.0000001;
-
-            if (AutoStartActivated || CurrentDifficulty < 0 || CurrentDifficulty > LowLevelDifficulty || !(ProgressSuprNova > 0 && ProgressSuprNova < 30 || newBlockDetected))
+            if (AutoStartActivated || CurrentDifficulty < 0 || CurrentDifficulty > LowLevelDifficulty || ProgressSuprNova < 0 || ProgressSuprNova > 30)
                 return;
+
+            MarketLogger.Information($"AutoStart !!! progressSuprNova:{ProgressSuprNova} currentLevelDiff:{CurrentDifficulty} lowLevelDiff:{LowLevelDifficulty} heighLevelDiff:{HeighLevelDifficulty}");
 
             AutoStartActivated = true;
             Messenger.Default.Send(new CheckAutoStartMessage { Checked = true });
 
             var workLimit = 5;
 
-            MyOrders.Where(o => o.Amount != workLimit)
+            MyOrders.Where(o => o.Amount < workLimit)
                 .ForEach(myOrder =>
             {
-                Task.Factory
-                    .StartNew(() =>
+                Task.Factory.StartNew(() =>
+                {
+                    lock (this)
                     {
-                        lock (this)
-                        {
-                            ChangeLimitMyOrder(myOrder, workLimit);
-                        }
-                    })
-                    .ContinueWith(t => { });
+                        ChangeLimitMyOrder(myOrder, workLimit);
+                    }
+                });
             });
         }
 

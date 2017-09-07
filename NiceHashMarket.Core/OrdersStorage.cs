@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows.Threading;
 using NiceHashMarket.Model;
 using NiceHashMarket.Model.Interfaces;
@@ -21,7 +22,10 @@ namespace NiceHashMarket.Core
             if (orders == null || !orders.Any() || algo != Algo)
                 return;
 
-            UpdateBindingList(orders);
+            if (_currentDispatcher == null)
+                UpdateBindingList(orders);
+            else
+                _currentDispatcher.Invoke(() => UpdateBindingList(orders));
 
             base.JsonQueryExecute();
         }
