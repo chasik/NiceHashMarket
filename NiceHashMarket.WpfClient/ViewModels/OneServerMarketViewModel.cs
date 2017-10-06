@@ -62,9 +62,9 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 throw new ArgumentNullException("Orders Storage не может быть равным null!");
 
             ordersStorage.AlgoChanging += OrdersStorage_AlgoChanging;
-            ordersStorage.AlgoChanged += OrdersStorageOnAlgoChanged;
+            ordersStorage.AlgoChanged += OrdersStorage_AlgoChanged;
 
-            OrdersStorageOnAlgoChanged(ordersStorage, null, null);
+            OrdersStorage_AlgoChanged(ordersStorage, null, null);
 
             ordersStorage.Entities
                 .Where(o => o.Server == Server)
@@ -80,7 +80,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
             sender.Entities.BeforeRemove -= Entities_BeforeRemove;
         }
 
-        private void OrdersStorageOnAlgoChanged(DataStorage<Order> sender, IAlgo oldalgo, IAlgo newalgo)
+        private void OrdersStorage_AlgoChanged(DataStorage<Order> sender, IAlgo oldalgo, IAlgo newalgo)
         {
             sender.Entities.ListChanged += Entities_ListChanged;
             sender.Entities.BeforeRemove += Entities_BeforeRemove;
@@ -172,7 +172,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
             OrderUpJumpLevel = null;
             JumpedOrders.Clear();
             //var speedLimit = 0.1m;
-            var workersPercentLimit = 90;
+            var workersPercentLimit = 100;
             //var speedSumm = 0m;
             var workersSumm = 0;
 
@@ -199,7 +199,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             this.RaisePropertyChanged(vm => vm.JumpedOrders);
 
-            if (OrderUpJumpLevel == null || Math.Abs((_lastJumpOnServerDateTime - DateTime.Now).TotalMilliseconds) < 100)
+            if (OrderUpJumpLevel == null || Math.Abs((_lastJumpOnServerDateTime - DateTime.Now).TotalMilliseconds) < 300)
                 return;
 
             //MarketLogger.Information(

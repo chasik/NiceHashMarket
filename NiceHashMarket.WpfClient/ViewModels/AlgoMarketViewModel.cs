@@ -29,6 +29,10 @@ namespace NiceHashMarket.WpfClient.ViewModels
     {
         private const string LbrySuprnovaUrl = "https://lbry-api.suprnova.cc";
         private const string LbryCoinmineUrl = "https://www2.coinmine.pl/lbc";
+        private const double OrderAmount = 0.01;
+        private const int TimeWaitBetweenApiCalls = 1800;
+        private const int LowLevelOfDiff = 300000;
+        private const int HeighLevelOfDiff = 600000;
 
         #region | Fields |
 
@@ -46,6 +50,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
         #endregion
 
         #region | Properties |
+
+        public virtual bool EnableAutoStart { get; set; }
 
         public virtual bool AutoStartActivated { get; set; }
 
@@ -83,8 +89,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
         public virtual int CurrentDifficulty { get; set; } = -1;
         public virtual int MinDifficulity { get; set; }
         public virtual int MaxDifficulity { get; set; }
-        public virtual int LowLevelDifficulty { get; set; } = 380000;
-        public virtual int HeighLevelDifficulty { get; set; } = 500000;
+        public virtual int LowLevelDifficulty { get; set; } = LowLevelOfDiff;
+        public virtual int HeighLevelDifficulty { get; set; } = HeighLevelOfDiff;
         public virtual BindingList<DashboardPoolResult> DashboardResults { get; set; } = new BindingList<DashboardPoolResult>();
         public virtual ConcurrentDictionary<int, ApiCall> LastApiCalls { get; set; } = new ConcurrentDictionary<int, ApiCall>();
 
@@ -143,11 +149,11 @@ namespace NiceHashMarket.WpfClient.ViewModels
             #region | SuprNova api |
 
             GetLastBlocksFromPool(
-                new MiningPortalApi(LbrySuprnovaUrl, 4000, +3, MetricPrefixEnum.Mega, Settings.Default.LbrySuprnovaApiKey, Settings.Default.LbrySuprnovaUserId)
+                new MiningPortalApi(LbrySuprnovaUrl, 5000, +3, MetricPrefixEnum.Mega, Settings.Default.LbrySuprnovaApiKey, Settings.Default.LbrySuprnovaUserId)
                     , LastBlocksSuprNova);
 
             GetLastBlocksFromPool(
-                new MiningPortalApi(LbryCoinmineUrl, 4000, +1, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
+                new MiningPortalApi(LbryCoinmineUrl, 5000, +1, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
                     , LastBlocksCoinMinePl);
 
             #endregion
@@ -186,21 +192,32 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         private void GetMyOrders()
         {
-            Application.Current.Dispatcher.Invoke(() => { 
-                MyOrders.Clear();
+            //Application.Current.Dispatcher.Invoke(MyOrders.Clear);
 
-                var myEuroOrders = APIWrapper.GetMyOrders(0, (byte) CurrentAlgo);
-                myEuroOrders.ForEach(o =>
-                {
-                    MyOrders.Add(new Order(o.ID, (decimal)o.Price, (decimal)o.SpeedLimit, (decimal)o.Speed, o.Workers, o.OrderType, o.Alive ? 0 : 1, ServerEnum.Europe));
-                });
+            GetMyOrdersOnServer(ServerEnum.Europe);
+            GetMyOrdersOnServer(ServerEnum.Usa);
 
-                var myUsaOrders = APIWrapper.GetMyOrders(1, (byte)CurrentAlgo);
-                myUsaOrders.ForEach(o =>
+        }
+
+        private void GetMyOrdersOnServer(ServerEnum server)
+        {
+            Task.Factory.StartNew(() => APIWrapper.GetMyOrders(server == ServerEnum.Europe ? 0 : 1, (byte) CurrentAlgo))
+                .ContinueWith(myOrders =>
                 {
-                    MyOrders.Add(new Order(o.ID, (decimal)o.Price, (decimal)o.SpeedLimit, (decimal)o.Speed, o.Workers, o.OrderType, o.Alive ? 0 : 1, ServerEnum.Usa));
+                    if (myOrders.Result == null || !myOrders.Result.Any()) return;
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        myOrders.Result.ForEach(o =>
+                        {
+                            var newOrder = new Order(o.ID, (decimal)o.Price, (decimal)o.SpeedLimit, (decimal)o.Speed, o.Workers, o.OrderType, o.Alive ? 0 : 1, server);
+                            if (MyOrders.Any(or => or.Id == newOrder.Id))
+                                MyOrders.Remove(MyOrders.First(or => or.Id == newOrder.Id));
+
+                            MyOrders.Add(newOrder);
+                        });
+                    });
                 });
-            });
         }
 
         private void GetLastBlocksFromPool(MiningPortalApi miningPortalApiInstance, IList<BlockInfo> blocks)
@@ -315,9 +332,9 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         public DateTime DoJump(Order targetOrder)
         {
-            var newPrice = targetOrder.Price + _random.Next(1, 9) * 0.0001m;
+            var newPrice = targetOrder.Price + _random.Next(1, 5) * 0.0001m;
 
-            var myOrderForJump = MyOrders.OrderBy(o => o.Speed).ThenBy(o => o.Workers).ThenBy(o => o.Price)
+            var myOrderForJump = MyOrders.OrderBy(o => o.Price) //OrderBy(o => o.Speed).ThenBy(o => o.Workers).ThenBy(o => o.Price)
                 .FirstOrDefault(o => o.Server == targetOrder.Server && o.Price < targetOrder.Price + 0.0001m);
 
             if (myOrderForJump == null || _ordersStorage.GetOrderById(myOrderForJump.Id) == null)
@@ -327,11 +344,13 @@ namespace NiceHashMarket.WpfClient.ViewModels
             }
 
             var deltaTime = GetLastApiCallDateTime() - DateTime.Now;
-            if ((decimal)(WhattomineResult.MaxPrice24 + WhattomineResult.MaxPrice24 / 100 * 20) < newPrice
-                || deltaTime != null && Math.Abs(deltaTime.Value.TotalMilliseconds) < 2000)
+            if ((decimal)(WhattomineResult.MaxPrice24 + WhattomineResult.MaxPrice24 / 100 * 30) < newPrice
+                || deltaTime != null && Math.Abs(deltaTime.Value.TotalMilliseconds) < TimeWaitBetweenApiCalls)
                 return DateTime.Now;
 
-            //MarketLogger.Information($"{targetOrder.Server} Jump my order {myOrderForJump.Id} {myOrderForJump.Price} jump to:{newPrice}");
+            var jumpGuid = Guid.NewGuid();
+
+            MarketLogger.Information($"{DateTime.Now} JumpGuid:{jumpGuid} server:{targetOrder.Server} order:{myOrderForJump.Id} price:{myOrderForJump.Price} jumpTo:{newPrice}");
 
             AddOrUpdateLastApiCallDateTime(myOrderForJump.Id);
 
@@ -343,14 +362,13 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     if (Math.Abs(priceResult - -1) < 0.00001)
                     {
                         MarketLogger.Error(
-                            $"{DateTime.Now} server:{targetOrder.Server} id:{myOrderForJump.Id} price NOT changed!");
+                            $"{DateTime.Now} JumpGuid:{jumpGuid} server:{targetOrder.Server} id:{myOrderForJump.Id} price NOT changed!");
                     }
                     else
                     {
-                        //MarketLogger.Information(
-                        //    $"{DateTime.Now} server:{targetOrder.Server} id:{myOrderForJump.Id} price changed, new price:{priceResult}");
+                        MarketLogger.Information(
+                            $"{DateTime.Now} JumpGuid:{jumpGuid} server:{targetOrder.Server} id:{myOrderForJump.Id} price changed, new price:{priceResult}");
                     }
-
                 });
 
             return GetLastApiCallDateTime(myOrderForJump.Id);
@@ -384,27 +402,27 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         private void CheckAutoStopConditions()
         {
-            if (AutoStartActivated && (ProgressSuprNova > 70 || CurrentDifficulty > HeighLevelDifficulty))
-            {
-                Messenger.Default.Send(new CheckAutoStartMessage { Checked = false });
+            //if (AutoStartActivated && (ProgressSuprNova > 250 || CurrentDifficulty > HeighLevelDifficulty))
+            //{
+            //    Messenger.Default.Send(new CheckAutoStartMessage { Checked = false });
 
-                AutoStartActivated = false;
+            //    AutoStartActivated = false;
 
-                MarketLogger.Information($"AutoStop !!! progressSuprNova:{ProgressSuprNova} currentLevelDiff:{CurrentDifficulty} heighLevelDiff:{HeighLevelDifficulty}");
+            //    MarketLogger.Information($"AutoStop !!! progressSuprNova:{ProgressSuprNova} currentLevelDiff:{CurrentDifficulty} heighLevelDiff:{HeighLevelDifficulty}");
 
-                MyOrders.ForEach(myOrder =>
-                {
-                    Task.Factory
-                        .StartNew(() =>
-                        {
-                            lock (this)
-                            {
-                                ChangeLimitMyOrder(myOrder, 0.01);
-                                PriceDecreaseOrder(myOrder);
-                            }
-                        });
-                });
-            }
+            //    MyOrders.ForEach(myOrder =>
+            //    {
+            //        Task.Factory
+            //            .StartNew(() =>
+            //            {
+            //                //lock (this)
+            //                {
+            //                    ChangeLimitMyOrder(myOrder, 0.01);
+            //                    PriceDecreaseOrder(myOrder);
+            //                }
+            //            });
+            //    });
+            //}
         }
 
         private void ChangeLimitMyOrder(Order myOrder, double newLimit, byte iterationNumber = 0)
@@ -413,7 +431,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             MarketLogger.Information($"Изменение лимита {newLimit} iteration: {iterationNumber} idOrder:{myOrder}");
 
-            WaitAllowApiCommand(2000);
+            WaitAllowApiCommand(TimeWaitBetweenApiCalls);
 
             var changedLimit = APIWrapper.OrderSetLimit(myOrder.Server == ServerEnum.Europe ? 0 : 1, (int)CurrentAlgo, myOrder.Id, newLimit);
 
@@ -439,7 +457,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             MarketLogger.Information($"Понижение цены iteration: {iterationNumber} idOrder:{myOrder}");
 
-            WaitAllowApiCommand(2000);
+            WaitAllowApiCommand(TimeWaitBetweenApiCalls);
 
             var lastApiCallForOrder = LastApiCalls.FirstOrDefault(c => c.Key == myOrder.Id).Value;
 
@@ -480,7 +498,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         private void CheckAutoStartConditions()
         {
-            if (AutoStartActivated || CurrentDifficulty < 0 || CurrentDifficulty > LowLevelDifficulty || ProgressSuprNova < 0 || ProgressSuprNova > 30)
+            if (!EnableAutoStart || AutoStartActivated || CurrentDifficulty < 0 || CurrentDifficulty > LowLevelDifficulty /*|| ProgressSuprNova < 0 || ProgressSuprNova > 30*/)
                 return;
 
             MarketLogger.Information($"AutoStart !!! progressSuprNova:{ProgressSuprNova} currentLevelDiff:{CurrentDifficulty} lowLevelDiff:{LowLevelDifficulty} heighLevelDiff:{HeighLevelDifficulty}");
@@ -495,7 +513,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
             {
                 Task.Factory.StartNew(() =>
                 {
-                    lock (this)
+                    //lock (this)
                     {
                         ChangeLimitMyOrder(myOrder, workLimit);
                     }
@@ -512,7 +530,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 return;
             }
 
-            var amount = balance.Confirmed < 0.01 ? balance.Confirmed : 0.005;
+            var amount = balance.Confirmed < 2 * OrderAmount ? balance.Confirmed : OrderAmount;
 
             var pool = new NiceHashBotLib.Pool{Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x"};
             var limit = 5 + _random.Next(1, 99) / 100.0;

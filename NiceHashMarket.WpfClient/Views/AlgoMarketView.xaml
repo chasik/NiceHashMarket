@@ -169,7 +169,11 @@
                                    dxmvvm:ViewModelExtensions.Parameter="{x:Static enums:ServerEnum.Usa}"
                                    dxmvvm:ViewModelExtensions.ParentViewModel="{Binding DataContext,  RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
-        <DockPanel Grid.Column="1" Grid.Row="1" LastChildFill="True"> 
+        <DockPanel Grid.Column="1" Grid.Row="1" LastChildFill="True">
+            <dxe:ToggleSwitchEdit DockPanel.Dock="Top" CheckedStateContent="ДА" UncheckedStateContent="НЕТ" ContentPlacement="Both" 
+                                  Margin="0,0,0,20"
+                                  IsChecked="{Binding EnableAutoStart}" />
+            
             <ComboBox DockPanel.Dock="Top" VerticalAlignment="Top"
                       SelectedItem="{Binding CurrentAlgo}"
                       ItemsSource="{Binding Source={StaticResource AlgosFromEnum}}" />

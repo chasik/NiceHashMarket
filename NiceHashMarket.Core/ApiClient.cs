@@ -17,7 +17,8 @@ namespace NiceHashMarket.Core
         public ApiClient()
         {
             //_client = new RestClient("https://api.nicehash.com");
-            _client = new RestClient("https://www.nicehash.com");
+            //_client = new RestClient("https://www.nicehash.com");
+            _client = new RestClient("https://old.nicehash.com");
         }
 
         private IRestResponse RequestPubJson(string queryShortString)
