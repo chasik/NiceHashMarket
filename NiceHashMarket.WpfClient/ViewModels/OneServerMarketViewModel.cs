@@ -43,6 +43,12 @@ namespace NiceHashMarket.WpfClient.ViewModels
             Messenger.Default.Register<CheckAutoStartMessage>(this, m =>
             {
                 CatchUp = m.Checked;
+                if (CatchUp)
+                {
+                    CalcLevelForJump();
+                    CalcServersPowers();
+                }
+
                 MarketLogger.Information($"!!! AutoStart message {m.Checked}!!!");
             });
         }
@@ -172,7 +178,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
             OrderUpJumpLevel = null;
             JumpedOrders.Clear();
             //var speedLimit = 0.1m;
-            var workersPercentLimit = 100;
+            var workersPercentLimit = 80;
             //var speedSumm = 0m;
             var workersSumm = 0;
 
@@ -199,7 +205,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             this.RaisePropertyChanged(vm => vm.JumpedOrders);
 
-            if (OrderUpJumpLevel == null || Math.Abs((_lastJumpOnServerDateTime - DateTime.Now).TotalMilliseconds) < 300)
+            if (OrderUpJumpLevel == null || Math.Abs((_lastJumpOnServerDateTime - DateTime.Now).TotalMilliseconds) < 60)
                 return;
 
             //MarketLogger.Information(

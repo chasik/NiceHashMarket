@@ -12,7 +12,7 @@ namespace NiceHashMarket.WpfClient.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.3.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -26,24 +26,24 @@ namespace NiceHashMarket.WpfClient.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
-        public string NiceApiKey {
+        public string NiceApiKeyYandex {
             get {
-                return ((string)(this["NiceApiKey"]));
+                return ((string)(this["NiceApiKeyYandex"]));
             }
             set {
-                this["NiceApiKey"] = value;
+                this["NiceApiKeyYandex"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
-        public string NiceApiId {
+        public string NiceApiIdYandex {
             get {
-                return ((string)(this["NiceApiId"]));
+                return ((string)(this["NiceApiIdYandex"]));
             }
             set {
-                this["NiceApiId"] = value;
+                this["NiceApiIdYandex"] = value;
             }
         }
         
@@ -92,6 +92,30 @@ namespace NiceHashMarket.WpfClient.Properties {
             }
             set {
                 this["LbryCoinMineUserId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
+        public string NiceApiKeyGmail {
+            get {
+                return ((string)(this["NiceApiKeyGmail"]));
+            }
+            set {
+                this["NiceApiKeyGmail"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
+        public string NiceApiIdGmail {
+            get {
+                return ((string)(this["NiceApiIdGmail"]));
+            }
+            set {
+                this["NiceApiIdGmail"] = value;
             }
         }
     }

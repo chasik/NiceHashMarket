@@ -442,6 +442,14 @@ namespace NiceHashBotLib
             }
         }
 
+        public static string UsaApiKey { get; set; }
+
+        public static string UsaApiId { get; set; }
+
+        public static string EuropeApiKey { get; set; }
+
+        public static string EuropeApiId { get; set; }
+
         private static T Request<T>(int ServiceLocation, string Method, bool AppendCredentials, Dictionary<string, string> Parameters)
         {
             string URL = SERVICE_LOCATION + "/api";
@@ -451,8 +459,10 @@ namespace NiceHashBotLib
                 URL += "?method=" + Method;
                 if (AppendCredentials)
                 {
-                    URL += "&id=" + APIID;
-                    URL += "&key=" + APIKey;
+                    //URL += "&id=" + APIID;
+                    //URL += "&key=" + APIKey;
+                    URL += "&id=" + (ServiceLocation == 0 ? EuropeApiId : UsaApiId);
+                    URL += "&key=" + (ServiceLocation == 0 ? EuropeApiKey : UsaApiKey);
                 }
 
                 // Append location

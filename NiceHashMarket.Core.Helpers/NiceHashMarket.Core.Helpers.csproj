@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NiceHashMarket.Core.Helpers</RootNamespace>
     <AssemblyName>NiceHashMarket.Core.Helpers</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MetricPrefixHelper.cs" />
+    <Compile Include="NiceBot.cs" />
     <Compile Include="ObjectReflectionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -56,6 +58,14 @@
     <ProjectReference Include="..\NiceHashMarket.Model.Interfaces\NiceHashMarket.Model.Interfaces.csproj">
       <Project>{5236c511-7b02-4952-b9d8-d98291e7a6de}</Project>
       <Name>NiceHashMarket.Model.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.Model\NiceHashMarket.Model.csproj">
+      <Project>{91636e6f-612e-443e-89f5-a5baca2f05cb}</Project>
+      <Name>NiceHashMarket.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.NiceHashBotLib\NiceHashBotLib.csproj">
+      <Project>{b5b243e4-0497-42cb-afbf-a4ed3b4343d6}</Project>
+      <Name>NiceHashBotLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

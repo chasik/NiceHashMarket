@@ -2,10 +2,10 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="NiceHashMarket.WpfClient.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="NiceApiKey" Type="System.String" Scope="User">
+    <Setting Name="NiceApiKeyYandex" Type="System.String" Scope="User">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
-    <Setting Name="NiceApiId" Type="System.String" Scope="User">
+    <Setting Name="NiceApiIdYandex" Type="System.String" Scope="User">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
     <Setting Name="LbrySuprnovaApiKey" Type="System.String" Scope="User">
@@ -18,6 +18,12 @@
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
     <Setting Name="LbryCoinMineUserId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
+    </Setting>
+    <Setting Name="NiceApiKeyGmail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
+    </Setting>
+    <Setting Name="NiceApiIdGmail" Type="System.String" Scope="User">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
   </Settings>

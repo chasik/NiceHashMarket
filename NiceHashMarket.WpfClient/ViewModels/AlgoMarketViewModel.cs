@@ -6,13 +6,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using DevExpress.Data.Mask;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.Native;
 using DevExpress.Mvvm.POCO;
 using NiceHashBotLib;
 using NiceHashMarket.Core;
+using NiceHashMarket.Core.Helpers;
 using NiceHashMarket.Logger;
 using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
@@ -30,7 +30,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
         private const string LbrySuprnovaUrl = "https://lbry-api.suprnova.cc";
         private const string LbryCoinmineUrl = "https://www2.coinmine.pl/lbc";
         private const double OrderAmount = 0.01;
-        private const int TimeWaitBetweenApiCalls = 1800;
+        private const int TimeWaitBetweenApiCalls = 500;
         private const int LowLevelOfDiff = 300000;
         private const int HeighLevelOfDiff = 600000;
 
@@ -160,7 +160,21 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             #region | NiceHash api |
 
-            APIWrapper.Initialize(Settings.Default.NiceApiId, Settings.Default.NiceApiKey);
+            //NiceBot.ApiKeys = new Dictionary<ServerEnum, List<string>>
+            //{
+            //    {ServerEnum.Europe, new List<string> { Settings.Default.NiceApiIdYandex, Settings.Default.NiceApiKeyYandex}},
+            //    {ServerEnum.Usa, new List<string> { Settings.Default.NiceApiIdGmail, Settings.Default.NiceApiKeyGmail}}
+            //};
+
+            APIWrapper.EuropeApiId = Settings.Default.NiceApiIdYandex;
+            APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyYandex;
+
+            APIWrapper.UsaApiId = Settings.Default.NiceApiIdGmail;
+            APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyGmail;
+
+
+
+            APIWrapper.Initialize(Settings.Default.NiceApiIdYandex, Settings.Default.NiceApiKeyYandex);
 
             GetMyOrders();
 
@@ -192,16 +206,13 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         private void GetMyOrders()
         {
-            //Application.Current.Dispatcher.Invoke(MyOrders.Clear);
-
             GetMyOrdersOnServer(ServerEnum.Europe);
             GetMyOrdersOnServer(ServerEnum.Usa);
-
         }
 
         private void GetMyOrdersOnServer(ServerEnum server)
         {
-            Task.Factory.StartNew(() => APIWrapper.GetMyOrders(server == ServerEnum.Europe ? 0 : 1, (byte) CurrentAlgo))
+            Task.Factory.StartNew(() => server.GetMyOrders(CurrentAlgo))
                 .ContinueWith(myOrders =>
                 {
                     if (myOrders.Result == null || !myOrders.Result.Any()) return;
@@ -332,7 +343,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         public DateTime DoJump(Order targetOrder)
         {
-            var newPrice = targetOrder.Price + _random.Next(1, 5) * 0.0001m;
+            var newPrice = targetOrder.Price + _random.Next(1, 4) * 0.0001m;
 
             var myOrderForJump = MyOrders.OrderBy(o => o.Price) //OrderBy(o => o.Speed).ThenBy(o => o.Workers).ThenBy(o => o.Price)
                 .FirstOrDefault(o => o.Server == targetOrder.Server && o.Price < targetOrder.Price + 0.0001m);
@@ -343,18 +354,18 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 return DateTime.Now;
             }
 
-            var deltaTime = GetLastApiCallDateTime() - DateTime.Now;
+            var deltaTime = GetLastApiCallDateTimeByServer(myOrderForJump) - DateTime.Now;
             if ((decimal)(WhattomineResult.MaxPrice24 + WhattomineResult.MaxPrice24 / 100 * 30) < newPrice
                 || deltaTime != null && Math.Abs(deltaTime.Value.TotalMilliseconds) < TimeWaitBetweenApiCalls)
                 return DateTime.Now;
 
             var jumpGuid = Guid.NewGuid();
 
-            MarketLogger.Information($"{DateTime.Now} JumpGuid:{jumpGuid} server:{targetOrder.Server} order:{myOrderForJump.Id} price:{myOrderForJump.Price} jumpTo:{newPrice}");
+            MarketLogger.Information($"{DateTime.Now} ms: {deltaTime?.TotalMilliseconds ?? -1} JumpGuid:{jumpGuid} server:{targetOrder.Server} order:{myOrderForJump.Id} price:{myOrderForJump.Price} jumpTo:{newPrice}");
 
-            AddOrUpdateLastApiCallDateTime(myOrderForJump.Id);
+            AddOrUpdateLastApiCallDateTime(myOrderForJump);
 
-            Task.Factory.StartNew(() => APIWrapper.OrderSetPrice(myOrderForJump.Server == ServerEnum.Europe ? 0 : 1, (int)CurrentAlgo, myOrderForJump.Id, (double)newPrice))
+            Task.Factory.StartNew(() => myOrderForJump.SetPrice(CurrentAlgo, (double) newPrice))
                 .ContinueWith(t =>
                 {
                     var priceResult = t.Result;
@@ -386,11 +397,16 @@ namespace NiceHashMarket.WpfClient.ViewModels
             return !LastApiCalls.ContainsKey(orderId) ? DateTime.Now.AddHours(-1) : LastApiCalls[orderId].LastCall;
         }
 
-        private DateTime AddOrUpdateLastApiCallDateTime(int orderId)
+        private DateTime? GetLastApiCallDateTimeByServer(Order order)
+        {
+            return !LastApiCalls.ContainsKey(order.Id) ? DateTime.Now.AddHours(-1) : LastApiCalls.Where(ac => ac.Value.Order.Server == order.Server).OrderByDescending(ac => ac.Value?.LastCall).FirstOrDefault().Value?.LastCall;
+        }
+
+        private DateTime AddOrUpdateLastApiCallDateTime(Order order)
         {
             var currentDateTime = DateTime.Now;
 
-            LastApiCalls.AddOrUpdate(orderId, new ApiCall{LastCall = currentDateTime},
+            LastApiCalls.AddOrUpdate(order.Id, new ApiCall{Order = order, LastCall = currentDateTime},
                 (id, apiCall) => 
                 {
                     apiCall.LastCall = currentDateTime;
@@ -431,11 +447,11 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             MarketLogger.Information($"Изменение лимита {newLimit} iteration: {iterationNumber} idOrder:{myOrder}");
 
-            WaitAllowApiCommand(TimeWaitBetweenApiCalls);
+            WaitAllowApiCommand(TimeWaitBetweenApiCalls, myOrder);
 
-            var changedLimit = APIWrapper.OrderSetLimit(myOrder.Server == ServerEnum.Europe ? 0 : 1, (int)CurrentAlgo, myOrder.Id, newLimit);
+            var changedLimit = myOrder.SetLimit(CurrentAlgo, newLimit);
 
-            AddOrUpdateLastApiCallDateTime(myOrder.Id);
+            AddOrUpdateLastApiCallDateTime(myOrder);
 
             if (changedLimit < 0)
             {
@@ -457,13 +473,13 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             MarketLogger.Information($"Понижение цены iteration: {iterationNumber} idOrder:{myOrder}");
 
-            WaitAllowApiCommand(TimeWaitBetweenApiCalls);
+            WaitAllowApiCommand(TimeWaitBetweenApiCalls, myOrder);
 
             var lastApiCallForOrder = LastApiCalls.FirstOrDefault(c => c.Key == myOrder.Id).Value;
 
-            var newPrice = APIWrapper.OrderSetPriceDecrease(myOrder.Server == ServerEnum.Europe ? 0 : 1, (int) CurrentAlgo, myOrder.Id);
+            var newPrice = myOrder.SetPriceDecrease(CurrentAlgo);
 
-            AddOrUpdateLastApiCallDateTime(myOrder.Id);
+            AddOrUpdateLastApiCallDateTime(myOrder);
 
             if (lastApiCallForOrder == null)
                 lastApiCallForOrder = LastApiCalls.FirstOrDefault(c => c.Key == myOrder.Id).Value;
@@ -482,17 +498,18 @@ namespace NiceHashMarket.WpfClient.ViewModels
             }
         }
 
-        private void WaitAllowApiCommand(int milliseconds)
+        private void WaitAllowApiCommand(int milliseconds, Order order)
         {
             var iterationCounter = 0;
             DateTime? lastCall;
             do
             {
                 iterationCounter++;
-                Thread.Sleep(500);
-                MarketLogger.Information($"WaitAllowApiCommand iterationCounter:{iterationCounter} / milliseconds:{milliseconds} ");
-                lastCall = GetLastApiCallDateTime();
+                Thread.Sleep(100);
+                //MarketLogger.Information($"WaitAllowApiCommand iterationCounter:{iterationCounter} / milliseconds:{milliseconds} ");
+                lastCall = GetLastApiCallDateTimeByServer(order);
             }
+
             while (lastCall != null && Math.Abs((lastCall - DateTime.Now).Value.TotalMilliseconds) < milliseconds);
         }
 
@@ -523,25 +540,24 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         public void AddNewOrder(ServerEnum server, decimal minPriceOnServer)
         {
-            var balance = APIWrapper.GetBalance();
+            var balance = server.GetBalance();
             if (balance.Confirmed < 0.005)
             {
                 MarketLogger.Error($"Недостаточно средств на NiceHash кошельке: {balance.Confirmed}. Минимальный объем 0.005");
                 return;
             }
 
-            var amount = balance.Confirmed < 2 * OrderAmount ? balance.Confirmed : OrderAmount;
+            var amount = balance.Confirmed < OrderAmount + 0.005 ? balance.Confirmed : OrderAmount;
 
             var pool = new NiceHashBotLib.Pool{Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x"};
-            var limit = 5 + _random.Next(1, 99) / 100.0;
+            var limit = _random.Next(3, 8) + _random.Next(1, 99) / 100.0;
 
             //var pool = new NiceHashBotLib.Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
             //var limit = 0.02;
 
             var price = (double) (minPriceOnServer + _random.Next(1, 99) / 10000.0m);
 
-            Task.Factory.StartNew(() =>
-                APIWrapper.OrderCreate(server == ServerEnum.Europe ? 0 : 1, (int)CurrentAlgo, amount, price, limit, pool)
+            Task.Factory.StartNew(() => server.OrderCreate(CurrentAlgo, amount, price, limit, pool)
             ).ContinueWith(t =>
             {
                 if (t.Result == 0)
