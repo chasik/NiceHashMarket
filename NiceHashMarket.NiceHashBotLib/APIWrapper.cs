@@ -192,6 +192,13 @@ namespace NiceHashBotLib
             return R.Data;
         }
 
+        public static APIBalance GetBalance(int ServiceLocation)
+        {
+            Result<APIBalance> R = Request<Result<APIBalance>>(ServiceLocation, "balance", true, null);
+            if (R == null) return null;
+            return R.Data;
+        }
+
         /// <summary>
         /// Get list of all orders.
         /// </summary>

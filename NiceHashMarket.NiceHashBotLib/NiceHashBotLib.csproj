@@ -62,6 +62,10 @@
     <Compile Include="Result.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NiceHashMarket.Logger\NiceHashMarket.Logger.csproj">
+      <Project>{ec5235b5-d2b2-4883-b0e8-4a1532b04784}</Project>
+      <Name>NiceHashMarket.Logger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NiceHashMarket.Model.Enums\NiceHashMarket.Model.Enums.csproj">
       <Project>{4291b820-6118-46bc-a0e7-359d2caa9d9d}</Project>
       <Name>NiceHashMarket.Model.Enums</Name>

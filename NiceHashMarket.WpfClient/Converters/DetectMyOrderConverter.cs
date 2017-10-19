@@ -11,12 +11,9 @@ namespace NiceHashMarket.WpfClient.Converters
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var myOrders = values[1] as NiceBindingList<Order>;
-
-            if (!int.TryParse(values[0].ToString(), out int orderId) || myOrders != null && myOrders.All(order => order.Id != orderId))
-                return false;
-
-            return true;
+            return int.TryParse(values[0].ToString(), out var orderId) &&
+                   (!(values[1] is NiceBindingList<Order> myOrders) ||
+                    myOrders.ToList().Any(order => order.Id == orderId));
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

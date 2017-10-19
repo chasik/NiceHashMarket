@@ -3,20 +3,140 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using NiceHashMarket.Core;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using NiceHashBotLib;
+using NiceHashMarket.Console.Properties;
 using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
+using Renci.SshNet;
 using Order = NiceHashBotLib.Order;
 
 namespace NiceHashMarket.Console
 {
     class Program
     {
+        private static IList<FarmConnectionInfo> _farms;
+
         private static List<BlockInfo> _blocksInfo { get; set; } = new List<BlockInfo>();
 
         static void Main(string[] args)
+        {
+            try
+            {
+                var lastStart = DateTime.MinValue;
+                var lastStop = DateTime.MinValue;
+
+                _farms = FarmsStorage.LoadFromFile("FarmsConnectionInfo.txt");
+
+                if (args.Any(a => string.Equals(a, "d", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    StopMiningToPool();
+                    return;
+                }
+
+                if (args.Any(a => string.Equals(a, "c", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    StartMiningToPool();
+                    return;
+                }
+
+                var pool = new MiningPortalApi("https://lbry-api.suprnova.cc", 4000, +3, MetricPrefixEnum.Mega,
+                    Settings.Default.LbrySuprnovaApiKey, Settings.Default.LbrySuprnovaUserId);
+
+                //var pool = new MiningPortalApi("https://www2.coinmine.pl/lbc", 4000, +1, MetricPrefixEnum.Tera,
+                //    Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId);
+
+                pool.RoundProgressChanged += (sender, result) =>
+                {
+                    System.Console.WriteLine($"RoundProgress: {result.RoundProgress} %  diff: {result.Difficulty}");
+                    if (result.RoundProgress < 0) return;
+
+                    if ((result.RoundProgress < 50 && result.Difficulty < 260000)
+                        && Math.Abs((lastStart - DateTime.Now).TotalMilliseconds) > 30000)
+                    {
+                        lastStart = DateTime.Now;
+                        Task.Factory.StartNew(StartMiningToPool);
+                        return;
+                    }
+
+                    if ((result.RoundProgress > 100 || result.Difficulty > 400000)
+                        && Math.Abs((lastStop - DateTime.Now).TotalMilliseconds) > 30000)
+                    {
+                        lastStop = DateTime.Now;
+                        Task.Factory.StartNew(StopMiningToPool);
+                    }
+                };
+
+                pool.BlockUpdated += (sender, info) => { System.Console.WriteLine($"BlockUpdated: {info.Id} - {info.Percent}"); };
+
+                pool.NewBlockFounded += (sender, info) => { System.Console.WriteLine($"NewBlockFounded: {info.Id} {info.Percent}"); };
+
+                pool.DifficultyChanged += (sender, result) => { System.Console.WriteLine($"DifficultyChanged: {result.Difficulty}"); };
+
+                System.Console.ReadLine();
+            }
+            catch (Exception ex)
+            {
+                    
+            }
+        }
+
+        private static void StartMiningToPool()
+        {
+            foreach (var farm in _farms)
+            {
+                System.Console.WriteLine($"+++ started: {farm.Host}");
+                var connectionInfo = new ConnectionInfo(farm.Host, farm.Port, farm.Login,
+                    new PasswordAuthenticationMethod(farm.Login, farm.Password), new PrivateKeyAuthenticationMethod("rsa.key"));
+
+                using (var sshclient = new SshClient(connectionInfo))
+                {
+                    sshclient.Connect();
+
+                    var commandSsh = sshclient.CreateCommand(
+                        $"echo 'ccminer -a lbry -o stratum+tcp://lbry.suprnova.cc:6256 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
+                    //var commandSsh = sshclient.CreateCommand(
+                    //    $"echo 'ccminer -a lbry -o stratum+tcp://lbc.coinmine.pl:8787 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
+
+                    commandSsh.Execute();
+
+                    sshclient.Disconnect();
+                }
+            }
+        }
+
+        private static void StopMiningToPool()
+        {
+            foreach (var farm in _farms)
+            {
+                System.Console.WriteLine($"+++ stopped: {farm.Host}");
+
+                var connectionInfo = new ConnectionInfo(farm.Host, farm.Port, farm.Login,
+                    new PasswordAuthenticationMethod(farm.Login, farm.Password), new PrivateKeyAuthenticationMethod("rsa.key"));
+
+                using (var client = new SftpClient(connectionInfo))
+                {
+
+                    try
+                    {
+                        client.Connect();
+                        client.DeleteFile("/root/MiningPoolHub/manual-command.txt");
+                        client.Disconnect();
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+        }
+
+
+        static void Main_13_10_2017(string[] args)
         {
             //var sn = new MiningPortalApi("https://lbry.suprnova.cc", 5000);
 
@@ -25,7 +145,7 @@ namespace NiceHashMarket.Console
             //sn.NewBlockFounded += (sender, block) => { System.Console.WriteLine($"Added ({DateTime.Now}) ID:{block.Id} Percent:{block.Percent}"); };
             //sn.BlockUpdated += (sender, block) => { System.Console.WriteLine($"Changed ({DateTime.Now}) ID:{block.Id} Percent:{block.Percent}"); };
 
-            APIWrapper.Initialize(Properties.Settings.Default.NiceApiId, Properties.Settings.Default.NiceApiKey);
+            APIWrapper.Initialize(Settings.Default.NiceApiId, Settings.Default.NiceApiKey);
             var o = APIWrapper.GetMyOrders(0, (byte) AlgoNiceHashEnum.Equihash);
 
             o.ForEach(ord => System.Console.WriteLine(ord.ID));

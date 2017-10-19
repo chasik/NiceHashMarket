@@ -55,6 +55,8 @@
     <Compile Include="ApiClient.cs" />
     <Compile Include="DataStorage.cs" />
     <Compile Include="DashboardPoolResult.cs" />
+    <Compile Include="FarmConnectionInfo.cs" />
+    <Compile Include="FarmsStorage.cs" />
     <Compile Include="NiceBindingList.cs" />
     <Compile Include="OrdersStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,7 +92,13 @@
     <EmbeddedResource Include="Algorithms.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="FarmsConnectionInfo.txt.sample" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FarmsConnectionInfo.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

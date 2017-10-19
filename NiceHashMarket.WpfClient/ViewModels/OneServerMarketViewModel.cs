@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
@@ -20,6 +21,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
     public class OneServerMarketViewModel : ISupportParentViewModel, ISupportParameter
     {
         private DateTime _lastJumpOnServerDateTime;
+        private Timer _timer;
         public virtual ServerEnum Server { get; set; }
         public virtual NiceBindingList<Order> Orders { get; set; }
 
@@ -42,15 +44,21 @@ namespace NiceHashMarket.WpfClient.ViewModels
         {
             Messenger.Default.Register<CheckAutoStartMessage>(this, m =>
             {
-                CatchUp = m.Checked;
-                if (CatchUp)
+                if (m.Checked)
                 {
                     CalcLevelForJump();
                     CalcServersPowers();
                 }
 
+                CatchUp = m.Checked;
+
                 MarketLogger.Information($"!!! AutoStart message {m.Checked}!!!");
             });
+
+            _timer = new Timer(state =>
+            {
+                CalcLevelForJump();
+            }, null, 0, 500);
         }
 
         protected void OnParameterChanged()
@@ -175,17 +183,20 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         private void CalcLevelForJump()
         {
-            OrderUpJumpLevel = null;
+            if (Orders == null || !Orders.Any())
+                return;
+
+                OrderUpJumpLevel = null;
             JumpedOrders.Clear();
             //var speedLimit = 0.1m;
-            var workersPercentLimit = 80;
+            var workersPercentLimit = 60;
             //var speedSumm = 0m;
             var workersSumm = 0;
 
             var calculatedOrders = Orders.Where(o => o.Workers > 0
                 && o.Active && o.Type == OrderTypeEnum.Standart
                 && (!(ParentViewModel is IHaveMyOrders) || ((IHaveMyOrders)ParentViewModel).MyOrders.All(myOrder => myOrder.Id != o.Id)))
-                .OrderBy(o => o.Price);
+                .OrderBy(o => o.Price).ToList();
 
             var workersAll = calculatedOrders.Sum(o => o.Workers);
 
@@ -211,15 +222,14 @@ namespace NiceHashMarket.WpfClient.ViewModels
             //MarketLogger.Information(
             //    $"OneServerMarketViewModel JumpedOrders.Count:{JumpedOrders.Count} {Server} JumpTo OrderId: {OrderUpJumpLevel.Id} OrderPrice:{OrderUpJumpLevel.Price} speedSumBelow:{speedSumm}");
 
-            if (CatchUp)
-                DoJump(OrderUpJumpLevel);
-            else
-                _lastJumpOnServerDateTime = DateTime.Now;
+            _lastJumpOnServerDateTime = CatchUp 
+                ? DoJump(OrderUpJumpLevel) 
+                : DateTime.Now;
         }
 
-        private void DoJump(Order targetOrder)
+        private DateTime DoJump(Order targetOrder)
         {
-            _lastJumpOnServerDateTime = (ParentViewModel as ICanJump)?.DoJump(targetOrder) ?? DateTime.Now;
+            return (ParentViewModel as ICanJump)?.DoJump(targetOrder) ?? DateTime.Now;
         }
 
         public void AddNewOrder()

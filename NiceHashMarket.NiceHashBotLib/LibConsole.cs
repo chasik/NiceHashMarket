@@ -21,7 +21,7 @@ namespace NiceHashBotLib
         public static void OpenConsole()
         {
 #if !MONO
-            AllocConsole();
+            //AllocConsole();
 #endif
         }
 
@@ -34,7 +34,7 @@ namespace NiceHashBotLib
             else
                 Console.ForegroundColor = ConsoleColor.Red;
 
-            Console.WriteLine("[" + DateTime.Now.ToString() + "] " + Type.ToString() + ": " + Text);
+            NiceHashMarket.Logger.MarketLogger.Information($"NICEHASHBOT: {Type} : {Text}");
         }
     }
 }
