@@ -30,7 +30,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
         private const string LbrySuprnovaUrl = "https://lbry-api.suprnova.cc";
         private const string LbryCoinmineUrl = "https://www2.coinmine.pl/lbc";
         private const double OrderAmount = 0.01;
-        private const int TimeWaitBetweenApiCalls = 1000;
+        private const int TimeWaitBetweenApiCalls = 900;
         private const int LowLevelOfDiff = 300000;
         private const int HeighLevelOfDiff = 600000;
 

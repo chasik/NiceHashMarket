@@ -40,8 +40,12 @@ namespace NiceHashMarket.WpfClient.ViewModels
         public virtual int WorkersOnServer { get; set; }
         public virtual int MyWorkersOnServer { get; set; }
 
+        public virtual int WorkersPercentLimit { get; set; }
+
         public OneServerMarketViewModel()
         {
+            WorkersPercentLimit = 60;
+
             Messenger.Default.Register<CheckAutoStartMessage>(this, m =>
             {
                 if (m.Checked)
@@ -58,7 +62,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
             _timer = new Timer(state =>
             {
                 CalcLevelForJump();
-            }, null, 0, 500);
+            }, null, 0, 300);
         }
 
         protected void OnParameterChanged()
@@ -186,11 +190,13 @@ namespace NiceHashMarket.WpfClient.ViewModels
             if (Orders == null || !Orders.Any())
                 return;
 
-                OrderUpJumpLevel = null;
-            JumpedOrders.Clear();
-            //var speedLimit = 0.1m;
-            var workersPercentLimit = 60;
-            //var speedSumm = 0m;
+            lock (this)
+            {
+                JumpedOrders.Clear();
+            }
+
+            OrderUpJumpLevel = null;
+
             var workersSumm = 0;
 
             var calculatedOrders = Orders.Where(o => o.Workers > 0
@@ -205,12 +211,14 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     if (OrderUpJumpLevel != null)
                         return;
 
-                    JumpedOrders.Add(o);
+                    lock (this)
+                    {
+                        JumpedOrders.Add(o);
+                    }
 
-                    //speedSumm += o.Speed;
                     workersSumm += o.Workers;
 
-                    if (workersSumm * 100 / workersAll >= workersPercentLimit /*speedSumm > speedLimit || */)
+                    if (workersSumm * 100 / workersAll >= WorkersPercentLimit)
                         OrderUpJumpLevel = o;
                 });
 

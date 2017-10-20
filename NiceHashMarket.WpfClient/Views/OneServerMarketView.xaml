@@ -24,6 +24,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -45,8 +46,9 @@
             <Button Content="+1 ордер" DockPanel.Dock="Right"
                     Command="{Binding AddNewOrderCommand}"/>
         </DockPanel>
-        
-        <dxg:GridControl Grid.Row="1"  SelectionMode="Row"
+        <Slider Grid.Row="1" Minimum="0" Maximum="100" LargeChange="10" SmallChange="10"
+                Value="{Binding Path=WorkersPercentLimit, Mode=TwoWay}"/>
+        <dxg:GridControl Grid.Row="2"  SelectionMode="Row"
                          AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
                          ItemsSource="{Binding Orders}">
             <dxg:GridControl.Columns>
