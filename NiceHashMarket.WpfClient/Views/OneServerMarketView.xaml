@@ -18,7 +18,7 @@
 
     <UserControl.Resources>
         <converters:HistoryCollectionConverter x:Key="HistoryCollectionConverter" />
-        <converters:DetectMyOrderConverter x:Key="DetectMyOrderConverter" />
+        <converters:DetectOrderInListConverter x:Key="DetectOrderInListConverter" />
     </UserControl.Resources>
 
     <Grid>
@@ -46,7 +46,7 @@
             <Button Content="+1 ордер" DockPanel.Dock="Right"
                     Command="{Binding AddNewOrderCommand}"/>
         </DockPanel>
-        <Slider Grid.Row="1" Minimum="0" Maximum="100" LargeChange="10" SmallChange="10"
+        <Slider Grid.Row="1" Minimum="0" Maximum="100" LargeChange="5" SmallChange="5"
                 Value="{Binding Path=WorkersPercentLimit, Mode=TwoWay}"/>
         <dxg:GridControl Grid.Row="2"  SelectionMode="Row"
                          AutoGenerateColumns="None" EnableSmartColumnsGeneration="True" 
@@ -70,7 +70,7 @@
                                             </DataTrigger>
                                             <DataTrigger Value="True">
                                                 <DataTrigger.Binding>
-                                                    <MultiBinding Converter="{StaticResource DetectMyOrderConverter}">
+                                                    <MultiBinding Converter="{StaticResource DetectOrderInListConverter}">
                                                         <Binding Path="RowData.Row.Id" />
                                                         <Binding Path="DataContext.ParentViewModel.MyOrders" RelativeSource="{RelativeSource AncestorType=UserControl, Mode=FindAncestor}" />
                                                     </MultiBinding>
@@ -79,7 +79,7 @@
                                             </DataTrigger>
                                             <DataTrigger Value="True">
                                                 <DataTrigger.Binding>
-                                                    <MultiBinding Converter="{StaticResource DetectMyOrderConverter}">
+                                                    <MultiBinding Converter="{StaticResource DetectOrderInListConverter}">
                                                         <Binding Path="RowData.Row.Id" />
                                                         <Binding Path="DataContext.JumpedOrders" RelativeSource="{RelativeSource AncestorType=UserControl, Mode=FindAncestor}" />
                                                     </MultiBinding>

@@ -228,6 +228,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
                                 MyOrders.Remove(MyOrders.First(or => or.Id == newOrder.Id));
 
                             MyOrders.Add(newOrder);
+                            MarketLogger.Information($"GetMyOrders method on {server} server: add order {newOrder.Id}");
                         });
                     });
                 });
@@ -584,11 +585,11 @@ namespace NiceHashMarket.WpfClient.ViewModels
             //var amount = balance.Confirmed < OrderAmount + 0.005 ? balance.Confirmed : OrderAmount;
             var amount = balance.Confirmed;
 
-            var pool = new NiceHashBotLib.Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
-            var limit = _random.Next(3, 6) + _random.Next(1, 99) / 100.0;
-
-            //var pool = new NiceHashBotLib.Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
+            //var pool = new NiceHashBotLib.Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
             //var limit = _random.Next(3, 6) + _random.Next(1, 99) / 100.0;
+
+            var pool = new NiceHashBotLib.Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
+            var limit = _random.Next(3, 6) + _random.Next(1, 99) / 100.0;
 
             var price = (double) (minPriceOnServer + _random.Next(1, 99) / 10000.0m);
 

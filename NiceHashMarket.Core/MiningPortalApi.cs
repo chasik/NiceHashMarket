@@ -16,7 +16,7 @@ namespace NiceHashMarket.Core
     {
         private readonly string _host;
         private Timer _timer;
-        private readonly string _restRequest;
+        private readonly string _blocksRequest;
         private int _currentTimeZoneHoursOffset;
         private string _apiId;
         private string _apiKey;
@@ -52,14 +52,14 @@ namespace NiceHashMarket.Core
 
             Blocks = new ConcurrentQueue<BlockInfo>();
 
-            _restRequest = $"{_host}/index.php?page=statistics&action=blocks";
+            _blocksRequest = $"{_host}/index.php?page=statistics&action=blocks";
 
             _timer = new Timer(TimerHandler, null, 0, period);
         }
 
         private void TimerHandler(object state)
         {
-            Task.Factory.StartNew(() => { GetStatisticOfBlocks(DateTime.Now); });
+            Task.Factory.StartNew(() => { GetStatisticOfBlocks(DateTime.Now, Blocks.Any() ? 0 : 49); });
 
             if (_apiKey != null && _apiId != null)
             {
@@ -104,25 +104,36 @@ namespace NiceHashMarket.Core
             return dashBoardResponse;
         }
 
-        private void GetStatisticOfBlocks(DateTime queryTime)
+        private void GetStatisticOfBlocks(DateTime queryTime, int lastBlocksCount = 0)
         {
             var web = new HtmlWeb();
+            var stepsCounter = 0;
+            do
+            {
+                ParseOnPageAndFindBlocks(web, stepsCounter);
+                stepsCounter++;
+            } while (lastBlocksCount > 0 && Blocks.Count < lastBlocksCount && stepsCounter < 6);
+        }
 
+        private void ParseOnPageAndFindBlocks(HtmlWeb web, int stepsCounter)
+        {
             HtmlDocument document = null;
             try
             {
-                document = web.Load(_restRequest);
+                document = web.Load(stepsCounter == 0 || !Blocks.Any()
+                    ? _blocksRequest
+                    : $"{_blocksRequest}&height={Blocks.OrderBy(b => b.Id).First()?.Id}");
             }
             catch (Exception ex)
             {
-                MarketLogger.Error(ex, $"GetStatisticOfBlocks {ex.Message} {_restRequest}");
+                MarketLogger.Error(ex, $"GetStatisticOfBlocks {ex.Message} {_blocksRequest}");
             }
 
             if (document == null)
                 return;
 
             var rowsOfBlock = document.DocumentNode.Descendants("table")
-                .Where(y => y.Attributes.Contains("class") 
+                .Where(y => y.Attributes.Contains("class")
                         && y.Attributes["class"].Value.Contains("table")
                         && y.Attributes["class"].Value.Contains("table-striped")
                         && y.Attributes["class"].Value.Contains("table-bordered")
@@ -160,7 +171,7 @@ namespace NiceHashMarket.Core
                     existBlock.Percent = block.Percent;
                     OnBlockUpdated(existBlock);
                 }
-                
+
             });
         }
 

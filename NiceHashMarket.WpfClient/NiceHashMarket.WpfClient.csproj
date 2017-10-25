@@ -71,7 +71,7 @@
     </ApplicationDefinition>
     <Compile Include="Interfaces\ICanAddOrder.cs" />
     <Compile Include="Messages\CheckAutoStartMessage.cs" />
-    <Compile Include="Converters\DetectMyOrderConverter.cs" />
+    <Compile Include="Converters\DetectOrderInListConverter.cs" />
     <Compile Include="Converters\LastBlockCreatedValueConverter.cs" />
     <Compile Include="Converters\LastBlockPercentValueConverter.cs" />
     <Compile Include="Converters\HistoryCollectionConverter.cs" />

@@ -198,10 +198,12 @@ namespace NiceHashMarket.WpfClient.ViewModels
             OrderUpJumpLevel = null;
 
             var workersSumm = 0;
+            var myOrders = ((IHaveMyOrders) ParentViewModel).MyOrders.ToArray();
 
-            var calculatedOrders = Orders.Where(o => o.Workers > 0
+            var calculatedOrders = Orders.Where(o => 
+                o.Workers > 0 && (o.Amount > 0.05m || o.Amount < 0.01m)
                 && o.Active && o.Type == OrderTypeEnum.Standart
-                && (!(ParentViewModel is IHaveMyOrders) || ((IHaveMyOrders)ParentViewModel).MyOrders.All(myOrder => myOrder.Id != o.Id)))
+                && (!(ParentViewModel is IHaveMyOrders) || myOrders.All(myOrder => myOrder.Id != o.Id)))
                 .OrderBy(o => o.Price).ToList();
 
             var workersAll = calculatedOrders.Sum(o => o.Workers);
