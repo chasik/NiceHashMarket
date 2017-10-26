@@ -31,7 +31,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
         private const string LbryCoinmineUrl = "https://www2.coinmine.pl/lbc";
         private const double OrderAmount = 0.01;
         private const int TimeWaitBetweenApiCalls = 900;
-        private const int LowLevelOfDiff = 300000;
+        private const int LowLevelOfDiff = 50000;
         private const int HeighLevelOfDiff = 600000;
 
         #region | Fields |
@@ -132,7 +132,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             #region | local DataSource |
 
-            _ordersStorage = new OrdersStorage(_algoList.First(a => a.Id == (byte)CurrentAlgo), 1000, Application.Current.Dispatcher);
+            _ordersStorage = new OrdersStorage(_algoList.First(a => a.Id == (byte)CurrentAlgo), 900, Application.Current.Dispatcher);
 
             #endregion
 
@@ -204,7 +204,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 });
         }
 
-        private void GetMyOrders()
+        public void GetMyOrders()
         {
             GetMyOrdersOnServer(ServerEnum.Europe);
             GetMyOrdersOnServer(ServerEnum.Usa);
@@ -230,6 +230,9 @@ namespace NiceHashMarket.WpfClient.ViewModels
                             MyOrders.Add(newOrder);
                             MarketLogger.Information($"GetMyOrders method on {server} server: add order {newOrder.Id}");
                         });
+
+                        var forRemove = MyOrders.Where(myOrder => myOrder.Server == server && myOrders.Result.All(ord => ord.ID != myOrder.Id)).ToList();
+                        forRemove.ForEach(orderForRemove => MyOrders.RemoveIfExistById(orderForRemove.Id));
                     });
                 });
         }
@@ -351,9 +354,9 @@ namespace NiceHashMarket.WpfClient.ViewModels
             var myOrderForJump = MyOrders.OrderByDescending(o => o.Price)
                 //OrderBy(o => o.Price) 
                 //OrderBy(o => o.Speed).ThenBy(o => o.Workers).ThenBy(o => o.Price)
-                .FirstOrDefault(o => o.Server == targetOrder.Server && o.Price <= targetOrder.Price);
+                .FirstOrDefault(o => o.Server == targetOrder.Server /*&& o.Price <= targetOrder.Price*/);
 
-            if (myOrderForJump == null || _ordersStorage.GetOrderById(myOrderForJump.Id) == null)
+            if (myOrderForJump == null || myOrderForJump.Price >= targetOrder.Price || _ordersStorage.GetOrderById(myOrderForJump.Id) == null)
             {
                 //GetMyOrders();
                 return DateTime.Now;
@@ -582,14 +585,14 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 return;
             }
 
-            //var amount = balance.Confirmed < OrderAmount + 0.005 ? balance.Confirmed : OrderAmount;
-            var amount = balance.Confirmed;
+            var amount = balance.Confirmed < OrderAmount + 0.005 ? balance.Confirmed : OrderAmount;
+            //var amount = balance.Confirmed;
 
-            //var pool = new NiceHashBotLib.Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
+            var pool = new NiceHashBotLib.Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
+            var limit = _random.Next(3, 5) + _random.Next(1, 99) / 100.0;
+
+            //var pool = new NiceHashBotLib.Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
             //var limit = _random.Next(3, 6) + _random.Next(1, 99) / 100.0;
-
-            var pool = new NiceHashBotLib.Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
-            var limit = _random.Next(3, 6) + _random.Next(1, 99) / 100.0;
 
             var price = (double) (minPriceOnServer + _random.Next(1, 99) / 10000.0m);
 

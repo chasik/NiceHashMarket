@@ -210,7 +210,8 @@
 
             <StackPanel DockPanel.Dock="Bottom">
                 <TextBlock Text="Ордера:" />
-                <dxe:ListBoxEdit Height="100" ItemsSource="{Binding MyOrders}" ValueMember="Id" DisplayMember="Id">
+                <dxe:ListBoxEdit Height="100" ItemsSource="{Binding MyOrders}" ValueMember="Id" DisplayMember="Id"
+                                 MouseDoubleClick="{DXEvent Handler='GetMyOrders()'}">
                     
                 </dxe:ListBoxEdit>
             </StackPanel>

@@ -97,10 +97,13 @@ namespace NiceHashMarket.Console
                 {
                     sshclient.Connect();
 
-                    //var commandSsh = sshclient.CreateCommand(
-                    //    $"echo 'ccminer -a lbry -o stratum+tcp://lbry.suprnova.cc:6256 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
                     var commandSsh = sshclient.CreateCommand(
-                        $"echo 'ccminer -a lbry -o stratum+tcp://lbc.coinmine.pl:8787 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
+                        $"echo 'ccminer -a lbry -o stratum+tcp://lbry.suprnova.cc:6256 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
+                    //var commandSsh = sshclient.CreateCommand(
+                    //    $"echo 'ccminer -a lbry -o stratum+tcp://lbc.coinmine.pl:8787 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
+                    //" --server $algo_str.eu.nicehash.com --user $USER --pass x --port ${port} --solver 0 --fee 0 --cuda_devices "
+                    //var commandSsh = sshclient.CreateCommand(
+                    //    $"echo 'miner --server zec-eu.suprnova.cc --port 2142 --user {farm.Worker} --pass x --solver 0 --fee 0 --cuda_devices' > /root/MiningPoolHub/manual-command.txt");
 
                     //var commandSsh = sshclient.CreateCommand(
                     //    $"echo 'ccminer -a lyra2v2 -o stratum+tcp://lyra2rev2.eu.nicehash.com:3347 -u 3EmSA4xHw1p7gNvMeFCY5BG5e2zpve12ba.moscow -p x' > /root/MiningPoolHub/manual-command.txt");

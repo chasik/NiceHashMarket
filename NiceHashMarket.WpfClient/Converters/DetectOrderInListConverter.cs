@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
+using System.Windows.Navigation;
 using NiceHashMarket.Core;
 using NiceHashMarket.Model;
 
@@ -23,8 +24,15 @@ namespace NiceHashMarket.WpfClient.Converters
 
             while (counter < orderList.Count)
             {
-                if (orderList[counter]?.Id == orderId)
-                    return true;
+                try
+                {
+                    if (orderList[counter]?.Id == orderId)
+                        return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
 
                 counter++;
             }
