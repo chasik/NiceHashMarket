@@ -26,5 +26,11 @@
     <Setting Name="NiceApiIdGmail" Type="System.String" Scope="User">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
+    <Setting Name="NiceApiKeyMail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
+    </Setting>
+    <Setting Name="NiceApiIdMail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

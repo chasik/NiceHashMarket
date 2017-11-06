@@ -151,10 +151,13 @@ namespace NiceHashMarket.Core
 
                 if (id == null) return;
 
+                //var descendants = r.Descendants("td").ToList();
+
                 var percent = r.Descendants("td").LastOrDefault()?.Descendants("font").Single().InnerText;
                 var dateTime = r.Descendants("td").Skip(3).FirstOrDefault()?.InnerText;
-
-                var block = new BlockInfo(id, percent, DateTime.ParseExact(dateTime, "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture).AddHours(_currentTimeZoneHoursOffset));
+                var diff = r.Descendants("td").Skip(4).FirstOrDefault()?.InnerText;
+                double.TryParse(diff, NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var diffDouble);
+                var block = new BlockInfo(id, percent, diffDouble, DateTime.ParseExact(dateTime, "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture).AddHours(_currentTimeZoneHoursOffset));
 
                 OnRowOfBlockParsed(block);
 
@@ -165,6 +168,7 @@ namespace NiceHashMarket.Core
                     Blocks.Enqueue(block);
 
                     OnNewBlockFounded(block);
+                    OnDifficultyChanged(new DashboardPoolResult{Difficulty = block.Difficulty,QueryDateTime = block.Created});
                 }
                 else if (Math.Abs(existBlock.Percent - block.Percent) > 0.001 && existBlock.Percent < block.Percent)
                 {

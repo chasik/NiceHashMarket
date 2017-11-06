@@ -64,6 +64,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NiceHashMarket.Core.Helpers\NiceHashMarket.Core.Helpers.csproj">
+      <Project>{EF7CE819-802A-41B1-8B30-DC551985F585}</Project>
+      <Name>NiceHashMarket.Core.Helpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NiceHashMarket.Core.Interfaces\NiceHashMarket.Core.Interfaces.csproj">
       <Project>{7f2a4c8d-9dc1-48a0-84fd-0d365191a04d}</Project>
       <Name>NiceHashMarket.Core.Interfaces</Name>

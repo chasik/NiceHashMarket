@@ -29,6 +29,11 @@ namespace NiceHashMarket.Core
 
         public double RoundProgress { get; set; } = -1;
 
+        public DashboardPoolResult()
+        {
+            
+        }
+
         public DashboardPoolResult(string host, DateTime queryDateTime, MetricPrefixEnum metricPrefix, string apiKey, string apiId)
         {
             QueryDateTime = queryDateTime;

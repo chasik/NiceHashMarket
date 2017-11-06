@@ -9,14 +9,16 @@ namespace NiceHashMarket.Model
     public class BlockInfo : INotifyPropertyChanged, ICloneable
     {
         private double _percent;
+        private int _difficulty;
         private DateTime _created;
         private string _id;
 
-        public BlockInfo(string id, string percent, DateTime created)
+        public BlockInfo(string id, string percent, double diffDouble, DateTime created)
         {
             Id = id;
             Created = created;
             Percent = -1;
+            Difficulty = (int)diffDouble;
 
             if (double.TryParse(percent, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double parsePercent))
                 Percent = parsePercent;
@@ -48,6 +50,16 @@ namespace NiceHashMarket.Model
             set
             {
                 _percent = value; 
+                OnPropertyChanged();
+            }
+        }
+
+        public int Difficulty
+        {
+            get => _difficulty;
+            set
+            {
+                _difficulty = value; 
                 OnPropertyChanged();
             }
         }

@@ -118,5 +118,29 @@ namespace NiceHashMarket.WpfClient.Properties {
                 this["NiceApiIdGmail"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
+        public string NiceApiKeyMail {
+            get {
+                return ((string)(this["NiceApiKeyMail"]));
+            }
+            set {
+                this["NiceApiKeyMail"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
+        public string NiceApiIdMail {
+            get {
+                return ((string)(this["NiceApiIdMail"]));
+            }
+            set {
+                this["NiceApiIdMail"] = value;
+            }
+        }
     }
 }

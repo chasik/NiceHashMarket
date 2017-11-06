@@ -9,10 +9,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using NiceHashBotLib;
 using NiceHashMarket.Console.Properties;
+using NiceHashMarket.Core.Helpers;
 using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
 using Renci.SshNet;
+using Renci.SshNet.Common;
 using Order = NiceHashBotLib.Order;
 
 namespace NiceHashMarket.Console
@@ -31,6 +33,15 @@ namespace NiceHashMarket.Console
                 var lastStop = DateTime.MinValue;
 
                 _farms = FarmsStorage.LoadFromFile("FarmsConnectionInfo.txt");
+
+                //if (args.Any(a => string.Equals(a, "s", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    var progress = new Progress<ScriptOutputLine>(s => { System.Console.WriteLine(s.Line); });
+                    var token = new CancellationToken();
+                    ScreenPoolSsh(progress, token);
+                    System.Console.ReadLine();
+                    return;
+                }
 
                 if (args.Any(a => string.Equals(a, "d", StringComparison.InvariantCultureIgnoreCase)))
                 {
@@ -55,7 +66,7 @@ namespace NiceHashMarket.Console
                     System.Console.WriteLine($"RoundProgress: {result.RoundProgress} %  diff: {result.Difficulty}");
                     if (result.RoundProgress < 0) return;
 
-                    if ((result.RoundProgress < 50 && result.Difficulty < 260000)
+                    if (result.RoundProgress < 50 && result.Difficulty < 260000
                         && Math.Abs((lastStart - DateTime.Now).TotalMilliseconds) > 30000)
                     {
                         lastStart = DateTime.Now;
@@ -85,6 +96,28 @@ namespace NiceHashMarket.Console
             }
         }
 
+        private static void ScreenPoolSsh(IProgress<ScriptOutputLine> progress, CancellationToken token)
+        {
+            foreach (var farm in _farms)
+            {
+                System.Console.WriteLine($"+++ started: {farm.Host}");
+                var connectionInfo = new ConnectionInfo(farm.Host, farm.Port, farm.Login,
+                    new PasswordAuthenticationMethod(farm.Login, farm.Password), new PrivateKeyAuthenticationMethod("rsa.key"));
+
+                var sshclient = new SshClient(connectionInfo);
+                
+                sshclient.Connect();
+
+                //var commandSsh = sshclient.CreateCommand($"screen -x miner");
+                //var commandSsh = sshclient.CreateCommand($"ssh -t {farm.Login}@{farm.Host}:{farm.Port} screen -x miner");
+
+                //sshclient.CreateShellStream("screent", 80,24,800,600,1024, new Dictionary<TerminalModes, uint>{n})
+
+                //commandSsh.ExecuteAsync(progress, token);
+            }
+        }
+    
+
         private static void StartMiningToPool()
         {
             foreach (var farm in _farms)
@@ -97,16 +130,28 @@ namespace NiceHashMarket.Console
                 {
                     sshclient.Connect();
 
-                    var commandSsh = sshclient.CreateCommand(
-                        $"echo 'ccminer -a lbry -o stratum+tcp://lbry.suprnova.cc:6256 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
+                    //var commandSsh = sshclient.CreateCommand(
+                    //    $"echo 'ccminer -a lbry -o stratum+tcp://lbry.suprnova.cc:6256 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
                     //var commandSsh = sshclient.CreateCommand(
                     //    $"echo 'ccminer -a lbry -o stratum+tcp://lbc.coinmine.pl:8787 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
-                    //" --server $algo_str.eu.nicehash.com --user $USER --pass x --port ${port} --solver 0 --fee 0 --cuda_devices "
+
                     //var commandSsh = sshclient.CreateCommand(
                     //    $"echo 'miner --server zec-eu.suprnova.cc --port 2142 --user {farm.Worker} --pass x --solver 0 --fee 0 --cuda_devices' > /root/MiningPoolHub/manual-command.txt");
 
                     //var commandSsh = sshclient.CreateCommand(
                     //    $"echo 'ccminer -a lyra2v2 -o stratum+tcp://lyra2rev2.eu.nicehash.com:3347 -u 3EmSA4xHw1p7gNvMeFCY5BG5e2zpve12ba.moscow -p x' > /root/MiningPoolHub/manual-command.txt");
+
+                    //var commandSsh = sshclient.CreateCommand(
+                    //    $"echo 'ccminer -a sib -o stratum+tcp://sib.suprnova.cc:3458 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
+
+                    //var commandSsh = sshclient.CreateCommand(
+                    //    $"echo 'ccminer -a lyra2v2 -o stratum+tcp://hub.miningpoolhub.com:20507 -u {farm.Worker} -p x' > /root/MiningPoolHub/manual-command.txt");
+
+                    //var commandSsh = sshclient.CreateCommand(
+                    //    $"echo 'miner --server equihash.eu.nicehash.com --user 3EmSA4xHw1p7gNvMeFCY5BG5e2zpve12ba.home --pass x --port 3357 --solver 0 --fee 0 --cuda_devices' > /root/MiningPoolHub/manual-command.txt");
+
+                    var commandSsh = sshclient.CreateCommand(
+                        $"echo 'ccminer -a cryptonight -o stratum+tcp://cryptonight.eu.nicehash.com:3355 -u 3EmSA4xHw1p7gNvMeFCY5BG5e2zpve12ba.home -p x' > /root/MiningPoolHub/manual-command.txt");
 
                     commandSsh.Execute();
 

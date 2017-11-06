@@ -166,8 +166,11 @@ namespace NiceHashMarket.WpfClient.ViewModels
             //    {ServerEnum.Usa, new List<string> { Settings.Default.NiceApiIdGmail, Settings.Default.NiceApiKeyGmail}}
             //};
 
-            APIWrapper.EuropeApiId = Settings.Default.NiceApiIdYandex;
-            APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyYandex;
+            //APIWrapper.EuropeApiId = Settings.Default.NiceApiIdYandex;
+            //APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyYandex;
+
+            APIWrapper.EuropeApiId = Settings.Default.NiceApiIdMail;
+            APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyMail;
 
             APIWrapper.UsaApiId = Settings.Default.NiceApiIdGmail;
             APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyGmail;
@@ -349,7 +352,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         public DateTime DoJump(Order targetOrder)
         {
-            var newPrice = targetOrder.Price + _random.Next(1, 4) * 0.0001m;
+            var newPrice = targetOrder.Price + /*_random.Next(1, 4) **/ 0.0001m;
 
             var myOrderForJump = MyOrders.OrderByDescending(o => o.Price)
                 //OrderBy(o => o.Price) 
@@ -387,6 +390,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     }
                     else
                     {
+                        Application.Current.Dispatcher.Invoke(() => { myOrderForJump.Price = (decimal) priceResult; });
+
                         var lastCallApi = AddOrUpdateLastApiCallDateTime(myOrderForJump, ApiCallType.Success);
                         MarketLogger.Information(
                             $"{DateTime.Now} JumpGuid:{jumpGuid} server:{targetOrder.Server} id:{myOrderForJump.Id} price changed, new price:{priceResult}" + " {@lastCallApi}", lastCallApi);
@@ -585,8 +590,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 return;
             }
 
-            var amount = balance.Confirmed < OrderAmount + 0.005 ? balance.Confirmed : OrderAmount;
-            //var amount = balance.Confirmed;
+            //var amount = balance.Confirmed < OrderAmount + 0.005 ? balance.Confirmed : OrderAmount;
+            var amount = balance.Confirmed;
 
             var pool = new NiceHashBotLib.Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
             var limit = _random.Next(3, 5) + _random.Next(1, 99) / 100.0;
@@ -594,7 +599,10 @@ namespace NiceHashMarket.WpfClient.ViewModels
             //var pool = new NiceHashBotLib.Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
             //var limit = _random.Next(3, 6) + _random.Next(1, 99) / 100.0;
 
-            var price = (double) (minPriceOnServer + _random.Next(1, 99) / 10000.0m);
+            //var pool = new NiceHashBotLib.Pool { Label = "VertCoin MiningPoolHub", Host = "hub.miningpoolhub.com", Port = 20507, User = "wchasik.nice1", Password = "x" };
+            //var limit = 500;
+
+            var price = (double) (minPriceOnServer + _random.Next(1, 33) / 10000.0m);
 
             Task.Factory.StartNew(() => server.OrderCreate(CurrentAlgo, amount, price, limit, pool)
             ).ContinueWith(t =>
