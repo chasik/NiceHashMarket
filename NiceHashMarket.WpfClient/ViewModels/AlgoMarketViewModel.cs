@@ -153,7 +153,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     , LastBlocksSuprNova);
 
             GetLastBlocksFromPool(
-                new MiningPortalApi(LbryCoinmineUrl, 5000, +1, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
+                new MiningPortalApi(LbryCoinmineUrl, 5000, +2, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
                     , LastBlocksCoinMinePl);
 
             #endregion
@@ -166,14 +166,17 @@ namespace NiceHashMarket.WpfClient.ViewModels
             //    {ServerEnum.Usa, new List<string> { Settings.Default.NiceApiIdGmail, Settings.Default.NiceApiKeyGmail}}
             //};
 
-            //APIWrapper.EuropeApiId = Settings.Default.NiceApiIdYandex;
-            //APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyYandex;
+            APIWrapper.EuropeApiId = Settings.Default.NiceApiIdYandex;
+            APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyYandex;
 
-            APIWrapper.EuropeApiId = Settings.Default.NiceApiIdMail;
-            APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyMail;
+            //APIWrapper.EuropeApiId = Settings.Default.NiceApiIdMail;
+            //APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyMail;
 
-            APIWrapper.UsaApiId = Settings.Default.NiceApiIdGmail;
-            APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyGmail;
+            //APIWrapper.UsaApiId = Settings.Default.NiceApiIdGmail;
+            //APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyGmail;
+
+            APIWrapper.UsaApiId = Settings.Default.NiceApiIdMail;
+            APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyMail;
 
 
 
@@ -352,14 +355,16 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
         public DateTime DoJump(Order targetOrder)
         {
-            var newPrice = targetOrder.Price + /*_random.Next(1, 4) **/ 0.0001m;
+            if (targetOrder == null) return DateTime.Now;
+
+            var newPrice = targetOrder.Price + _random.Next(1, 4) * 0.0001m;
 
             var myOrderForJump = MyOrders.OrderByDescending(o => o.Price)
                 //OrderBy(o => o.Price) 
                 //OrderBy(o => o.Speed).ThenBy(o => o.Workers).ThenBy(o => o.Price)
                 .FirstOrDefault(o => o.Server == targetOrder.Server /*&& o.Price <= targetOrder.Price*/);
 
-            if (myOrderForJump == null || myOrderForJump.Price >= targetOrder.Price || _ordersStorage.GetOrderById(myOrderForJump.Id) == null)
+            if (myOrderForJump == null || myOrderForJump.Price > targetOrder.Price || _ordersStorage.GetOrderById(myOrderForJump.Id) == null)
             {
                 //GetMyOrders();
                 return DateTime.Now;
@@ -407,7 +412,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             if ((decimal) (WhattomineResult.MaxPrice24 + WhattomineResult.MaxPrice24 / 100 * 30) < newPrice)
             {
-                MarketLogger.Information("NOT allow jump : +30% of max price : {@server} {@apiCall}", lastCall.Order.Server.ToString(), lastCall);
+                MarketLogger.Information("NOT allow jump : +30% of max price : {@server} {@apiCall}", lastCall?.Order.Server.ToString(), lastCall);
                 return false;
             }
             if (lastCall?.Type == ApiCallType.InProcess && Math.Abs(deltaTime.TotalMilliseconds) < TimeWaitBetweenApiCalls)
@@ -593,11 +598,11 @@ namespace NiceHashMarket.WpfClient.ViewModels
             //var amount = balance.Confirmed < OrderAmount + 0.005 ? balance.Confirmed : OrderAmount;
             var amount = balance.Confirmed;
 
-            var pool = new NiceHashBotLib.Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
-            var limit = _random.Next(3, 5) + _random.Next(1, 99) / 100.0;
+            //var pool = new NiceHashBotLib.Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
+            //var limit = _random.Next(3, 5) + _random.Next(1, 99) / 100.0;
 
-            //var pool = new NiceHashBotLib.Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
-            //var limit = _random.Next(3, 6) + _random.Next(1, 99) / 100.0;
+            var pool = new NiceHashBotLib.Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
+            var limit = _random.Next(3, 6) + _random.Next(1, 99) / 100.0;
 
             //var pool = new NiceHashBotLib.Pool { Label = "VertCoin MiningPoolHub", Host = "hub.miningpoolhub.com", Port = 20507, User = "wchasik.nice1", Password = "x" };
             //var limit = 500;

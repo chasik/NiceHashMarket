@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.IO;
 using NiceHashMarket.Core;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -9,12 +11,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using NiceHashBotLib;
 using NiceHashMarket.Console.Properties;
+using NiceHashMarket.Core.Factories;
 using NiceHashMarket.Core.Helpers;
+using NiceHashMarket.Core.Interfaces.Blocks;
+using NiceHashMarket.Core.Interfaces.Wallets;
+using NiceHashMarket.Core.Wallets;
 using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
 using Renci.SshNet;
 using Renci.SshNet.Common;
+using RestSharp;
 using Order = NiceHashBotLib.Order;
 
 namespace NiceHashMarket.Console
@@ -27,6 +34,69 @@ namespace NiceHashMarket.Console
 
         static void Main(string[] args)
         {
+            var wallet = CoinsWhatToMineEnum.Lbc.CreateWallet();
+            var lastBlockId = wallet.LastBlockId();
+
+            const int blocksCount = 300;
+            var blocks = wallet.Blocks(lastBlockId - blocksCount, lastBlockId);
+
+            var counterStep = 0;
+
+            blocks.CollectionChanged += (sender, eventArgs) =>
+            {
+                if (eventArgs.Action != NotifyCollectionChangedAction.Add) return;
+                foreach (IBlock block in eventArgs.NewItems)
+                {
+                    System.Console.WriteLine($"{++counterStep}  {block.Id} - {block.Created} - {block.Difficulty}");
+                }
+
+            };
+
+            System.Console.ReadLine();
+
+            var orderBlocks = blocks.OrderBy(b => b?.Created).ToList();
+            var orderBlocks2 = blocks.OrderBy(b => b?.Created).ToList();
+
+            var allBefore = new[] {5, 10, 15, 20, 25, 30};
+            var allAfter = new[] {5, 10, 15, 20, 25, 30};
+
+            foreach (var bef in allBefore)
+            {
+                foreach (var aft in allAfter)
+                {
+                    var before = new TimeSpan(0, bef, 0);
+                    var after = new TimeSpan(0, aft, 0);
+
+                    var randomOffset = new Random((int)DateTime.Now.TimeOfDay.TotalSeconds);
+
+                    var lines = new List<string>();
+                    orderBlocks2.ForEach(b =>
+                    {
+                        if (b == null) return;
+
+                        var interval = orderBlocks.Where(bl =>
+                            bl != null && bl.Created > b.Created - before && bl.Created < b.Created + after);
+
+                        var beforeCount = interval.Count(bl => bl.Created < b.Created);
+                        var afterCount = interval.Count(bl => bl.Created > b.Created);
+
+                        var beforeValue = beforeCount - (double)randomOffset.Next(30) / 100;
+                        var afterValue = afterCount - (double)randomOffset.Next(30) / 100;
+
+                        System.Console.WriteLine($"{beforeValue} - {b.Created} - {afterValue}");
+
+                        lines.Add($"{b.Id};{b.Created};{(int)b.Difficulty};{beforeValue};{afterValue}");
+                    });
+
+                    File.WriteAllLines($@"C:\temp\data-{blocksCount}-before_{before.TotalMinutes}-after_{after.TotalMinutes}.csv", lines);
+                }
+            }
+
+            System.Console.ReadLine();
+        }
+
+        static void Main_______(string[] args)
+        {
             try
             {
                 var lastStart = DateTime.MinValue;
@@ -34,7 +104,7 @@ namespace NiceHashMarket.Console
 
                 _farms = FarmsStorage.LoadFromFile("FarmsConnectionInfo.txt");
 
-                //if (args.Any(a => string.Equals(a, "s", StringComparison.InvariantCultureIgnoreCase)))
+                if (args.Any(a => string.Equals(a, "s", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     var progress = new Progress<ScriptOutputLine>(s => { System.Console.WriteLine(s.Line); });
                     var token = new CancellationToken();
@@ -138,6 +208,9 @@ namespace NiceHashMarket.Console
                     //var commandSsh = sshclient.CreateCommand(
                     //    $"echo 'miner --server zec-eu.suprnova.cc --port 2142 --user {farm.Worker} --pass x --solver 0 --fee 0 --cuda_devices' > /root/MiningPoolHub/manual-command.txt");
 
+                    var commandSsh = sshclient.CreateCommand(
+                        $"echo 'miner --server btg.suprnova.cc --port 8816 --user {farm.Worker} --pass x --solver 0 --fee 0 --cuda_devices' > /root/MiningPoolHub/manual-command.txt");
+
                     //var commandSsh = sshclient.CreateCommand(
                     //    $"echo 'ccminer -a lyra2v2 -o stratum+tcp://lyra2rev2.eu.nicehash.com:3347 -u 3EmSA4xHw1p7gNvMeFCY5BG5e2zpve12ba.moscow -p x' > /root/MiningPoolHub/manual-command.txt");
 
@@ -150,8 +223,8 @@ namespace NiceHashMarket.Console
                     //var commandSsh = sshclient.CreateCommand(
                     //    $"echo 'miner --server equihash.eu.nicehash.com --user 3EmSA4xHw1p7gNvMeFCY5BG5e2zpve12ba.home --pass x --port 3357 --solver 0 --fee 0 --cuda_devices' > /root/MiningPoolHub/manual-command.txt");
 
-                    var commandSsh = sshclient.CreateCommand(
-                        $"echo 'ccminer -a cryptonight -o stratum+tcp://cryptonight.eu.nicehash.com:3355 -u 3EmSA4xHw1p7gNvMeFCY5BG5e2zpve12ba.home -p x' > /root/MiningPoolHub/manual-command.txt");
+                    //var commandSsh = sshclient.CreateCommand(
+                    //    $"echo 'ccminer -a cryptonight -o stratum+tcp://cryptonight.eu.nicehash.com:3355 -u 3EmSA4xHw1p7gNvMeFCY5BG5e2zpve12ba.home -p x' > /root/MiningPoolHub/manual-command.txt");
 
                     commandSsh.Execute();
 

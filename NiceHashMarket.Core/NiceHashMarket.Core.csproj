@@ -53,14 +53,23 @@
   <ItemGroup>
     <Compile Include="Algorithms.cs" />
     <Compile Include="ApiClient.cs" />
+    <Compile Include="Blocks\Block.cs" />
+    <Compile Include="Blocks\LbcBlock.cs" />
     <Compile Include="DataStorage.cs" />
     <Compile Include="DashboardPoolResult.cs" />
+    <Compile Include="Factories\WalletFactory.cs" />
     <Compile Include="FarmConnectionInfo.cs" />
     <Compile Include="FarmsStorage.cs" />
     <Compile Include="NiceBindingList.cs" />
     <Compile Include="OrdersStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MiningPortalApi.cs" />
+    <Compile Include="Transactions\Input.cs" />
+    <Compile Include="Transactions\LbcTransaction.cs" />
+    <Compile Include="Transactions\Output.cs" />
+    <Compile Include="Transactions\Transaction.cs" />
+    <Compile Include="Wallets\LbcWallet.cs" />
+    <Compile Include="Wallets\Wallet.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NiceHashMarket.Core.Helpers\NiceHashMarket.Core.Helpers.csproj">
@@ -100,5 +109,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
