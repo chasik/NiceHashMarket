@@ -95,6 +95,10 @@
       <Project>{91636E6F-612E-443E-89F5-A5BACA2F05CB}</Project>
       <Name>NiceHashMarket.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.MultiPoolHub\NiceHashMarket.MultiPoolHub.csproj">
+      <Project>{31ADA678-D00E-41CD-AB3F-C0AC8750F415}</Project>
+      <Name>NiceHashMarket.MultiPoolHub</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NiceHashMarket.NiceHashBotLib\NiceHashBotLib.csproj">
       <Project>{B5B243E4-0497-42CB-AFBF-A4ED3B4343D6}</Project>
       <Name>NiceHashBotLib</Name>

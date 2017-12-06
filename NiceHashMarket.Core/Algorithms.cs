@@ -12,8 +12,9 @@ namespace NiceHashMarket.Core
 {
     public class Algorithms : IHaveAlgorithms, IEnumerable<IAlgo>
     {
-        private List<IAlgo> _algoList;
         private const string ResourceName = "NiceHashMarket.Core.Algorithms.txt";
+
+        private List<IAlgo> _algoList;
 
         public List<IAlgo> AlgoList
         {
