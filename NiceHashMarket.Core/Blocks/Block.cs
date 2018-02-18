@@ -13,6 +13,8 @@ namespace NiceHashMarket.Core.Blocks
 
         public DateTime Created { get; set; }
 
+        public ITransaction RewardTransaction { get; set; }
+
         public IList<ITransaction> Transactions { get; set; }
     }
 }

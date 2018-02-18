@@ -29,6 +29,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.Core.Wallets
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.MultiPoolHub", "NiceHashMarket.MultiPoolHub\NiceHashMarket.MultiPoolHub.csproj", "{31ADA678-D00E-41CD-AB3F-C0AC8750F415}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.YiiMiningPool", "NiceHashMarket.YiiMiningPool\NiceHashMarket.YiiMiningPool.csproj", "{8E29EB64-E041-4964-BA77-1E2927A628E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NiceHashMarket.YiiMiningPool.Interfaces", "NiceHashMarket.YiiMiningPool.Interfaces\NiceHashMarket.YiiMiningPool.Interfaces.csproj", "{533AAC78-4842-447E-A0EF-8C3F8E8A720B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,14 @@ Global
 		{31ADA678-D00E-41CD-AB3F-C0AC8750F415}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31ADA678-D00E-41CD-AB3F-C0AC8750F415}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31ADA678-D00E-41CD-AB3F-C0AC8750F415}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E29EB64-E041-4964-BA77-1E2927A628E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E29EB64-E041-4964-BA77-1E2927A628E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E29EB64-E041-4964-BA77-1E2927A628E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E29EB64-E041-4964-BA77-1E2927A628E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{533AAC78-4842-447E-A0EF-8C3F8E8A720B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{533AAC78-4842-447E-A0EF-8C3F8E8A720B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{533AAC78-4842-447E-A0EF-8C3F8E8A720B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{533AAC78-4842-447E-A0EF-8C3F8E8A720B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

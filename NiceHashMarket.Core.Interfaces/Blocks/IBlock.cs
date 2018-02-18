@@ -12,6 +12,8 @@ namespace NiceHashMarket.Core.Interfaces.Blocks
 
         DateTime Created { get; set; }
 
+        ITransaction RewardTransaction { get; set; }
+
         IList<ITransaction> Transactions { get; set; }
     }
 }

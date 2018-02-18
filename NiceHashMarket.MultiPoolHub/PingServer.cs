@@ -12,27 +12,38 @@ namespace NiceHashMarket.MultiPoolHub
         private readonly StratumConnection _stratumConnection;
         private TcpClient _tcpClient;
         private Timer _timer;
-        private bool? _lastPingResult;
+        private bool? _lastAuthResult;
         private string _page = string.Empty;
 
-        public int ID;
+        public int CommandGlobalId;
+        public Hashtable PendingAcks = new Hashtable();
+        private IAsyncResult _oldReadAsyncResult;
+        private IAsyncResult _oldConnectAsyncResult;
+
+
         public event Action<PingResult> PingResultChanged;
 
-        public PingServer(StratumConnection stratumConnection, int interval = 1000)
+        public event EventHandler<StratumEventArgs> GotSetDifficulty;
+        public event EventHandler<StratumEventArgs> GotNotify;
+        public event EventHandler<StratumEventArgs> GotResponse;
+
+        public PingServer(StratumConnection stratumConnection, int interval = 10000)
         {
+            CommandGlobalId = 1;
+
             _stratumConnection = stratumConnection;
 
-            _timer = new Timer(_ => { ConnectToServer(); }, null, 0, interval);
+            //_timer = new Timer(_ => { ConnectToServer(); }, null, 0, interval);
+            ConnectToServer();
         }
 
         private void ConnectToServer()
         {
-            ID = 1;
-            try
+           try
             {
                 _tcpClient = new TcpClient(AddressFamily.InterNetwork);
 
-                _tcpClient.BeginConnect(_stratumConnection.Host, _stratumConnection.Port, ConnectCallback, _tcpClient);
+                _oldConnectAsyncResult = _tcpClient.BeginConnect(_stratumConnection.Host, _stratumConnection.Port, ConnectCallback, _tcpClient);
             }
             catch (Exception ex)
             {
@@ -44,7 +55,7 @@ namespace NiceHashMarket.MultiPoolHub
         {
             var command = new StratumCommand
             {
-                Id = ID++,
+                Id = CommandGlobalId++,
                 Method = "mining.subscribe",
                 Parameters = new ArrayList()
             };
@@ -57,6 +68,9 @@ namespace NiceHashMarket.MultiPoolHub
             try
             {
                 _tcpClient.GetStream().Write(bytesSent, 0, bytesSent.Length);
+
+                if (command.Id != null)
+                    PendingAcks.Add(command.Id, command.Method);
             }
             catch (Exception ex)
             {
@@ -69,7 +83,7 @@ namespace NiceHashMarket.MultiPoolHub
         {
             var command = new StratumCommand
             {
-                Id = ID++,
+                Id = CommandGlobalId++,
                 Method = "mining.authorize",
                 Parameters = new ArrayList {_stratumConnection.UserName, _stratumConnection.Password}
             };
@@ -81,6 +95,9 @@ namespace NiceHashMarket.MultiPoolHub
             try
             {
                 _tcpClient.GetStream().Write(bytesSent, 0, bytesSent.Length);
+
+                if (command.Id != null)
+                    PendingAcks.Add(command.Id, command.Method);
             }
             catch (Exception ex)
             {
@@ -91,22 +108,19 @@ namespace NiceHashMarket.MultiPoolHub
 
         private void ConnectCallback(IAsyncResult result)
         {
-            if (_lastPingResult != _tcpClient.Connected)
-                OnPingResultChanged(new PingResult(_tcpClient.Connected, _stratumConnection.ToString()));
-
-            _lastPingResult = _tcpClient.Connected;
+            if (_oldConnectAsyncResult != null && result != _oldConnectAsyncResult) return;
 
             // We are connected successfully
             try
             {
+                SendSubscribe();
+                SendAuthorize();
+
                 var networkStream = _tcpClient.GetStream();
                 var buffer = new byte[_tcpClient.ReceiveBufferSize];
 
                 // Now we are connected start async read operation.
-                networkStream.BeginRead(buffer, 0, buffer.Length, ReadCallback, buffer);
-
-                SendSubscribe();
-                SendAuthorize();
+                _oldReadAsyncResult = networkStream.BeginRead(buffer, 0, buffer.Length, ReadCallback, buffer);
             }
             catch (Exception ex)
             {
@@ -117,6 +131,8 @@ namespace NiceHashMarket.MultiPoolHub
         // Callback for Read operation
         private void ReadCallback(IAsyncResult result)
         {
+            if (_oldReadAsyncResult != null && result != _oldReadAsyncResult) return;
+
             NetworkStream networkStream;
             int bytesread;
 
@@ -135,18 +151,23 @@ namespace NiceHashMarket.MultiPoolHub
 
             if (bytesread == 0)
             {
-                Console.WriteLine(DateTime.Now + " Disconnected. Reconnecting...");
+                //Debug.WriteLine(_stratumConnection.Algo + "    " + DateTime.Now + " Disconnected. Reconnecting...");
 
                 _tcpClient.Close();
                 _tcpClient = null;
 
+                PendingAcks.Clear();
+
+                Thread.Sleep(1000);
+
                 ConnectToServer();
+
                 return;
             }
 
             // Get the data
             var data = Encoding.ASCII.GetString(buffer, 0, bytesread);
-            Debug.WriteLine(data);
+            Debug.WriteLine($"|{_stratumConnection.Algo}| " + data);
 
             _page = _page + data;
 
@@ -157,42 +178,51 @@ namespace NiceHashMarket.MultiPoolHub
                 var currentString = _page.Substring(0, foundClose + 1);
 
                 // We can get either a command or response from the server. Try to deserialise both
-                var command = Helpers.JsonDeserialize<StratumCommand>(currentString);
-                var response = Helpers.JsonDeserialize<StratumResponse>(currentString);
+                var currentCommand = Helpers.JsonDeserialize<StratumCommand>(currentString);
+                var currentResponse = Helpers.JsonDeserialize<StratumResponse>(currentString);
 
-                var e = new StratumEventArgs();
+                var e = new StratumEventArgs{Algo = _stratumConnection.Algo};
 
-                if (command.Method != null)             // We got a command
+                if (currentCommand.Method != null)             // We got a command
                 {
-                    Console.WriteLine(DateTime.Now + " Got Command: " + currentString);
-                    Debug.WriteLine(DateTime.Now + " Got Command: " + currentString);
-                    e.MiningEventArg = command;
+                    e.MiningEventArg = currentCommand;
 
-                    switch (command.Method)
+                    switch (currentCommand.Method)
                     {
                         case "mining.notify":
-                            //if (GotNotify != null)
-                            //    GotNotify(this, e);
+                            GotNotify?.Invoke(this, e);
                             break;
                         case "mining.set_difficulty":
-                            //if (GotSetDifficulty != null)
-                            //    GotSetDifficulty(this, e);
+                            GotSetDifficulty?.Invoke(this, e);
                             break;
                     }
                 }
-                else if (response.Error != null || response.Result != null)       // We got a response
+                else if (currentResponse.Error != null || currentResponse.Result != null)       // We got a response
                 {
-                    Console.WriteLine(DateTime.Now + " Got Response: " + currentString);
-                    Debug.WriteLine(DateTime.Now + " Got Response: " + currentString);
-                    e.MiningEventArg = response;
+                    e.MiningEventArg = currentResponse;
 
                     // Find the command that this is the response to and remove it from the list of commands that we're waiting on a response to
-                    //var Cmd = (string)PendingACKs[response.Id];
+                    var command = currentResponse.Id == null ? null : (string)PendingAcks[currentResponse.Id];
 
-                    //if (Cmd == null)
-                    //    Console.WriteLine("Unexpected Response");
-                    //else if (GotResponse != null)
-                    //    GotResponse(Cmd, e);
+                    if (currentResponse.Id != null && PendingAcks.ContainsKey(currentResponse.Id))
+                        PendingAcks.Remove(currentResponse.Id);
+
+                    if (command == null)
+                        Console.WriteLine("Unexpected Response");
+                    else
+                    {
+                        GotResponse?.Invoke(command, e);
+
+                        if (command.Contains("mining.authorize"))
+                        {
+                            var authSuccess = bool.Parse((e.MiningEventArg as StratumResponse)?.Result.ToString());
+
+                            if (_lastAuthResult != authSuccess)
+                                OnPingResultChanged(new PingResult(authSuccess, _stratumConnection.ToString()));
+
+                            _lastAuthResult = authSuccess;
+                        }
+                    }
                 }
 
                 _page = _page.Remove(0, foundClose + 2);
@@ -200,7 +230,7 @@ namespace NiceHashMarket.MultiPoolHub
             }
 
             // Then start reading from the network again.
-            networkStream.BeginRead(buffer, 0, buffer.Length, ReadCallback, buffer);
+            _oldReadAsyncResult = networkStream.BeginRead(buffer, 0, buffer.Length, ReadCallback, buffer);
         }
 
         protected virtual void OnPingResultChanged(PingResult obj)

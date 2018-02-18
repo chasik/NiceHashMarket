@@ -12,7 +12,9 @@ using DevExpress.Mvvm.Native;
 using DevExpress.Mvvm.POCO;
 using NiceHashBotLib;
 using NiceHashMarket.Core;
+using NiceHashMarket.Core.Factories;
 using NiceHashMarket.Core.Helpers;
+using NiceHashMarket.Core.Interfaces.Transactions;
 using NiceHashMarket.Logger;
 using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
@@ -21,6 +23,7 @@ using NiceHashMarket.WpfClient.Interfaces;
 using NiceHashMarket.WpfClient.Messages;
 using NiceHashMarket.WpfClient.Properties;
 using Order = NiceHashMarket.Model.Order;
+using Pool = NiceHashBotLib.Pool;
 
 namespace NiceHashMarket.WpfClient.ViewModels
 {
@@ -29,8 +32,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
     {
         private const string LbrySuprnovaUrl = "https://lbry-api.suprnova.cc";
         private const string LbryCoinmineUrl = "https://www2.coinmine.pl/lbc";
-        private const double OrderAmount = 0.01;
-        private const int TimeWaitBetweenApiCalls = 900;
+        private const double OrderAmount = 0.005;
+        private const int TimeWaitBetweenApiCalls = 1600;
         private const int LowLevelOfDiff = 50000;
         private const int HeighLevelOfDiff = 600000;
 
@@ -149,14 +152,35 @@ namespace NiceHashMarket.WpfClient.ViewModels
             #region | pools api |
 
             GetLastBlocksFromPool(
-                new MiningPortalApi(LbrySuprnovaUrl, 5000, +3, MetricPrefixEnum.Mega, Settings.Default.LbrySuprnovaApiKey, Settings.Default.LbrySuprnovaUserId)
+                new MiningPortalApi(LbrySuprnovaUrl, 10000, +3, MetricPrefixEnum.Mega, Settings.Default.LbrySuprnovaApiKey, Settings.Default.LbrySuprnovaUserId)
                     , LastBlocksSuprNova);
 
             GetLastBlocksFromPool(
-                new MiningPortalApi(LbryCoinmineUrl, 5000, +2, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
+                new MiningPortalApi(LbryCoinmineUrl, 10000, +2, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
                     , LastBlocksCoinMinePl);
 
             #endregion
+
+            var wallet = CoinsWhatToMineEnum.Lbc.CreateWallet();
+
+            wallet.NewBlockIdFounded += (sender, newBlockId) =>
+            {
+                wallet.BlockAsync(newBlockId)
+                    .ContinueWith(t =>
+                    {
+                        wallet.Difficulty = t.Result.Difficulty;
+                    });
+            };
+
+            wallet.DifficultyChanged += (sender, difficulty) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CurrentDifficulty = (int) difficulty;
+                });
+            };
+
+            wallet.WaitNewBlock(1000);
 
             #region | NiceHash api |
 
@@ -166,8 +190,11 @@ namespace NiceHashMarket.WpfClient.ViewModels
             //    {ServerEnum.Usa, new List<string> { Settings.Default.NiceApiIdGmail, Settings.Default.NiceApiKeyGmail}}
             //};
 
-            APIWrapper.EuropeApiId = Settings.Default.NiceApiIdYandex;
-            APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyYandex;
+            APIWrapper.EuropeApiId = Settings.Default.NiceApiIdMail;
+            APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyMail;
+
+            APIWrapper.UsaApiId = Settings.Default.NiceApiIdYandex;
+            APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyYandex;
 
             //APIWrapper.EuropeApiId = Settings.Default.NiceApiIdMail;
             //APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyMail;
@@ -175,8 +202,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
             //APIWrapper.UsaApiId = Settings.Default.NiceApiIdGmail;
             //APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyGmail;
 
-            APIWrapper.UsaApiId = Settings.Default.NiceApiIdMail;
-            APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyMail;
+            //APIWrapper.UsaApiId = Settings.Default.NiceApiIdMail;
+            //APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyMail;
 
 
 
@@ -277,7 +304,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 {
                     DashboardResults.Add(dashboardResult);
 
-                    CurrentDifficulty = dashboardResult.Difficulty;
+                    //CurrentDifficulty = dashboardResult.Difficulty;
 
                     MinDifficulity = DashboardResults.OrderBy(x => x.Difficulty).FirstOrDefault()?.Difficulty ?? 0;
                     MaxDifficulity =
@@ -357,7 +384,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
         {
             if (targetOrder == null) return DateTime.Now;
 
-            var newPrice = targetOrder.Price + _random.Next(1, 4) * 0.0001m;
+            var newPrice = targetOrder.Price + _random.Next(1, 2) * 0.0001m;
 
             var myOrderForJump = MyOrders.OrderByDescending(o => o.Price)
                 //OrderBy(o => o.Price) 
@@ -412,8 +439,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             if ((decimal) (WhattomineResult.MaxPrice24 + WhattomineResult.MaxPrice24 / 100 * 30) < newPrice)
             {
-                MarketLogger.Information("NOT allow jump : +30% of max price : {@server} {@apiCall}", lastCall?.Order.Server.ToString(), lastCall);
-                return false;
+                //MarketLogger.Information("NOT allow jump : +30% of max price : {@server} {@apiCall}", lastCall?.Order.Server.ToString(), lastCall);
+                //return false;
             }
             if (lastCall?.Type == ApiCallType.InProcess && Math.Abs(deltaTime.TotalMilliseconds) < TimeWaitBetweenApiCalls)
             {
@@ -595,19 +622,100 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 return;
             }
 
-            //var amount = balance.Confirmed < OrderAmount + 0.005 ? balance.Confirmed : OrderAmount;
-            var amount = balance.Confirmed;
+            Pool pool = null;
+            var limit = -1.0;
 
-            //var pool = new NiceHashBotLib.Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
-            //var limit = _random.Next(3, 5) + _random.Next(1, 99) / 100.0;
+            var amount = balance.Confirmed < OrderAmount + 0.005 ? balance.Confirmed : OrderAmount;
+            //var amount = balance.Confirmed;
 
-            var pool = new NiceHashBotLib.Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
-            var limit = _random.Next(3, 6) + _random.Next(1, 99) / 100.0;
+            switch (CurrentAlgo)
+            {
+                case AlgoNiceHashEnum.Scrypt:
+                    break;
+                case AlgoNiceHashEnum.Sha256:
+                    break;
+                case AlgoNiceHashEnum.ScryptNf:
+                    break;
+                case AlgoNiceHashEnum.X11:
+                    break;
+                case AlgoNiceHashEnum.X13:
+                    break;
+                case AlgoNiceHashEnum.Keccak:
+                    break;
+                case AlgoNiceHashEnum.X15:
+                    break;
+                case AlgoNiceHashEnum.Nist5:
+                    pool = new Pool { Label = "ZPOOL nist5", Host = "nist5.mine.zpool.ca", Port = 3833, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC" };
+                    limit = 500;
+                    break;
+                case AlgoNiceHashEnum.NeoScrypt:
+                    pool = new Pool { Label = "ZPOOL NeoScrypt", Host = "neoscrypt.mine.zpool.ca", Port = 4233, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC,d=4096,nice1" };
+                    limit = 10;
+                    break;
+                case AlgoNiceHashEnum.Lyra2Re:
+                    break;
+                case AlgoNiceHashEnum.WhirlpoolX:
+                    break;
+                case AlgoNiceHashEnum.Qubit:
+                    break;
+                case AlgoNiceHashEnum.Quark:
+                    break;
+                case AlgoNiceHashEnum.Axiom:
+                    break;
+                case AlgoNiceHashEnum.Lyra2REv2:
+                    pool = new Pool { Label = "ZPOOL lyra2v2", Host = "lyra2v2.mine.zpool.ca", Port = 4533, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC" };
+                    limit = 10;
+                    break;
+                case AlgoNiceHashEnum.ScryptJaneNf16:
+                    break;
+                case AlgoNiceHashEnum.Blake256R8:
+                    break;
+                case AlgoNiceHashEnum.Blake256R14:
+                    break;
+                case AlgoNiceHashEnum.Blake256R8Vnl:
+                    break;
+                case AlgoNiceHashEnum.Hodl:
+                    break;
+                case AlgoNiceHashEnum.DaggerHashimoto:
+                    break;
+                case AlgoNiceHashEnum.Decred:
+                    break;
+                case AlgoNiceHashEnum.CryptoNight:
+                    break;
+                case AlgoNiceHashEnum.Lbry:
+                    //pool = new Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
+                    pool = new Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
+                    limit = _random.Next(3, 25) + _random.Next(1, 99) / 100.0;
+                    break;
+                case AlgoNiceHashEnum.Equihash:
+                    pool = new Pool { Label = "ZClassic SuprNova", Host = "zcl.suprnova.cc", Port = 4043, User = "wchasik.nice1", Password = "x" };
+                    limit = _random.Next(3, 5) + _random.Next(1, 99) / 100.0;
+                    break;
+                case AlgoNiceHashEnum.Pascal:
+                    break;
+                case AlgoNiceHashEnum.X11Gost:
+                    break;
+                case AlgoNiceHashEnum.Sia:
+                    break;
+                case AlgoNiceHashEnum.Blake2S:
+                    pool = new Pool { Label = "ZPOOL blake2s", Host = "blake2s.mine.zpool.ca", Port = 5766, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC" };
+                    limit = 20;
+                    break;
+                case AlgoNiceHashEnum.Skunk:
+                    pool = new Pool { Label = "ZPOOL skunk", Host = "skunk.mine.zpool.ca", Port = 8433, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC" };
+                    limit = 100;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
-            //var pool = new NiceHashBotLib.Pool { Label = "VertCoin MiningPoolHub", Host = "hub.miningpoolhub.com", Port = 20507, User = "wchasik.nice1", Password = "x" };
-            //var limit = 500;
+            if (pool == null || limit < 0)
+            {
+                MarketLogger.Error("Add new order failed! No pool for current algo!");
+                return;
+            }
 
-            var price = (double) (minPriceOnServer + _random.Next(1, 33) / 10000.0m);
+            var price = (double) (minPriceOnServer + _random.Next(1, 3) / 10000.0m);
 
             Task.Factory.StartNew(() => server.OrderCreate(CurrentAlgo, amount, price, limit, pool)
             ).ContinueWith(t =>

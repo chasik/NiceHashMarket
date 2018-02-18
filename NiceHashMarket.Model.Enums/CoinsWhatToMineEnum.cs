@@ -10,6 +10,7 @@
         Eth = 151,
         Lbc = 164,
         Zec = 166,
+        Zcl = 167,
         Sib = 169,
         Komodo = 174,
         Music = 178,

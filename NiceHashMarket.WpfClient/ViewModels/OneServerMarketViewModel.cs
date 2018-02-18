@@ -200,13 +200,15 @@ namespace NiceHashMarket.WpfClient.ViewModels
             var workersSumm = 0;
             var myOrders = ((IHaveMyOrders) ParentViewModel).MyOrders.ToArray();
 
-            var calculatedOrders = Orders.Where(o => 
-                o.Workers > 0 && (o.Amount > 0.05m || o.Amount < 0.01m)
+            var calculatedOrders = Orders.ToList().Where(o => 
+                o.Workers > 0 && (o.Amount > 0.1m || o.Amount < 0.01m /* if less than 0.01 volume - it's unlimited order */)
                 && o.Active && o.Type == OrderTypeEnum.Standart
                 && (!(ParentViewModel is IHaveMyOrders) || myOrders.All(myOrder => myOrder.Id != o.Id)))
                 .OrderBy(o => o.Price).ToList();
 
             var workersAll = calculatedOrders.Sum(o => o.Workers);
+
+            if (workersAll == 0) return;
 
             calculatedOrders.ForEach(o =>
                 {
@@ -220,8 +222,15 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
                     workersSumm += o.Workers;
 
-                    if (workersSumm * 100 / workersAll >= WorkersPercentLimit)
-                        OrderUpJumpLevel = o;
+                    try
+                    {
+                        if (workersSumm * 100 / workersAll >= WorkersPercentLimit)
+                            OrderUpJumpLevel = o;
+                    }
+                    catch (Exception e)
+                    {
+                        
+                    }
                 });
 
             this.RaisePropertyChanged(vm => vm.JumpedOrders);

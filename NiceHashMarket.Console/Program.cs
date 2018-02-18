@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Data.SqlClient;
 using System.IO;
 using NiceHashMarket.Core;
 using System.Linq;
@@ -11,15 +12,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using NiceHashBotLib;
 using NiceHashMarket.Console.Properties;
+using NiceHashMarket.Core.Blocks;
 using NiceHashMarket.Core.Factories;
 using NiceHashMarket.Core.Helpers;
 using NiceHashMarket.Core.Interfaces.Blocks;
+using NiceHashMarket.Core.Interfaces.Transactions;
 using NiceHashMarket.Core.Interfaces.Wallets;
 using NiceHashMarket.Core.Wallets;
 using NiceHashMarket.Model;
 using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
 using NiceHashMarket.MultiPoolHub;
+using NiceHashMarket.YiiMiningPool;
+using NiceHashMarket.YiiMiningPool.Interfaces;
 using Renci.SshNet;
 using Renci.SshNet.Common;
 using RestSharp;
@@ -35,36 +40,88 @@ namespace NiceHashMarket.Console
 
         static void Main(string[] args)
         {
+            var wallet = CoinsWhatToMineEnum.Lbc.CreateWallet();
+            wallet.NewBlockIdFounded += (sender, newBlockId) =>
+            {
+                var currentDateTime = DateTime.UtcNow;
+                wallet.BlockAsync(newBlockId)
+                .ContinueWith(t =>
+                    {
+                        ITransaction r = wallet.RewardTransaction(t.Result);
+
+                        System.Console.WriteLine(
+                            $"{currentDateTime:T} \t\t {newBlockId} {t.Result.Created:T} \t {(currentDateTime - t.Result.Created).TotalSeconds} \t {t.Result.Difficulty} \t {t.Result.RewardTransaction.Outputs.First().Address}");
+                    });
+            };
+
+            wallet.WaitNewBlock(1000);
+
+            System.Console.ReadLine();
+        }
+
+        static void Main_yii(string[] args)
+        {
+            var dic = new Dictionary<string, double>();
+
+            var zpool = YiiFactory.Create(YiiPoolEnum.Zpool);
+            zpool.LoopCommand(10000, YiiCommandEnum.Status);
+
+            zpool.StatusReceived += (sender, algos) =>
+            {
+                dic.Clear();
+                foreach (var algo in algos.Children())
+                {
+                    var yiiAlgo = algo.First.ToObject<YiiAlgo>();
+                    dic.Add($"{yiiAlgo.EstimateCurrent:#########.#########}\t{yiiAlgo.Name}", yiiAlgo.EstimateCurrent * 100 / yiiAlgo.EstimateLast24H);
+                }
+
+                System.Console.Clear();
+
+                foreach (var pair in dic.OrderByDescending(x => x.Value))
+                {
+                    System.Console.WriteLine($"{pair.Key} \t\t {pair.Value:####.##} %");
+                }
+
+            };
+
+            System.Console.ReadLine();
+        }
+
+        static void Mainasdfasdfasdf(string[] args)
+        {
             var serversList = new List<StratumConnection>
             {
-
-                StratumConnection.Parse(AlgoNiceHashEnum.DaggerHashimoto, "europe.ethash-hub.miningpoolhub.com,12020,wchasik,vegaKlet,x"),
                 //groestl - StratumConnection.Parse("hub.miningpoolhub.com,12004,wchasik,home,x");
                 //myr-gr - StratumConnection.Parse("hub.miningpoolhub.com,12005,wchasik,home,x");
 
-                StratumConnection.Parse(AlgoNiceHashEnum.CryptoNight, "europe.cryptonight-hub.miningpoolhub.com,12024,wchasik,vegaKlet,x"),
-                StratumConnection.Parse(AlgoNiceHashEnum.Equihash, "europe.equihash-hub.miningpoolhub.com,12023,wchasik,vegaKlet,x"),
-
-                StratumConnection.Parse(AlgoNiceHashEnum.X11,"hub.miningpoolhub.com,12007,wchasik,vegaKlet,x"),
-                StratumConnection.Parse(AlgoNiceHashEnum.X13,"hub.miningpoolhub.com,12008,wchasik,vegaKlet,x"),
-                StratumConnection.Parse(AlgoNiceHashEnum.X15,"hub.miningpoolhub.com,12009,wchasik,vegaKlet,x"),
-                StratumConnection.Parse(AlgoNiceHashEnum.NeoScrypt,"hub.miningpoolhub.com,12012,wchasik,vegaKlet,x"),
-                StratumConnection.Parse(AlgoNiceHashEnum.Qubit,"hub.miningpoolhub.com,12014,wchasik,vegaKlet,x"),
-                StratumConnection.Parse(AlgoNiceHashEnum.Quark,"hub.miningpoolhub.com,12015,wchasik,vegaKlet,x"),
+                StratumConnection.Parse(AlgoNiceHashEnum.X11,"hub.miningpoolhub.com,12007,wchasik,home,x"),
+                StratumConnection.Parse(AlgoNiceHashEnum.X13,"hub.miningpoolhub.com,12008,wchasik,home,x"),
+                StratumConnection.Parse(AlgoNiceHashEnum.X15,"hub.miningpoolhub.com,12009,wchasik,home,x"),
+                StratumConnection.Parse(AlgoNiceHashEnum.NeoScrypt,"hub.miningpoolhub.com,12012,wchasik,home,x"),
+                StratumConnection.Parse(AlgoNiceHashEnum.Qubit,"hub.miningpoolhub.com,12014,wchasik,home,x"),
+                StratumConnection.Parse(AlgoNiceHashEnum.Quark,"hub.miningpoolhub.com,12015,wchasik,home,x"),
                 // skein - StratumConnection.Parse("hub.miningpoolhub.com,12016,wchasik,home,x");
-                StratumConnection.Parse(AlgoNiceHashEnum.Lyra2REv2,"hub.miningpoolhub.com,12018,wchasik,vegaKlet,x")
+                StratumConnection.Parse(AlgoNiceHashEnum.Lyra2REv2,"hub.miningpoolhub.com,12018,wchasik,home,x"),
                 // vanilla - StratumConnection.Parse("hub.miningpoolhub.com,12019,wchasik,home,x");
+                StratumConnection.Parse(AlgoNiceHashEnum.DaggerHashimoto, "europe.ethash-hub.miningpoolhub.com,12020,wchasik,home,x"),
+                StratumConnection.Parse(AlgoNiceHashEnum.Equihash, "europe.equihash-hub.miningpoolhub.com,12023,wchasik,home,x"),
+                StratumConnection.Parse(AlgoNiceHashEnum.CryptoNight, "europe.cryptonight-hub.miningpoolhub.com,12024,wchasik,home,x")
             };
 
-            serversList.Take(1).ToList().ForEach(server =>
+            serversList.Where(sc => sc.Algo == AlgoNiceHashEnum.NeoScrypt || sc.Algo == AlgoNiceHashEnum.Equihash || sc.Algo == AlgoNiceHashEnum.CryptoNight || sc.Algo == AlgoNiceHashEnum.Lyra2REv2)
+                .ToList().ForEach(server =>
             {
                 var pinger = new PingServer(server, 10000);
 
                 pinger.PingResultChanged += result =>
                 {
-                    System.Console.BackgroundColor = result.Success ? ConsoleColor.Cyan : ConsoleColor.Red;
+                    //System.Console.BackgroundColor = result.Success ? ConsoleColor.Cyan : ConsoleColor.Red;
 
                     System.Console.WriteLine($"minutes: {(DateTime.Now - result.DateTime).TotalMinutes:#######.##} ; {result.Success} ; {result.Result}");
+                };
+
+                pinger.GotResponse += (sender, stratumEventArgs) =>
+                {
                 };
             });
 
@@ -90,7 +147,6 @@ namespace NiceHashMarket.Console
                 {
                     System.Console.WriteLine($"{++counterStep}  {block.Id} - {block.Created} - {block.Difficulty}");
                 }
-
             };
 
             System.Console.ReadLine();
@@ -136,7 +192,7 @@ namespace NiceHashMarket.Console
             System.Console.ReadLine();
         }
 
-        static void Main_______(string[] args)
+        static void Main95977777777(string[] args)
         {
             try
             {

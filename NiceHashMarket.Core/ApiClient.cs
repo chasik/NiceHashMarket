@@ -16,9 +16,9 @@ namespace NiceHashMarket.Core
 
         public ApiClient()
         {
-            //_client = new RestClient("https://api.nicehash.com");
+            _client = new RestClient("https://api.nicehash.com");
             //_client = new RestClient("https://www.nicehash.com");
-            _client = new RestClient("https://old.nicehash.com");
+            //_client = new RestClient("https://old.nicehash.com");
         }
 
         private IRestResponse RequestPubJson(string queryShortString)
@@ -47,7 +47,8 @@ namespace NiceHashMarket.Core
         public IEnumerable<Order> GetOrders(IAlgo algo)
         {
             var regex = new Regex(@"^.*\((?<json>(?:.*))\)");
-            var match = regex.Match(RequestPubJson($"l=0&a={algo.Id}").Content);
+            var response = RequestPubJson($"l=0&a={algo.Id}");
+            var match = regex.Match(response.Content);
 
             if (!match.Success || string.IsNullOrEmpty(match.Groups["json"].Value))
                 return null;

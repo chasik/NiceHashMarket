@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed" />
     <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
@@ -102,6 +103,14 @@
     <ProjectReference Include="..\NiceHashMarket.NiceHashBotLib\NiceHashBotLib.csproj">
       <Project>{B5B243E4-0497-42CB-AFBF-A4ED3B4343D6}</Project>
       <Name>NiceHashBotLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.YiiMiningPool.Interfaces\NiceHashMarket.YiiMiningPool.Interfaces.csproj">
+      <Project>{533AAC78-4842-447E-A0EF-8C3F8E8A720B}</Project>
+      <Name>NiceHashMarket.YiiMiningPool.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NiceHashMarket.YiiMiningPool\NiceHashMarket.YiiMiningPool.csproj">
+      <Project>{8E29EB64-E041-4964-BA77-1E2927A628E1}</Project>
+      <Name>NiceHashMarket.YiiMiningPool</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

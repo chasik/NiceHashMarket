@@ -115,7 +115,7 @@ namespace NiceHashBotLib
 
         public WhattomineResult(HandlerClass.WhattomineResponse response, int outterDifficulty)
         {
-            Difficulty = outterDifficulty == 0 ? response.difficulty : outterDifficulty;
+            Difficulty = outterDifficulty <= 0 ? response.difficulty : outterDifficulty;
             Difficulty24 = response.difficulty24;
 
             Price = response.exchange_rate;
