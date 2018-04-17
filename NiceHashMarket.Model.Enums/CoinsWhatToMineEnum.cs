@@ -15,6 +15,7 @@
         Komodo = 174,
         Music = 178,
         Zen = 185,
-        Sigt = 191
+        Sigt = 191,
+        Sumo = 196
     }
 }

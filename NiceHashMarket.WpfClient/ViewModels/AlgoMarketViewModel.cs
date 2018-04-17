@@ -130,8 +130,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
         {
             _random = new Random((int)DateTime.Now.TimeOfDay.TotalMilliseconds);
             _algoList = new Algorithms();
-            CurrentCoin = CoinsWhatToMineEnum.Lbc;
-            CurrentAlgo = AlgoNiceHashEnum.Lbry;
+            CurrentCoin = CoinsWhatToMineEnum.Monero;
+            CurrentAlgo = AlgoNiceHashEnum.CryptoNightV7;
 
             #region | local DataSource |
 
@@ -151,36 +151,36 @@ namespace NiceHashMarket.WpfClient.ViewModels
 
             #region | pools api |
 
-            GetLastBlocksFromPool(
-                new MiningPortalApi(LbrySuprnovaUrl, 10000, +3, MetricPrefixEnum.Mega, Settings.Default.LbrySuprnovaApiKey, Settings.Default.LbrySuprnovaUserId)
-                    , LastBlocksSuprNova);
+            //GetLastBlocksFromPool(
+            //    new MiningPortalApi(LbrySuprnovaUrl, 10000, +3, MetricPrefixEnum.Mega, Settings.Default.LbrySuprnovaApiKey, Settings.Default.LbrySuprnovaUserId)
+            //        , LastBlocksSuprNova);
 
-            GetLastBlocksFromPool(
-                new MiningPortalApi(LbryCoinmineUrl, 10000, +2, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
-                    , LastBlocksCoinMinePl);
+            //GetLastBlocksFromPool(
+            //    new MiningPortalApi(LbryCoinmineUrl, 10000, +2, MetricPrefixEnum.Tera, Settings.Default.LbryCoinMineApiKey, Settings.Default.LbryCoinMineUserId)
+            //        , LastBlocksCoinMinePl);
 
             #endregion
 
-            var wallet = CoinsWhatToMineEnum.Lbc.CreateWallet();
+            //var wallet = CoinsWhatToMineEnum.Lbc.CreateWallet();
 
-            wallet.NewBlockIdFounded += (sender, newBlockId) =>
-            {
-                wallet.BlockAsync(newBlockId)
-                    .ContinueWith(t =>
-                    {
-                        wallet.Difficulty = t.Result.Difficulty;
-                    });
-            };
+            //wallet.NewBlockIdFounded += (sender, newBlockId) =>
+            //{
+            //    wallet.BlockAsync(newBlockId)
+            //        .ContinueWith(t =>
+            //        {
+            //            wallet.Difficulty = t.Result.Difficulty;
+            //        });
+            //};
 
-            wallet.DifficultyChanged += (sender, difficulty) =>
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    CurrentDifficulty = (int) difficulty;
-                });
-            };
+            //wallet.DifficultyChanged += (sender, difficulty) =>
+            //{
+            //    Application.Current.Dispatcher.Invoke(() =>
+            //    {
+            //        CurrentDifficulty = (int) difficulty;
+            //    });
+            //};
 
-            wallet.WaitNewBlock(1000);
+            //wallet.WaitNewBlock(1000);
 
             #region | NiceHash api |
 
@@ -190,8 +190,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
             //    {ServerEnum.Usa, new List<string> { Settings.Default.NiceApiIdGmail, Settings.Default.NiceApiKeyGmail}}
             //};
 
-            APIWrapper.EuropeApiId = Settings.Default.NiceApiIdMail;
-            APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyMail;
+            APIWrapper.EuropeApiId = Settings.Default.NiceApiIdYandex;
+            APIWrapper.EuropeApiKey = Settings.Default.NiceApiKeyYandex;
 
             APIWrapper.UsaApiId = Settings.Default.NiceApiIdYandex;
             APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyYandex;
@@ -206,7 +206,6 @@ namespace NiceHashMarket.WpfClient.ViewModels
             //APIWrapper.UsaApiKey = Settings.Default.NiceApiKeyMail;
 
 
-
             APIWrapper.Initialize(Settings.Default.NiceApiIdYandex, Settings.Default.NiceApiKeyYandex);
 
             GetMyOrders();
@@ -217,7 +216,6 @@ namespace NiceHashMarket.WpfClient.ViewModels
             _timer = new Timer(WhatToTimeTimerHandler, null, 0, 3000);
 
             //_tryDecreaseTime = new Timer(TryDecreaseMyOrders, null, 0, 5000);
-
         }
 
         private void TryDecreaseMyOrders(object state)
@@ -683,8 +681,8 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 case AlgoNiceHashEnum.CryptoNight:
                     break;
                 case AlgoNiceHashEnum.Lbry:
-                    //pool = new Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
-                    pool = new Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
+                    pool = new Pool { Label = "LBC SuprNova", Host = "lbry.suprnova.cc", Port = 6257, User = "wchasik.nice1", Password = "x" };
+                    //pool = new Pool { Label = "LBC CoinMine", Host = "lbc.coinmine.pl", Port = 8788, User = "wchasik.nice1", Password = "x" };
                     limit = _random.Next(3, 25) + _random.Next(1, 99) / 100.0;
                     break;
                 case AlgoNiceHashEnum.Equihash:
@@ -704,6 +702,17 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 case AlgoNiceHashEnum.Skunk:
                     pool = new Pool { Label = "ZPOOL skunk", Host = "skunk.mine.zpool.ca", Port = 8433, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC" };
                     limit = 100;
+                    break;
+                case AlgoNiceHashEnum.CryptoNightV7:
+                    pool = new Pool
+                    {
+                        Label = "xmr.nanopool.org",
+                        Host = server == ServerEnum.Europe ? "xmr-eu1.nanopool.org" : "xmr-us-east1.nanopool.org",
+                        Port = 14444,
+                        User = "4JUdGzvrMFDWrUUwY3toJATSeNwjn54LkCnKBPRzDuhzi5vSepHfUckJNxRL2gjkNrSqtCoRUrEDAgRwsQvVCjZbRzse7RcJQ59KjwefgU.nice/chasow@yandex.ru",
+                        Password = "x"
+                    };
+                    limit = 0.1;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -28,3 +28,4 @@
 27 = Sia
 28 = Blake2s
 29 = Skunk
+30 = CryptoNightV7

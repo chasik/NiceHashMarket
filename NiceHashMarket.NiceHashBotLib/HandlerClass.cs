@@ -128,10 +128,12 @@ namespace NiceHashBotLib
         private static double CalcPriceByDifficulty(double difficulty, double exchangeRate, double blockReward)
         {
             // Calculate mining profitability in BTC per 1 TH of hashpower.
-            var HT = difficulty * (Math.Pow(2.0, 32) / 1000000000000.0);
+            var HT = difficulty * (Math.Pow(2.0, 32) / 1000000);
             var CPD = blockReward * 24.0 * 3600.0 / HT;
 
-            return CPD * exchangeRate;
+            var price = CPD * exchangeRate;
+
+            return price;
         }
     }
 }
