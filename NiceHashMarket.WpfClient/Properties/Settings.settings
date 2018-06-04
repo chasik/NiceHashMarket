@@ -2,35 +2,35 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="NiceHashMarket.WpfClient.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="NiceApiKeyYandex" Type="System.String" Scope="User">
+    <Setting Name="NiceApiKeyYandex" Type="System.String" Scope="Application">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
-    <Setting Name="NiceApiIdYandex" Type="System.String" Scope="User">
+    <Setting Name="NiceApiIdYandex" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">111111</Value>
+    </Setting>
+    <Setting Name="LbrySuprnovaApiKey" Type="System.String" Scope="Application">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
-    <Setting Name="LbrySuprnovaApiKey" Type="System.String" Scope="User">
+    <Setting Name="LbrySuprnovaUserId" Type="System.String" Scope="Application">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
-    <Setting Name="LbrySuprnovaUserId" Type="System.String" Scope="User">
+    <Setting Name="LbryCoinMineApiKey" Type="System.String" Scope="Application">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
-    <Setting Name="LbryCoinMineApiKey" Type="System.String" Scope="User">
+    <Setting Name="LbryCoinMineUserId" Type="System.String" Scope="Application">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
-    <Setting Name="LbryCoinMineUserId" Type="System.String" Scope="User">
+    <Setting Name="NiceApiKeyGmail" Type="System.String" Scope="Application">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
-    <Setting Name="NiceApiKeyGmail" Type="System.String" Scope="User">
+    <Setting Name="NiceApiIdGmail" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">111111</Value>
+    </Setting>
+    <Setting Name="NiceApiKeyMail" Type="System.String" Scope="Application">
       <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
     </Setting>
-    <Setting Name="NiceApiIdGmail" Type="System.String" Scope="User">
-      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
-    </Setting>
-    <Setting Name="NiceApiKeyMail" Type="System.String" Scope="User">
-      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
-    </Setting>
-    <Setting Name="NiceApiIdMail" Type="System.String" Scope="User">
-      <Value Profile="(Default)">xxxx-xxx-xxx-xxx-xx-xx-sample</Value>
+    <Setting Name="NiceApiIdMail" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">111111</Value>
     </Setting>
   </Settings>
 </SettingsFile>

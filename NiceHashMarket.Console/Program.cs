@@ -34,11 +34,13 @@ namespace NiceHashMarket.Console
 {
     class Program
     {
+        private static object _syncObject = new object();
         private static IList<FarmConnectionInfo> _farms;
+        private static TimeSpan _lastPrintConsole;
 
         private static List<BlockInfo> _blocksInfo { get; set; } = new List<BlockInfo>();
 
-        static void Main(string[] args)
+        static void Main_fjjfjjfjf(string[] args)
         {
             var wallet = CoinsWhatToMineEnum.Lbc.CreateWallet();
             wallet.NewBlockIdFounded += (sender, newBlockId) =>
@@ -59,30 +61,90 @@ namespace NiceHashMarket.Console
             System.Console.ReadLine();
         }
 
-        static void Main_yii(string[] args)
+        static void Main(string[] args)
         {
-            var dic = new Dictionary<string, double>();
-
-            var zpool = YiiFactory.Create(YiiPoolEnum.Zpool);
-            zpool.LoopCommand(10000, YiiCommandEnum.Status);
-
-            zpool.StatusReceived += (sender, algos) =>
+            var pools = new[]
             {
-                dic.Clear();
-                foreach (var algo in algos.Children())
-                {
-                    var yiiAlgo = algo.First.ToObject<YiiAlgo>();
-                    dic.Add($"{yiiAlgo.EstimateCurrent:#########.#########}\t{yiiAlgo.Name}", yiiAlgo.EstimateCurrent * 100 / yiiAlgo.EstimateLast24H);
-                }
-
-                System.Console.Clear();
-
-                foreach (var pair in dic.OrderByDescending(x => x.Value))
-                {
-                    System.Console.WriteLine($"{pair.Key} \t\t {pair.Value:####.##} %");
-                }
-
+                YiiPoolEnum.Ahashpool, YiiPoolEnum.BlazePool, YiiPoolEnum.BlockMasters, YiiPoolEnum.HashRefinery,
+                YiiPoolEnum.ZergPool, YiiPoolEnum.Zpool, YiiPoolEnum.NiceHash
             };
+
+            var poolsInstances = new List<IYiiPool>();
+
+            foreach (var pool in pools)
+            {
+                var poolInstance = YiiFactory.Create(pool);
+                if (pool == YiiPoolEnum.NiceHash)
+                    poolInstance.LoopCommand(1000, YiiCommandEnum.Api, new Dictionary<string, string>{{ "method", "simplemultialgo.info" } });
+                else
+                    poolInstance.LoopCommand(5000, YiiCommandEnum.Status);
+
+                poolsInstances.Add(poolInstance);
+
+                poolInstance.StatusReceived += (sender, algos) =>
+                {
+                    if (DateTime.Now.TimeOfDay - _lastPrintConsole < new TimeSpan(0, 0, 0, 3))
+                        return;
+
+                    lock (_syncObject)
+                    {
+                        _lastPrintConsole = DateTime.Now.TimeOfDay;
+                        System.Console.Clear();
+                        System.Console.WriteLine(DateTime.Now);
+                        System.Console.Write(string.Empty.PadRight(20, ' '));
+
+                        foreach (var parsedPool in pools)
+                        {
+                            System.Console.Write(parsedPool.ToString().PadRight(14, ' '));
+                        }
+
+                        System.Console.WriteLine();
+
+                        foreach (var parsedAlgoName in poolsInstances.SelectMany(a => a.PoolsAlgos).Select(a => a.Key).Distinct())
+                        {
+                            System.Console.Write($"{parsedAlgoName.PadRight(16, ' ')}");
+
+                            var averageSum = 0.0;
+                            var averageCount = 0;
+
+                            foreach (var instance in poolsInstances)
+                            {
+                                if (instance.PoolsAlgos.ContainsKey(parsedAlgoName)
+                                    && instance.PoolType != YiiPoolEnum.NiceHash)
+                                {
+                                    averageCount++;
+                                    averageSum += instance.PoolsAlgos[parsedAlgoName].EstimateLast24H;
+                                }
+                            }
+
+                            var average = averageSum / averageCount;
+
+                            foreach (var instance in poolsInstances)
+                            {
+                                System.Console.ForegroundColor = ConsoleColor.DarkGray;
+                                if (instance.PoolsAlgos.ContainsKey(parsedAlgoName))
+                                {
+                                    if (instance.PoolType != YiiPoolEnum.NiceHash)
+                                    {
+                                        var percent = instance.PoolsAlgos[parsedAlgoName].EstimateCurrent * 100 /
+                                                      average;
+                                        if (percent > 160)
+                                            System.Console.ForegroundColor = ConsoleColor.DarkRed;
+                                        else if (percent > 130)
+                                            System.Console.ForegroundColor = ConsoleColor.Yellow;
+                                    }
+
+                                    System.Console.Write(instance.PoolsAlgos[parsedAlgoName].EstimateCurrent.ToString("### ### ###.### ### 000"));
+                                }
+                                else
+                                    System.Console.Write("  ".PadRight(14, '-'));
+                            }
+                            System.Console.ForegroundColor = ConsoleColor.White;
+                            System.Console.WriteLine();
+                        }
+                    }
+                };
+            }
 
             System.Console.ReadLine();
         }

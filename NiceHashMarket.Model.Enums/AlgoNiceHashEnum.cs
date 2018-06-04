@@ -32,6 +32,8 @@
         Sia = 27,
         Blake2S = 28,
         Skunk = 29,
-        CryptoNightV7 = 30
+        CryptoNightV7 = 30,
+        CryptoNightHeavy = 31,
+        Lyra2z = 32
     }
 }

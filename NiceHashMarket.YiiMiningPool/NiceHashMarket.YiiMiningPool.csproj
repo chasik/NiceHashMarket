@@ -47,10 +47,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ahashpool.cs" />
+    <Compile Include="BlazePool.cs" />
+    <Compile Include="BlockMasters.cs" />
+    <Compile Include="HashRefinery.cs" />
+    <Compile Include="NiceHash.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="YiiAlgo.cs" />
+    <Compile Include="YiiAlgoNiceHash.cs" />
+    <Compile Include="YiiCommand.cs" />
     <Compile Include="YiiFactory.cs" />
+    <Compile Include="YiiMp.cs" />
     <Compile Include="YiiPool.cs" />
+    <Compile Include="ZergPool.cs" />
     <Compile Include="Zpool.cs" />
   </ItemGroup>
   <ItemGroup>

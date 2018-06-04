@@ -1,9 +1,21 @@
 ﻿using Newtonsoft.Json;
+using NiceHashMarket.YiiMiningPool.Interfaces;
 
 namespace NiceHashMarket.YiiMiningPool
 {
-    public class YiiAlgo
+    public class YiiAlgo : IYiiAlgo
     {
+        public YiiAlgo()
+        {
+        }
+
+        public YiiAlgo(YiiAlgoNiceHash niceAlgo)
+        {
+            Name = niceAlgo.Name;
+            EstimateCurrent = niceAlgo.EstimateCurrent;
+            Port = niceAlgo.Port;
+        }
+
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("port")]
@@ -21,8 +33,13 @@ namespace NiceHashMarket.YiiMiningPool
         [JsonProperty("estimate_last24h")]
         public double EstimateLast24H { get; set; }
         [JsonProperty("actual_last24h")]
-        public string ActualLast24H { get; set; }
+        public double ActualLast24H { get; set; }
         [JsonProperty("ashrate_last24h")]
         public float HashRateLast24H { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

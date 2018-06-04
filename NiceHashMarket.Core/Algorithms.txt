@@ -29,3 +29,5 @@
 28 = Blake2s
 29 = Skunk
 30 = CryptoNightV7
+31 = CryptoNightHeavy
+32 = Lyra2Z

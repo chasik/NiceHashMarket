@@ -12,7 +12,7 @@ namespace NiceHashMarket.WpfClient.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.3.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.7.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -23,123 +23,93 @@ namespace NiceHashMarket.WpfClient.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
         public string NiceApiKeyYandex {
             get {
                 return ((string)(this["NiceApiKeyYandex"]));
             }
-            set {
-                this["NiceApiKeyYandex"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
+        [global::System.Configuration.DefaultSettingValueAttribute("111111")]
         public string NiceApiIdYandex {
             get {
                 return ((string)(this["NiceApiIdYandex"]));
             }
-            set {
-                this["NiceApiIdYandex"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
         public string LbrySuprnovaApiKey {
             get {
                 return ((string)(this["LbrySuprnovaApiKey"]));
             }
-            set {
-                this["LbrySuprnovaApiKey"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
         public string LbrySuprnovaUserId {
             get {
                 return ((string)(this["LbrySuprnovaUserId"]));
             }
-            set {
-                this["LbrySuprnovaUserId"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
         public string LbryCoinMineApiKey {
             get {
                 return ((string)(this["LbryCoinMineApiKey"]));
             }
-            set {
-                this["LbryCoinMineApiKey"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
         public string LbryCoinMineUserId {
             get {
                 return ((string)(this["LbryCoinMineUserId"]));
             }
-            set {
-                this["LbryCoinMineUserId"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
         public string NiceApiKeyGmail {
             get {
                 return ((string)(this["NiceApiKeyGmail"]));
             }
-            set {
-                this["NiceApiKeyGmail"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
+        [global::System.Configuration.DefaultSettingValueAttribute("111111")]
         public string NiceApiIdGmail {
             get {
                 return ((string)(this["NiceApiIdGmail"]));
             }
-            set {
-                this["NiceApiIdGmail"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
         public string NiceApiKeyMail {
             get {
                 return ((string)(this["NiceApiKeyMail"]));
             }
-            set {
-                this["NiceApiKeyMail"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("xxxx-xxx-xxx-xxx-xx-xx-sample")]
+        [global::System.Configuration.DefaultSettingValueAttribute("111111")]
         public string NiceApiIdMail {
             get {
                 return ((string)(this["NiceApiIdMail"]));
-            }
-            set {
-                this["NiceApiIdMail"] = value;
             }
         }
     }

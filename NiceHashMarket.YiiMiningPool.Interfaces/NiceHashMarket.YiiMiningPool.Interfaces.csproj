@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IYiiAlgo.cs" />
     <Compile Include="IYiiPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="YiiCommandEnum.cs" />

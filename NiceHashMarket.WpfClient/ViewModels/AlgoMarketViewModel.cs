@@ -131,7 +131,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
             _random = new Random((int)DateTime.Now.TimeOfDay.TotalMilliseconds);
             _algoList = new Algorithms();
             CurrentCoin = CoinsWhatToMineEnum.Monero;
-            CurrentAlgo = AlgoNiceHashEnum.CryptoNightV7;
+            CurrentAlgo = AlgoNiceHashEnum.Qubit;
 
             #region | local DataSource |
 
@@ -637,17 +637,21 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 case AlgoNiceHashEnum.X11:
                     break;
                 case AlgoNiceHashEnum.X13:
+                    pool = new Pool { Label = "ZPOOL X13", Host = "x13.mine.zpool.ca", Port = 3633, User = "3BxZEKb4KPPpGMVBtC7HumSJwD7NFRe6Q3", Password = "c=BTC" };
+                    limit = 1;
                     break;
                 case AlgoNiceHashEnum.Keccak:
+                    pool = new Pool { Label = "ZPOOL Keccak", Host = "keccak.mine.zpool.ca", Port = 5133, User = "3BxZEKb4KPPpGMVBtC7HumSJwD7NFRe6Q3", Password = "c=BTC,d=2047" };
+                    limit = 1;
                     break;
                 case AlgoNiceHashEnum.X15:
                     break;
                 case AlgoNiceHashEnum.Nist5:
-                    pool = new Pool { Label = "ZPOOL nist5", Host = "nist5.mine.zpool.ca", Port = 3833, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC" };
+                    pool = new Pool { Label = "ZPOOL nist5", Host = "nist5.mine.zpool.ca", Port = 3833, User = "3BxZEKb4KPPpGMVBtC7HumSJwD7NFRe6Q3", Password = "c=BTC,d=0.5" };
                     limit = 500;
                     break;
                 case AlgoNiceHashEnum.NeoScrypt:
-                    pool = new Pool { Label = "ZPOOL NeoScrypt", Host = "neoscrypt.mine.zpool.ca", Port = 4233, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC,d=4096,nice1" };
+                    pool = new Pool { Label = "ZPOOL NeoScrypt", Host = "neoscrypt.mine.zpool.ca", Port = 4233, User = "3BxZEKb4KPPpGMVBtC7HumSJwD7NFRe6Q3", Password = "c=BTC,nice1" };
                     limit = 10;
                     break;
                 case AlgoNiceHashEnum.Lyra2Re:
@@ -655,13 +659,15 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 case AlgoNiceHashEnum.WhirlpoolX:
                     break;
                 case AlgoNiceHashEnum.Qubit:
+                    pool = new Pool { Label = "ZPOOL Qubit", Host = "qubit.mine.zpool.ca", Port = 4733, User = "3BxZEKb4KPPpGMVBtC7HumSJwD7NFRe6Q3", Password = "c=BTC,nice1" };
+                    limit = 10;
                     break;
                 case AlgoNiceHashEnum.Quark:
                     break;
                 case AlgoNiceHashEnum.Axiom:
                     break;
                 case AlgoNiceHashEnum.Lyra2REv2:
-                    pool = new Pool { Label = "ZPOOL lyra2v2", Host = "lyra2v2.mine.zpool.ca", Port = 4533, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC" };
+                    pool = new Pool { Label = "ZPOOL lyra2v2", Host = "lyra2v2.mine.zpool.ca", Port = 4533, User = "3BxZEKb4KPPpGMVBtC7HumSJwD7NFRe6Q3", Password = "c=BTC" };
                     limit = 10;
                     break;
                 case AlgoNiceHashEnum.ScryptJaneNf16:
@@ -686,7 +692,7 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     limit = _random.Next(3, 25) + _random.Next(1, 99) / 100.0;
                     break;
                 case AlgoNiceHashEnum.Equihash:
-                    pool = new Pool { Label = "ZClassic SuprNova", Host = "zcl.suprnova.cc", Port = 4043, User = "wchasik.nice1", Password = "x" };
+                    pool = new Pool { Label = "ZPOOL Equihash", Host = "equihash.mine.zpool.ca", Port = 2142, User = "3BxZEKb4KPPpGMVBtC7HumSJwD7NFRe6Q3", Password = "c=BTC" };
                     limit = _random.Next(3, 5) + _random.Next(1, 99) / 100.0;
                     break;
                 case AlgoNiceHashEnum.Pascal:
@@ -696,11 +702,11 @@ namespace NiceHashMarket.WpfClient.ViewModels
                 case AlgoNiceHashEnum.Sia:
                     break;
                 case AlgoNiceHashEnum.Blake2S:
-                    pool = new Pool { Label = "ZPOOL blake2s", Host = "blake2s.mine.zpool.ca", Port = 5766, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC" };
+                    pool = new Pool { Label = "ZPOOL blake2s", Host = "blake2s.mine.zpool.ca", Port = 5766, User = "3BxZEKb4KPPpGMVBtC7HumSJwD7NFRe6Q3", Password = "c=BTC,d=32,nice1" };
                     limit = 20;
                     break;
                 case AlgoNiceHashEnum.Skunk:
-                    pool = new Pool { Label = "ZPOOL skunk", Host = "skunk.mine.zpool.ca", Port = 8433, User = "3Ho7sc4URxp3g6mHHkhg4BRAoRjkrA4Fjg", Password = "c=BTC" };
+                    pool = new Pool { Label = "ZPOOL skunk", Host = "skunk.mine.zpool.ca", Port = 8433, User = "3BxZEKb4KPPpGMVBtC7HumSJwD7NFRe6Q3", Password = "c=BTC" };
                     limit = 100;
                     break;
                 case AlgoNiceHashEnum.CryptoNightV7:
@@ -714,6 +720,20 @@ namespace NiceHashMarket.WpfClient.ViewModels
                     };
                     limit = 0.1;
                     break;
+                case AlgoNiceHashEnum.CryptoNightHeavy:
+                    break;
+                case AlgoNiceHashEnum.Lyra2z:
+                    pool = new Pool
+                    {
+                        Label = "ZPOOL Lyra2z",
+                        Host = "lyra2z.mine.zpool.ca",
+                        Port = 4553,
+                        User = "3BxZEKb4KPPpGMVBtC7HumSJwD7NFRe6Q3",
+                        Password = "c=BTC"
+                    };
+                    limit = 0.1;
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
