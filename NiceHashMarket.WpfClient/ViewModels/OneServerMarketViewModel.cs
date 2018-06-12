@@ -198,40 +198,43 @@ namespace NiceHashMarket.WpfClient.ViewModels
             OrderUpJumpLevel = null;
 
             var workersSumm = 0;
-            var myOrders = ((IHaveMyOrders) ParentViewModel).MyOrders.ToArray();
+            var myOrders = ((IHaveMyOrders) ParentViewModel)?.MyOrders?.ToArray();
 
-            var calculatedOrders = Orders.ToList().Where(o => 
-                o.Workers > 0 && (o.Amount > 0.1m || o.Amount < 0.01m /* if less than 0.01 volume - it's unlimited order */)
-                && o.Active && o.Type == OrderTypeEnum.Standart
-                && (!(ParentViewModel is IHaveMyOrders) || myOrders.All(myOrder => myOrder.Id != o.Id)))
-                .OrderBy(o => o.Price).ToList();
+            var calculatedOrders = Orders.ToList().Where(o =>
+                o.Active
+                && o.Type == OrderTypeEnum.Standart 
+                && o.Workers > 0 
+                && (o.Amount > 0.1m || o.Amount < 0.01m /* if less than 0.01 volume - it's unlimited order */)
+                && (myOrders == null || !myOrders.Any() || myOrders.All(myOrder => myOrder.Id != o.Id)))
+                .OrderBy(o => o.Price)
+                .ToList();
 
             var workersAll = calculatedOrders.Sum(o => o.Workers);
 
             if (workersAll == 0) return;
 
-            calculatedOrders.ForEach(o =>
+            foreach (var o in calculatedOrders)
+            {
+                if (OrderUpJumpLevel != null)
+                    break;
+
+                lock (this)
                 {
-                    if (OrderUpJumpLevel != null)
-                        return;
+                    JumpedOrders.Add(o);
+                }
 
-                    lock (this)
-                    {
-                        JumpedOrders.Add(o);
-                    }
+                workersSumm += o.Workers;
 
-                    workersSumm += o.Workers;
+                try
+                {
+                    if (workersSumm * 100 / workersAll >= WorkersPercentLimit)
+                        OrderUpJumpLevel = o;
+                }
+                catch (Exception e)
+                {
 
-                    try
-                    {
-                        if (workersSumm * 100 / workersAll >= WorkersPercentLimit)
-                            OrderUpJumpLevel = o;
-                    }
-                    catch (Exception e)
-                    {
-                        
-                    }
-                });
+                }
+            }
 
             this.RaisePropertyChanged(vm => vm.JumpedOrders);
 

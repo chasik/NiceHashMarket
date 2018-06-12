@@ -10,6 +10,8 @@ namespace NiceHashMarket.YiiMiningPool.Interfaces
 
         string ApiUrl { get; set; }
 
+        DateTime LastQuery { get; set; }
+
         Dictionary<string, double> PrecisionAlgosCorrections { get; set; }
 
         YiiPoolEnum PoolType { get; set; }

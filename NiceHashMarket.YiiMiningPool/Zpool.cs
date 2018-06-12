@@ -10,7 +10,6 @@ namespace NiceHashMarket.YiiMiningPool
         {
             PrecisionAlgosCorrections = new Dictionary<string, double>
             {
-                {"x13", 0.001}
             };
         }
     }

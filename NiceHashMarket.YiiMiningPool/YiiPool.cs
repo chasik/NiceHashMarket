@@ -18,6 +18,8 @@ namespace NiceHashMarket.YiiMiningPool
 
         public event EventHandler<JEnumerable<JToken>> StatusReceived;
 
+        public DateTime LastQuery { get; set; }
+
         public Dictionary<string, IYiiAlgo> PoolsAlgos { get; set; }
 
         public virtual string ApiUrl { get; set; }
@@ -68,6 +70,8 @@ namespace NiceHashMarket.YiiMiningPool
                         try
                         {
                             if (content.Length < 10) return;
+
+                            LastQuery = DateTime.Now;
 
                             ParseYiiStatusCommand(GetJTokensFromResponse(content), JtokenParser);
                         }
@@ -137,6 +141,11 @@ namespace NiceHashMarket.YiiMiningPool
         protected virtual void OnStatusReceived(JEnumerable<JToken> e)
         {
             StatusReceived?.Invoke(this, e);
+        }
+
+        public override string ToString()
+        {
+            return PoolType.ToString();
         }
     }
 }

@@ -11,6 +11,9 @@ namespace NiceHashMarket.Core.Helpers
 
             switch (metrixFrom)
             {
+                case MetricPrefixEnum.Kilo:
+                    fullValue = (long)(value * 1000);
+                    break;
                 case MetricPrefixEnum.Mega:
                     fullValue = (long)(value * 1000000);
                     break;
@@ -20,6 +23,9 @@ namespace NiceHashMarket.Core.Helpers
                 case MetricPrefixEnum.Tera:
                     fullValue = (long)(value * 1000000000000);
                     break;
+                case MetricPrefixEnum.Peta:
+                    fullValue = (long)(value * 1000000000000000);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(metrixFrom), metrixFrom, null);
             }
@@ -27,6 +33,9 @@ namespace NiceHashMarket.Core.Helpers
             long convertedValue;
             switch (metricTo)
             {
+                case MetricPrefixEnum.Kilo:
+                    convertedValue = fullValue / 1000;
+                    break;
                 case MetricPrefixEnum.Mega:
                     convertedValue = fullValue / 1000000;
                     break;
@@ -35,6 +44,9 @@ namespace NiceHashMarket.Core.Helpers
                     break;
                 case MetricPrefixEnum.Tera:
                     convertedValue = fullValue / 1000000000000;
+                    break;
+                case MetricPrefixEnum.Peta:
+                    convertedValue = fullValue / 1000000000000000;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(metricTo), metricTo, null);

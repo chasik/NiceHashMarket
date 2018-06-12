@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using NiceHashMarket.Core.Interfaces;
 using NiceHashMarket.Model;
+using NiceHashMarket.Model.Enums;
 using NiceHashMarket.Model.Interfaces;
 
 namespace NiceHashMarket.Core
 {
     public class Algorithms : IHaveAlgorithms, IEnumerable<IAlgo>
     {
-        private const string ResourceName = "NiceHashMarket.Core.Algorithms.txt";
-
         private List<IAlgo> _algoList;
 
         public List<IAlgo> AlgoList
@@ -22,33 +18,24 @@ namespace NiceHashMarket.Core
             set => _algoList = value;
         }
 
-        public Algorithms()
+        public Algorithms(bool onlyNiceHash = true)
         {
-            LoadFromResources();
+            LoadFromEnum(onlyNiceHash);
         }
 
-        public void LoadFromResources()
+        public void LoadFromEnum(bool onlyNiceHash)
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            var algoType = typeof(AlgoNiceHashEnum);
+            var algosIds = Enum.GetValues(algoType);
 
-            using (var stream = assembly.GetManifestResourceStream(ResourceName))
+            foreach (var algoId in algosIds)
             {
-                if (stream == null)
-                    throw new Exception("Не могу загрузить ресурс Algorithms.txt");
+                var id = Convert.ToByte(algoId);
 
-                using (var reader = new StreamReader(stream))
-                {
-                    var result = reader.ReadToEnd();
+                if (onlyNiceHash && id > 99)
+                    break;
 
-                    var regex = new Regex(@"^(?<index>\d{1,3})\s*=\s*(?<name>[a-zA-Z1-9]*)", RegexOptions.Multiline);
-
-                    var matches = regex.Matches(result);
-
-                    foreach (Match match in matches)
-                    {
-                        AlgoList.Add(new Algo{Id = byte.Parse(match.Groups["index"].Value), Name = match.Groups["name"].Value});
-                    }
-                }
+                AlgoList.Add(new Algo{Id = id, Name = Enum.GetName(algoType, id)});
             }
         }
 

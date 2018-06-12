@@ -18,8 +18,7 @@ namespace NiceHashMarket.YiiMiningPool
                 {"neoscrypt", 0.001},
                 {"nist5", 0.001},
                 {"skunk", 0.001},
-                {"sha256", 1000000},
-                {"x13", 0.001}
+                {"sha256", 1000000}
             };
         }
 

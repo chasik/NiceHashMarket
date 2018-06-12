@@ -10,11 +10,12 @@ namespace NiceHashMarket.YiiMiningPool
         {
             PrecisionAlgosCorrections = new Dictionary<string, double>
             {
-                {"quark", 1000},
-                {"qubit", 1000},
-                {"scrypt", 1000},
-                {"x11", 1000},
-                {"yescrypt", 0.001}
+                //{"quark", 1000},
+                //{"qubit", 1000},
+                //{"scrypt", 1000},
+                //{"x11", 1000},
+                {"yescrypt", 0.001},
+                {"x13", 0.001}
             };
         }
     }

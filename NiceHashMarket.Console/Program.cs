@@ -63,9 +63,19 @@ namespace NiceHashMarket.Console
 
         static void Main(string[] args)
         {
+            var targets = new Dictionary<short, decimal>();
+            var ordersStorage = new OrdersStorage(new Algorithms(onlyNiceHash: false).First(a => a.Id == (byte)AlgoNiceHashEnum.Skunk), 2000, targetLevels: new short[] {20, 40, 60, 80});
+            ordersStorage.TargetLevelChanged += (percent, price) =>
+            {
+                if (!targets.ContainsKey(percent))
+                    targets.Add(percent, price);
+
+                targets[percent] = price;
+            };
+
             var pools = new[]
             {
-                YiiPoolEnum.Ahashpool, YiiPoolEnum.BlazePool, YiiPoolEnum.BlockMasters, YiiPoolEnum.HashRefinery,
+                //YiiPoolEnum.Ahashpool, YiiPoolEnum.BlazePool, YiiPoolEnum.BlockMasters, YiiPoolEnum.HashRefinery,
                 YiiPoolEnum.ZergPool, YiiPoolEnum.Zpool, YiiPoolEnum.NiceHash
             };
 
@@ -75,9 +85,9 @@ namespace NiceHashMarket.Console
             {
                 var poolInstance = YiiFactory.Create(pool);
                 if (pool == YiiPoolEnum.NiceHash)
-                    poolInstance.LoopCommand(1000, YiiCommandEnum.Api, new Dictionary<string, string>{{ "method", "simplemultialgo.info" } });
+                    poolInstance.LoopCommand(6000, YiiCommandEnum.Api, new Dictionary<string, string>{{ "method", "simplemultialgo.info" } });
                 else
-                    poolInstance.LoopCommand(5000, YiiCommandEnum.Status);
+                    poolInstance.LoopCommand(6000, YiiCommandEnum.Status);
 
                 poolsInstances.Add(poolInstance);
 
@@ -91,19 +101,24 @@ namespace NiceHashMarket.Console
                         _lastPrintConsole = DateTime.Now.TimeOfDay;
                         System.Console.Clear();
                         System.Console.WriteLine(DateTime.Now);
-                        System.Console.Write(string.Empty.PadRight(20, ' '));
 
-                        foreach (var parsedPool in pools)
+                        var poolsString = string.Empty.PadRight(20, ' ');
+                        var lastQueriesString = string.Empty.PadRight(20, ' ');
+                        foreach (var parsedPool in poolsInstances)
                         {
-                            System.Console.Write(parsedPool.ToString().PadRight(14, ' '));
+                            poolsString += parsedPool.ToString().PadRight(14, ' ');
+                            lastQueriesString += ((int)(DateTime.Now - parsedPool.LastQuery).TotalSeconds).ToString()
+                                .PadRight(14, ' ');
                         }
 
-                        System.Console.WriteLine();
+                        System.Console.WriteLine(poolsString);
+                        System.Console.WriteLine(lastQueriesString);
 
                         foreach (var parsedAlgoName in poolsInstances.SelectMany(a => a.PoolsAlgos).Select(a => a.Key).Distinct())
                         {
                             System.Console.Write($"{parsedAlgoName.PadRight(16, ' ')}");
 
+                            var currentSum = 0.0;
                             var averageSum = 0.0;
                             var averageCount = 0;
 
@@ -114,10 +129,12 @@ namespace NiceHashMarket.Console
                                 {
                                     averageCount++;
                                     averageSum += instance.PoolsAlgos[parsedAlgoName].EstimateLast24H;
+                                    currentSum += instance.PoolsAlgos[parsedAlgoName].EstimateCurrent;
                                 }
                             }
 
-                            var average = averageSum / averageCount;
+                            var average24H = averageSum / averageCount;
+                            var averageCurrent = currentSum / averageCount;
 
                             foreach (var instance in poolsInstances)
                             {
@@ -127,20 +144,43 @@ namespace NiceHashMarket.Console
                                     if (instance.PoolType != YiiPoolEnum.NiceHash)
                                     {
                                         var percent = instance.PoolsAlgos[parsedAlgoName].EstimateCurrent * 100 /
-                                                      average;
-                                        if (percent > 160)
+                                                      average24H;
+                                        if (percent > 150)
                                             System.Console.ForegroundColor = ConsoleColor.DarkRed;
                                         else if (percent > 130)
                                             System.Console.ForegroundColor = ConsoleColor.Yellow;
-                                    }
 
-                                    System.Console.Write(instance.PoolsAlgos[parsedAlgoName].EstimateCurrent.ToString("### ### ###.### ### 000"));
+                                        System.Console.Write(instance.PoolsAlgos[parsedAlgoName].EstimateCurrent.ToString("### ### ###.### ### 000"));
+                                    }
+                                    else
+                                    {
+                                        System.Console.Write(instance.PoolsAlgos[parsedAlgoName].EstimateCurrent.ToString("### ### ###.### ### 000"));
+                                        var moreAt = averageCurrent * 100 /
+                                                     instance.PoolsAlgos[parsedAlgoName].EstimateCurrent;
+
+                                        if (moreAt > 150)
+                                            System.Console.ForegroundColor = ConsoleColor.DarkRed;
+                                        else if (moreAt > 130)
+                                            System.Console.ForegroundColor = ConsoleColor.Yellow;
+
+                                        System.Console.Write($" ({moreAt:F1}%)".PadRight(10,' '));
+                                        System.Console.ForegroundColor = ConsoleColor.White;
+                                        System.Console.Write($"{parsedAlgoName.PadLeft(20, ' ')}");
+                                        System.Console.ForegroundColor = ConsoleColor.DarkGray;
+                                    }
                                 }
                                 else
                                     System.Console.Write("  ".PadRight(14, '-'));
+
                             }
                             System.Console.ForegroundColor = ConsoleColor.White;
                             System.Console.WriteLine();
+                        }
+
+                        System.Console.WriteLine();
+                        foreach (var target in targets)
+                        {
+                            System.Console.WriteLine($"{target.Key} % => {target.Value}");
                         }
                     }
                 };
@@ -458,26 +498,6 @@ namespace NiceHashMarket.Console
             }
 
             System.Console.ReadLine();
-        }
-
-        static void MainOld(string[] args)
-        {
-            var algoList = new Algorithms();
-
-            
-            var ordersStorage = new OrdersStorage(algoList.First(a => a.Id == (byte)AlgoNiceHashEnum.Lbry), 2000);
-            ordersStorage.Entities.ListChanged += EntitiesOnListChanged;
-
-            System.Console.WriteLine();
-            System.Console.ReadKey();
-        }
-
-        private static void EntitiesOnListChanged(object sender, ListChangedEventArgs listChangedEventArgs)
-        {
-            var storage = sender as BindingList<Order>;
-            if (storage == null) return;
-
-            var order = storage[listChangedEventArgs.NewIndex];
         }
     }
 }

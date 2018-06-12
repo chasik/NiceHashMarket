@@ -11,5 +11,4 @@ namespace NiceHashMarket.Services
         [OperationContract(IsOneWay = true)]
         void ListenAlgo(IAlgo algo);
     }
-
 }

@@ -7,6 +7,6 @@ namespace NiceHashMarket.Core.Interfaces
     {
         List<IAlgo> AlgoList { get; set; }
 
-        void LoadFromResources();
+        void LoadFromEnum(bool onlyNiceHash);
     }
 }

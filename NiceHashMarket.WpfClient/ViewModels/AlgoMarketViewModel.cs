@@ -129,13 +129,13 @@ namespace NiceHashMarket.WpfClient.ViewModels
         public AlgoMarketViewModel()
         {
             _random = new Random((int)DateTime.Now.TimeOfDay.TotalMilliseconds);
-            _algoList = new Algorithms();
+            _algoList = new Algorithms(onlyNiceHash:false);
             CurrentCoin = CoinsWhatToMineEnum.Monero;
             CurrentAlgo = AlgoNiceHashEnum.Qubit;
 
             #region | local DataSource |
 
-            _ordersStorage = new OrdersStorage(_algoList.First(a => a.Id == (byte)CurrentAlgo), 900, Application.Current.Dispatcher);
+            _ordersStorage = new OrdersStorage(_algoList.First(a => a.Id == (byte)CurrentAlgo), 900, null);
 
             #endregion
 

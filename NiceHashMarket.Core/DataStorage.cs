@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
-using System.Windows.Threading;
 using NiceHashMarket.Core.Helpers;
 using NiceHashMarket.Model.Interfaces;
 
@@ -12,23 +11,25 @@ namespace NiceHashMarket.Core
     public delegate void AlgoChangedDelegate<T>(DataStorage<T> sender, IAlgo oldAlgo, IAlgo newAlgo) 
         where T : IHaveId, INotifyPropertyChanged;
 
-    public class DataStorage<T> : IEnumerable<T>
+    public abstract class DataStorage<T> : IEnumerable<T>
         where T : IHaveId, INotifyPropertyChanged
     {
-        private Timer _timer;
-        private readonly int _frequencyQueryMilliseconds;
-        protected readonly Dispatcher _currentDispatcher;
-
         public event AlgoChangedDelegate<T> AlgoChanging;
         public event AlgoChangedDelegate<T> AlgoChanged;
+
+        private Timer _timer;
+        private readonly int _frequencyQueryMilliseconds;
+        private readonly SynchronizationContext _syncContext;
 
         public IAlgo Algo { get; set; }
         public ApiClient ApiClient { get; set; }
         public NiceBindingList<T> Entities { get; set; }
 
-        public DataStorage(IAlgo algo, int frequencyQueryMilliseconds, Dispatcher currentDispatcher = null)
+        public abstract void JsonQueryExecute();
+
+        protected DataStorage(IAlgo algo, int frequencyQueryMilliseconds)
         {
-            _currentDispatcher = currentDispatcher;
+            _syncContext = SynchronizationContext.Current;
             _frequencyQueryMilliseconds = frequencyQueryMilliseconds;
 
             Algo = algo;
@@ -42,7 +43,10 @@ namespace NiceHashMarket.Core
 
         private void TimerOnElapsed(object state)
         {
-            JsonQueryExecute();
+            if (_syncContext == null)
+                JsonQueryExecute();
+            else
+                _syncContext.Send(s => JsonQueryExecute(), state);
         }
 
         public virtual void SelectAnotherAlgo(IAlgo newAlgo)
@@ -51,36 +55,38 @@ namespace NiceHashMarket.Core
             AlgoChanging?.Invoke(this, oldAlgo, newAlgo);
 
             Entities = new NiceBindingList<T>();
+
             Algo = newAlgo;
 
             AlgoChanged?.Invoke(this, oldAlgo, newAlgo);
         }
 
-        public virtual void JsonQueryExecute()
+        public void UpdateBindingList(IEnumerable<T> newEntities)
         {
-        }
+            var newEntitiesArray = newEntities as T[] ?? newEntities.ToArray();
 
-        public void UpdateBindingList(IEnumerable<T> entities)
-        {
-            if (entities.Any())
+            if (newEntitiesArray.Any())
             {
-                var entitiesIds = entities.Select(e => e.Id).ToList();
-                var closedEntities = Entities.Where(e => !entitiesIds.Contains(e.Id)).Select(e => e.Id).ToList();
+                var entitiesIds = newEntitiesArray.Select(e => e.Id).ToList();
+                var closedEntities = Entities.Where(e => !entitiesIds.Contains(e.Id)).ToArray();
 
-                closedEntities.ForEach(eid => Entities.Remove(Entities.First(e => e.Id == eid)));
+                foreach (var closedEntity in closedEntities)
+                {
+                    Entities.Remove(closedEntity);
+                }
             }
 
-            foreach (var entity in entities)
+            foreach (var entity in newEntitiesArray)
             {
-                var knownEntity = Entities.FirstOrDefault(x => x.Id == entity.Id);
+                var existEntity = Entities.FirstOrDefault(x => x.Id == entity.Id);
 
-                if (knownEntity == null)
+                if (existEntity == null)
                 {
                     Entities.Add(entity);
                     continue;
                 }
 
-                entity.CopyProperties(knownEntity);
+                entity.CopyProperties(existEntity);
             }
         }
 

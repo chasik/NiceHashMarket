@@ -31,7 +31,7 @@ namespace NiceHashMarket.Services
 
             if (!_ordersStorages.ContainsKey(algo.Id))
             {
-                var orderStorageForAlgo = new OrdersStorage(algo, 1000);
+                var orderStorageForAlgo = new OrdersStorage(algo, 1000, targetLevels:null);
                 
                 orderStorageForAlgo.Entities.ListChanged += Entities_ListChanged;
                 //orderStorageForAlgo.Entities.BeforeRemove += Entities_BeforeRemove;

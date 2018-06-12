@@ -98,9 +98,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Algorithms.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="FarmsConnectionInfo.txt.sample" />
     <None Include="packages.config" />
   </ItemGroup>

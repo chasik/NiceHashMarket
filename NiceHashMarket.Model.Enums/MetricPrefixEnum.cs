@@ -2,8 +2,10 @@
 {
     public enum MetricPrefixEnum
     {
+        Kilo,
         Mega,
         Giga,
-        Tera
+        Tera,
+        Peta
     }
 }

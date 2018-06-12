@@ -34,6 +34,30 @@
         Skunk = 29,
         CryptoNightV7 = 30,
         CryptoNightHeavy = 31,
-        Lyra2z = 32
+        Lyra2z = 32,
+        // 33 ... 99 - empty slots for nicehash algos
+        BitCore = 100,
+        BlakeCoin = 101,
+        C11 = 102,
+        Groestl = 103,
+        Hmq1725 = 104,
+        Hsr = 105,
+        KeccakC = 106,
+        M7m = 107,
+        MyrGr = 108,
+        Phi = 109,
+        Sib = 110,
+        Skein = 111,
+        TimeTravel = 112,
+        Tribus = 113,
+        X16r = 114,
+        X16s = 115,
+        X17 = 116,
+        Xevan = 117,
+        Yescrypt = 118,
+        YescryptR16 = 119,
+        Allium = 120,
+        Sha256t = 121,
+        X11evo = 122
     }
 }

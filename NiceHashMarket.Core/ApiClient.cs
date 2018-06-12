@@ -31,17 +31,17 @@ namespace NiceHashMarket.Core
 
         private List<Order> GetOrderFromJtoken(JToken jtoken, ServerEnum server)
         {
-            return jtoken.Select(order => new Order
-                (
-                    id: order[0].Value<int>(),
-                    price: order[3].Value<decimal>(),
-                    amount: order[4].Value<decimal>(),
-                    speed: order[6].Value<decimal>(),
-                    workers: order[5].Value<int>(),
-                    type: order[1].Value<int>(),
-                    active: order[2].Value<int>(),
-                    server: server
-                )).ToList();
+            return jtoken?.Select(order => new Order
+            (
+                id: order[0].Value<int>(),
+                price: order[3].Value<decimal>(),
+                amount: order[4].Value<decimal>(),
+                speed: order[6].Value<decimal>(),
+                workers: order[5].Value<int>(),
+                type: order[1].Value<int>(),
+                active: order[2].Value<int>(),
+                server: server
+            )).ToList();
         }
 
         public IEnumerable<Order> GetOrders(IAlgo algo)
@@ -57,13 +57,13 @@ namespace NiceHashMarket.Core
 
             var euServer = jobject["eu"];
             var euOrders = euServer["orders"];
-
-            var result = GetOrderFromJtoken(euOrders, ServerEnum.Europe);
+            var resultEurope = GetOrderFromJtoken(euOrders, ServerEnum.Europe);
 
             var usServer = jobject["usa"];
             var usOrders = usServer["orders"];
+            var resultUsa = GetOrderFromJtoken(usOrders, ServerEnum.Usa);
 
-            result.AddRange(GetOrderFromJtoken(usOrders, ServerEnum.Usa));
+            var result = resultEurope?.Concat(resultUsa) ?? resultUsa ?? new List<Order>();
 
             return result;
         }
